@@ -118,6 +118,29 @@ class DataProccess extends CI_Controller {
             redirect(base_url($_POST['prevLink']));
         }
     }
+    public function comment()
+    {
+        $data = array(
+            'sender'=> $this->session->username,
+            'feedID'=> $_POST['feedID'],
+            'comment'=> nl2br($_POST['comment']),
+            'date'=> date("Y-m-d H:i:s")
+        );
+        $post = $this->crud->Insert('feed_comment', $data);
+        if($post){
+            redirect(base_url($_POST['prevLink']));
+        }
+    }
+    public function getComment($feedID)
+    {
+        $comment = $this->crud->GetWhere('feed_comment', array('feedID'=>$feedID));
+        $commenJSON = json_encode($comment);
+        echo $commenJSON;
+    }
+    public function coba($page)
+    {
+        $this->load->view('class-page/'.$page);
+    }
 }
 
 /* End of file DataProccess.php */

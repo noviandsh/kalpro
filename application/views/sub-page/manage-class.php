@@ -16,7 +16,7 @@
         foreach($class as $val){?>
             <div class="class-div">
                 <?=$val['name']?>
-                <a href="<?=base_url('class/'.clean($val['name']).'-'.$val['classID'])?>">Link</a><br>
+                <a href="<?=base_url('class/'.clean($val['name']).'-'.$val['classID'].'/post')?>">Link</a><br>
                 
             </div>
             <hr>

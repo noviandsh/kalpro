@@ -46,7 +46,18 @@ class Home extends CI_Controller {
 	public function index()
 	{
 		$this->ceklogin();
-		$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->username));
+		$type = $this->session->type;
+		if($type=='m'){
+			$class = $this->crud->GetSelectWhere('class_member', 'classID', array('username'=>$this->session->username));
+			$subData['class'] = $this->crud->GetOrWhere('class', 'classID', $class);
+		}else{
+			$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->username));
+		}
+		$subData['feed'] = $this->crud->GetOrWhereOrder('feed', 'classID', $subData['class'], 'date', 'DESC');
+		$subData['feedID'] = array();
+		foreach($subData['feed'] as $val){
+			array_push($subData['feedID'], $val['id']);
+		}
 		$data['page'] = $this->load->view('sub-page/home', $subData, TRUE);
 		$this->load->view('page/home', $data);
 	}
@@ -62,7 +73,13 @@ class Home extends CI_Controller {
 	public function manageClass()
 	{
 		$this->ceklogin();
-		$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->username));
+		$type = $this->session->type;
+		if($type=='m'){
+			$class = $this->crud->GetSelectWhere('class_member', 'classID', array('username'=>$this->session->username));
+			$subData['class'] = $this->crud->GetOrWhere('class', 'classID', $class);
+		}else{
+			$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->username));
+		}
 		$data['page'] = $this->load->view('sub-page/manage-class', $subData, TRUE);
 		$this->load->view('page/home', $data);
 	}
@@ -85,14 +102,20 @@ class Home extends CI_Controller {
 			'classID'=>$classID
 		);
 		if($type=='m'){
-			echo "haha";
+			// echo "haha";
 		}else{
 			$classCheck = $this->crud->GetCountWhere('class', $where);
 			if($classCheck==0){
 				show_404();
 			}
 		}
+		$subData['feed'] = $this->crud->GetWhereOrder('feed', array('classID'=>$classID), 'date', 'DESC');
+		$subData['feedID'] = array();
+		foreach($subData['feed'] as $val){
+			array_push($subData['feedID'], $val['id']);
+		}
 		$subData['class'] = $where;
+		$subData['link'] = $link;
 		$subData['member'] = $this->crud->GetWhere('class_member', array('classID'=> $classID));
 		// http://localhost/kalpro/class/agama-lalapan-RHXwQc
 		$data['page'] = $this->load->view('sub-page/class', $subData, TRUE);

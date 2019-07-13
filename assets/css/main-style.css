@@ -210,3 +210,36 @@ body{
     resize: none;
     width: 100%;
 }
+
+.feed-container{
+    padding: 5px;
+    margin-top: 10px;
+    border: 1px solid #eee;
+}
+.comment-container{
+    width: 100%;
+    background: #009688;
+}
+.comment-form form{
+    display: grid;
+    grid-template-columns: 90% 10%;
+    padding: 10px;
+}
+.comment-form textarea{
+    resize: vertical;
+}
+.user-comment div{
+    position: relative;
+    right: 0;
+    top: 0;
+}
+#side-menu ul>li{
+    cursor: pointer;
+    padding: 10px;
+    background: #c2e6e3;
+    font-family: fonta;
+}
+#side-menu ul>li.selected{
+    background: #00897B;
+    color: white;
+}

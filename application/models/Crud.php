@@ -19,6 +19,19 @@ class crud extends CI_Model{
         $res=$this->db->get($table);
         return $res->result_array();
     }
+    public function GetOrWhereOrder($table, $column, $where, $col, $order)
+    {
+        for($i=0;$i<count($where);$i++){
+            if($i==0){
+                $this->db->where($column, $where[$i]['classID']);
+            }else{
+                $this->db->or_where($column, $where[$i]['classID']);
+            }
+        }
+        $this->db->order_by($col, $order);
+        $res=$this->db->get($table);
+        return $res->result_array();
+    }
     // MENAMPILKAN DATA DENGAN BERURUTAN
     public function GetOrder($table, $col, $order){
         $this->db->order_by($col, $order);
@@ -161,6 +174,12 @@ class crud extends CI_Model{
     public function GetSelectWhereGroupBy($table, $select, $where, $group){
         $this->db->select($select);
         $this->db->group_by($group);
+        $res = $this->db->get_where($table, $where);
+        return $res->result_array();
+    }
+    // MENAMPILKAN DATA DENGAN RECORD YANG DIPILIH
+    public function GetSelectWhere($table, $select, $where){
+        $this->db->select($select);
         $res = $this->db->get_where($table, $where);
         return $res->result_array();
     }

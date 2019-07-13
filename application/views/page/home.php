@@ -13,6 +13,7 @@
     <div id="navbar">
         <div id="logo"></div>
             <div id="menubar-atas">
+                <a href="<?=base_url('dataproccess/logout')?>" style="right: 220px;position: absolute;color: white;">LOGOUT</a>
                 <div id="search-box">
                     <input type="" id="search" name="search" placeholder="Search">
                     <i id="search-btn" class="fa fa-search" aria-hidden="true"></i>
@@ -40,6 +41,5 @@
     <div id="container">
         <?=$page?>
     </div>
-    <a href="<?=base_url('dataproccess/logout')?>">LOGOUT</a>
 </body>
 </html>
