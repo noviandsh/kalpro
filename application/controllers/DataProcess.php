@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class DataProccess extends CI_Controller {
+class DataProcess extends CI_Controller {
     
     public function __construct()
     {
@@ -137,10 +137,50 @@ class DataProccess extends CI_Controller {
         $commenJSON = json_encode($comment);
         echo $commenJSON;
     }
-    public function coba($page)
+    public function showContent($page, $classID)
     {
-        $this->load->view('class-page/'.$page);
+        function clean($string) {
+            $string = strtolower($string);
+            $string = trim($string, " ");
+            $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
+            $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
+
+            return preg_replace('/-+/', '-', $string); // Replaces multiple hyphens with single one.
+        }
+        $where = array(
+            'teacher'=>$this->session->username,
+            'classID'=>$classID
+        );
+        $subData['class'] = $this->crud->GetWhere('class', $where);
+        switch($page){
+            // CASE POST START
+            case 'post':
+                $subData['feed'] = $this->crud->GetWhereOrder('feed', array('classID'=>$classID), 'date', 'DESC');
+                $subData['feedID'] = array();
+                $subData['link'] = clean($subData['class'][0]['name']).'-'.$subData['class'][0]['classID'].'/post';
+                foreach($subData['feed'] as $val){
+                    array_push($subData['feedID'], $val['id']);
+                }
+                // print_r($subData['link']);
+                break;
+            // CASE POST END
+            
+            // CASE QUIZ START
+            case 'quiz':
+                $subData['link'] = clean($subData['class'][0]['name']).'-'.$subData['class'][0]['classID'].'/quiz';
+                $subData['quiz'] = $this->crud->GetWhere('quiz', array('classID'=>$classID));
+                break;
+            // CASE QUIZ END
+
+            // CASE MEMBER START
+            case 'member':
+                $subData['member'] = $this->crud->GetWhere('class_member', array('classID'=> $classID));
+                break;
+            // CASE MEMBER END
+        }
+        $this->load->view('class-page/'.$page, $subData);
+        
     }
 }
 
-/* End of file DataProccess.php */
+/* End of file DataProcess.php */

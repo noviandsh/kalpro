@@ -1,57 +1,59 @@
-<div id="profile">
-    <div class="photo">
-        <img src="<?=base_url('assets/img/poto.jpg')?>" alt="">
-    </div>
-    login as <b><?=$this->session->username;?></b><br>
-    <form action="<?=base_url('dataproccess/joinClass')?>" method="post">
-        <input type="text" name="classID" placeholder="Masukkan Kode Kelas">
-        <button>Gabung Kelas</button>
-    </form>
-</div>
-<div id="content">
-    <div id="post-form">
-        <form action="<?=base_url('dataproccess/post')?>" method="post">
-            <select name="classID">
-                <?php
-                    foreach($class as $val){
-                        echo "<option value=".$val['classID'].">".$val['name']."</option>";
-                    }
-                ?>
-            </select>
-            <input type="hidden" value="home" name="prevLink">
-            <textarea name="content" id="blas" cols="30" rows="10"></textarea>
-            <button onClick="test()">Kirim</button>
+<div id="container">
+    <div id="profile">
+        <div class="photo">
+            <img src="<?=base_url('assets/img/poto.jpg')?>" alt="">
+        </div>
+        login as <b><?=$this->session->username;?></b><br>
+        <form action="<?=base_url('dataprocess/joinClass')?>" method="post">
+            <input type="text" name="classID" placeholder="Masukkan Kode Kelas">
+            <button>Gabung Kelas</button>
         </form>
     </div>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores aspernatur facere dolore aperiam, voluptatem ullam consequuntur assumenda at? Sapiente expedita vero cumque quaerat corporis explicabo laudantium deserunt! Sit, non rem.
-        <?php
-            foreach($feed as $val){
-                ?>
-                <div class="feed-container">
-                    <b><?=$val['sender']?></b> => <?=$val['classID']?><br>
-                    <small><?=$val['date']?></small><br>
-                    <?=$val['content']?>
-                    <div class="comment-container">
-                        <div class="comment-box-<?=$val['id']?>">
-                            <div class="user-comment-1">
+    <div id="content">
+        <div id="post-form">
+            <form action="<?=base_url('dataprocess/post')?>" method="post">
+                <select name="classID">
+                    <?php
+                        foreach($class as $val){
+                            echo "<option value=".$val['classID'].">".$val['name']."</option>";
+                        }
+                    ?>
+                </select>
+                <input type="hidden" value="home" name="prevLink">
+                <textarea name="content" id="blas" cols="30" rows="10"></textarea>
+                <button onClick="test()">Kirim</button>
+            </form>
+        </div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores aspernatur facere dolore aperiam, voluptatem ullam consequuntur assumenda at? Sapiente expedita vero cumque quaerat corporis explicabo laudantium deserunt! Sit, non rem.
+            <?php
+                foreach($feed as $val){
+                    ?>
+                    <div class="feed-container">
+                        <b><?=$val['sender']?></b> => <?=$val['classID']?><br>
+                        <small><?=$val['date']?></small><br>
+                        <?=$val['content']?>
+                        <div class="comment-container">
+                            <div class="comment-box-<?=$val['id']?>">
+                                <div class="user-comment-1">
 
+                                </div>
+                            </div>
+                            <div class="comment-form">
+                                <form action="<?=base_url('dataprocess/comment')?>" method="post">
+                                    <input type="hidden" name="feedID" value="<?=$val['id']?>">
+                                    <input type="hidden" name="prevLink" value="home">
+                                    <textarea name="comment" placeholder="Tulis Komentar..."></textarea><button>Kirim</button>
+                                </form>
                             </div>
                         </div>
-                        <div class="comment-form">
-                            <form action="<?=base_url('dataproccess/comment')?>" method="post">
-                                <input type="hidden" name="feedID" value="<?=$val['id']?>">
-                                <input type="hidden" name="prevLink" value="home">
-                                <textarea name="comment" placeholder="Tulis Komentar..."></textarea><button>Kirim</button>
-                            </form>
-                        </div>
                     </div>
-                </div>
-                <?php
-            }
-        ?>
-</div>
-<div id="sidebar">
+                    <?php
+                }
+            ?>
+    </div>
+    <div id="sidebar">
 
+    </div>
 </div>
 <script>
     var feed = [<?php echo '"'.implode('","', $feedID).'"' ?>];
@@ -59,7 +61,7 @@
     function showComment(item, index) {
         $.ajax({
             type  : 'POST',
-            url   : '<?php echo base_url()?>dataproccess/getcomment/'+item,
+            url   : '<?php echo base_url()?>dataprocess/getcomment/'+item,
             async : false,
             contentType: 'application/json',
             dataType: 'json',

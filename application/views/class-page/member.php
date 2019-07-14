@@ -1,9 +1,8 @@
 member:
 <ul> 
     <?php
-    print_r($class['classID']);
     foreach($member as $mhs){
-        if($mhs['classID'] == $class['classID']){
+        if($mhs['classID'] == $class[0]['classID']){
             echo "<li>".$mhs['username']."</li>";
         }
     }

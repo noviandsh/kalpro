@@ -1,26 +1,28 @@
-<div id="side-menu">
-    <ul>
-        <li id="post" class="side-btn">Kiriman</li>
-        <li id="quiz" class="side-btn">Kuis</li>
-        <li id="member" class="side-btn">Member</li>
-    </ul>
+<div id="container">
+    <div id="side-menu">
+        <ul>
+            <li id="post" class="side-btn">Kiriman</li>
+            <li id="quiz" class="side-btn">Kuis</li>
+            <li id="member" class="side-btn">Member</li>
+        </ul>
+    </div>
+    <div id="content">
+        
+    </div>
+    <div>
+    <span id="classID"><?=$class['classID']?></span><?=$this->uri->segment(2)?>
+    </div>
 </div>
-<div id="content">
-    
-</div>
-<div>
-
-</div>
-<script>
+<script language="JavaScript" type="text/javascript">
 $( document ).ready(function() {
     const link = '<?=base_url("class/".$link)?>';
     let menu = jQuery.makeArray($('.side-btn'));
     const uri = <?=$this->uri->segment(3)?>;
-
+    const currentClass = $('#classID').html();
     menu.forEach(m => {
         if(m.id === uri.id){
             $('#'+m.id).toggleClass('selected');
-            showPage(m.id);
+            showPage(m.id, currentClass);
         }else{
             $('#'+m.id).removeClass('selected');
         }
@@ -30,17 +32,17 @@ $( document ).ready(function() {
         menu.forEach(m => {
             if(m.id === id){
                 $('#'+m.id).toggleClass('selected');
-                showPage(m.id);
+                showPage(m.id, currentClass);
             }else{
                 $('#'+m.id).removeClass('selected');
             }
         })
     }
 
-    function showPage(item){
+    function showPage(item,kelas){
         $.ajax({
             type  : 'POST',
-            url   : '<?php echo base_url()?>dataproccess/coba/'+item,
+            url   : '<?php echo base_url()?>dataprocess/showcontent/'+item+'/'+kelas,
             error: function (jqXHR, textStatus, errorThrown){
                 alert(jqXHR.status);
             },
@@ -67,31 +69,6 @@ $( document ).ready(function() {
     })
 
 
-    const feed = [<?php echo '"'.implode('","', $feedID).'"' ?>];
-    feed.forEach(showComment);
-
-    function showComment(item, index) {
-        $.ajax({
-            type  : 'POST',
-            url   : '<?php echo base_url()?>dataproccess/getcomment/'+item,
-            async : false,
-            contentType: 'application/json',
-            dataType: 'json',
-            success : function(data){
-                let html = '';
-                let i;
-                let arrId = [];
-                for(i=0; i<data.length; i++){
-                    html += '<div class="user-comment user-comment-'+data[i].id+'">'+
-                                '<b>'+data[i].sender+'</b><br>'+
-                                '<small>'+data[i].date+'</small><br>'+
-                                data[i].comment+
-                                '<div><i class="fas fa-ellipsis-v fa-xs"></i></div>'+
-                            '</div>';
-                }
-                $('.comment-box-'+item).html(html);
-            }
-        });
-    }
+    
 })
 </script>

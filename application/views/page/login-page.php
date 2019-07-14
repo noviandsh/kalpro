@@ -17,7 +17,7 @@
         <button id="login-btn">Masuk</button>
     </form>
     <hr>
-    <form id="regForm" action="<?=base_url('dataproccess/register')?>" method="post">
+    <form id="regForm" action="<?=base_url('dataprocess/register')?>" method="post">
         <label for="">Tipe</label>
         <input type="radio" name="type" value="d">Dosen
         <input type="radio" name="type" value="m">Mahasiswa
@@ -34,7 +34,7 @@
             var pass = $("#pass").val();
             $.ajax({
                 type  : 'POST',
-                url   : '<?=base_url()?>dataproccess/login',
+                url   : '<?=base_url()?>dataprocess/login',
                 // dataType: 'json',
                 data : {username:user, password:pass},
                 beforeSend: function () {
@@ -58,7 +58,7 @@
 
         function userCheck() {
             $.ajax({
-                url: "<?=base_url()?>dataproccess/userCheck",
+                url: "<?=base_url()?>dataprocess/userCheck",
                 data:'username='+$("#userRegist").val(),
                 type: "POST",
                 beforeSend: function () {

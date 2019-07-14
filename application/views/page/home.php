@@ -7,13 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="<?=base_url('assets/css/main-style.css')?>">
     <link href="<?php echo base_url('assets/css/all.min.css');?>" rel="stylesheet"/>
+    <link href="<?php echo base_url('assets/css/jquery-ui.css');?>" rel="stylesheet"/>
+    <link href="<?php echo base_url('assets/css/jquery-ui.theme.css');?>" rel="stylesheet"/>
+    <link href="<?php echo base_url('assets/css/jquery-ui-timepicker-addon.css');?>" rel="stylesheet"/>
+    <link href="<?php echo base_url('assets/css/all.min.css');?>" rel="stylesheet"/>
+
     <script src="<?=base_url('assets/js/jquery.min.js')?>"></script>
+    <script src="<?=base_url('assets/js/jquery-ui.js')?>"></script>
+    <script src="<?=base_url('assets/js/jquery-ui-timepicker-addon.js')?>"></script>
 </head>
 <body>
     <div id="navbar">
         <div id="logo"></div>
             <div id="menubar-atas">
-                <a href="<?=base_url('dataproccess/logout')?>" style="right: 220px;position: absolute;color: white;">LOGOUT</a>
+                <a href="<?=base_url('dataprocess/logout')?>" style="right: 220px;position: absolute;color: white;">LOGOUT</a>
                 <div id="search-box">
                     <input type="" id="search" name="search" placeholder="Search">
                     <i id="search-btn" class="fa fa-search" aria-hidden="true"></i>
@@ -38,8 +45,6 @@
             </div>
         </div>
     </div>
-    <div id="container">
-        <?=$page?>
-    </div>
+    <?=$page?>
 </body>
 </html>

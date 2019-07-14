@@ -53,6 +53,7 @@ $route['default_controller'] = 'home';
 $route['login-page'] = 'home/login';
 $route['class'] = 'home/manageClass';
 $route['class/(:any)/(:any)'] = 'home/classPage';
+$route['class/(:any)/(:any)/new-quiz'] = 'home/createQuiz';
 $route['akun'] = 'home/akun';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = TRUE;

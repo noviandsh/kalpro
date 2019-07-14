@@ -109,16 +109,15 @@ class Home extends CI_Controller {
 				show_404();
 			}
 		}
-		$subData['feed'] = $this->crud->GetWhereOrder('feed', array('classID'=>$classID), 'date', 'DESC');
-		$subData['feedID'] = array();
-		foreach($subData['feed'] as $val){
-			array_push($subData['feedID'], $val['id']);
-		}
 		$subData['class'] = $where;
 		$subData['link'] = $link;
-		$subData['member'] = $this->crud->GetWhere('class_member', array('classID'=> $classID));
 		// http://localhost/kalpro/class/agama-lalapan-RHXwQc
 		$data['page'] = $this->load->view('sub-page/class', $subData, TRUE);
+		$this->load->view('page/home', $data);
+	}
+
+	public function createQuiz(){
+		$data['page'] = $this->load->view('sub-page/new-quiz', null, TRUE);
 		$this->load->view('page/home', $data);
 	}
 }
