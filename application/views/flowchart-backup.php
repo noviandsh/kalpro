@@ -1,17 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-  	<title>Flowchart</title>
-	<link href="<?php echo base_url('assets/css/jquery-ui.css');?>" rel="stylesheet"/>
-	<link href="<?php echo base_url('assets/css/flowchart.css');?>" rel="stylesheet"/>
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
-  	<script src="<?=base_url('assets/js/jquery.min.js')?>"></script>
-	<script src="<?=base_url('assets/js/jquery-ui.js')?>"></script>
-</head>
-<body>
-	<div id="content">
+<div id="content">
 		<div>
 			<div id="start-end-shape-wrap">
 				<div class="start-end-shape">start end</div>
@@ -50,49 +37,29 @@
 		
 		// Create the card slots
 		// var words = [ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten' ];
-		for ( var i=1; i<=5; i++ ) {
-			$('<div>' + i + '- <span class=count"'+i+'"></span' + '</div>').data( 'number', i ).appendTo( '.target' ).droppable( {
+		for ( var i=1; i<=15; i++ ) {
+			$('<div>' + i + '</div>').data( 'number', i ).appendTo( '.target' ).droppable( {
 				accept: shapes,
 				hoverClass: 'hovered',
-				over: cobaOver,
-				drop: coba,
-				out: cobaOut
+				drop: coba
 			} );
 		}
-		function cobaOver(event, ui){
-			// console.log(ui.draggable);
-			if($(this).hasClass('contained')){
-				console.log('full');
-				// $(this).droppable('option', 'accept', null);
-			}
-		}
-		function cobaOut(event, ui) {
-			$(this).removeClass('contained');
-				$(this).data('count', 0);
-				// console.log('anu');
-		}
+
+
 		function coba(event, ui) {
-			if ($(this).data('count')) {
-				// $(this).droppable('disable');
-			}else{
-				ui.draggable.position({
-					of: $(this), my: 'center center', at: 'center center'
-				});
-				let shape = ui.draggable.attr('class').split(' ')[0];
-				let dropped = ui.draggable.attr('class').split(' ')[4];
-				if(!ui.draggable.hasClass('dropped')){
-					$('<div class="'+shape+'"><div>'+shape+'</div></div>').prependTo('#'+shape+'-wrap').draggable({
-						stack: shapes,
-						cursor: 'move',
-						revert: 'invalid'
-					});
-				}
-				ui.draggable.addClass('dropped');
-				$(this).addClass('contained');
-				$(this).data('count', 1);
-			}
-			// $($(this).data('count')).prependTo($(this));
-			console.log($(this).data('count'));
+			ui.draggable.position({
+				of: $(this), my: 'center center', at: 'center center'
+			});
+			ui.draggable.addClass('dropped');
+			let shape = ui.draggable.attr('class').split(' ')[0];
+			let dropped = ui.draggable.attr('class').split(' ')[4];
+			if()
+			$('<div class="'+shape+'"><div>'+shape+'</div></div>').prependTo('#'+shape+'-wrap').draggable({
+				stack: shapes,
+				cursor: 'move',
+				revert: 'invalid'
+			});
+
 			// ui.draggable.clone().prependTo('#content');
 			// ui.draggable.append()
 			// $(this).droppable('disable');
@@ -182,5 +149,3 @@
 		// }
 		
 	</script>
-</body>
-</html>

@@ -24,7 +24,9 @@ h1, h2, h3, h4 {
     display: grid;
     grid-template-columns: auto auto;
 }
-
+#content>div:first-child{
+    display: grid;
+}
 /* Header/footer boxes */
 
 .wideBox {
@@ -151,20 +153,21 @@ h1, h2, h3, h4 {
     height: 100px;
     border-radius: 50px;
     background: red;
+    position: absolute !important;
 }
 .process-shape{
     margin: 10px;
     width: 200px;
     height: 100px;
     background: red;
-    position: relative;
+    position: absolute;
 }
 .document-shape{
     margin: 50px 10px;
     width: 200px;
-    height: 90px;
+    height: 100px;
     background: red;
-    position: relative;
+    position: absolute;
     /* background-image: url(../img/wavy-btm.svg);
     background-position: center bottom;
     background-size: 1440px 126px;
@@ -184,7 +187,7 @@ h1, h2, h3, h4 {
     margin: 10px;
     width: 200px;
     height: 200px;
-    position: relative;
+    position: absolute;
     line-height: 200px;
 }
 .decision-shape::before{
@@ -215,8 +218,18 @@ h1, h2, h3, h4 {
     height: 100px;
     transform: skew(-20deg);
     background: red;
+    position: absolute;
+}
+.input-output-shape>div{
+    transform: skew(20deg);
 }
 .target{
+    display: grid;
+    grid-template-columns: auto auto auto;
+    width: 600px;
+    height: 1000px;
+}
+.target>div{
     width: 200px;
     height: 200px;
     border: 1px solid black;
