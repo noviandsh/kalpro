@@ -11,29 +11,56 @@
 	<script src="<?=base_url('assets/js/jquery-ui.js')?>"></script>
 </head>
 <body>
+	<button onClick="coba()">coba</button>
 	<div id="content">
 		<div id="diagram-container">
-			<div id="start-end-shape-wrap">
-				<img id="start-end-shape" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/rounded-rectangle.svg')?>" alt="">
+			<div id="diagram-trash">
+			TRASH
 			</div>
-			<div id="process-shape-wrap">
-				<img id="process-shape" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/rectangle.svg')?>" alt="">
+			<div id="start-end-wrap">
+				<img id="start-end" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/rounded-rectangle.svg')?>" alt="">
 			</div>
-			<div id="document-shape-wrap">
-				<img id="document-shape" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/wavy-rectangle.svg')?>" alt="">
+			<div id="process-wrap">
+				<img id="process" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/rectangle.svg')?>" alt="">
 			</div>
-			<div id="decision-shape-wrap">
-				<img id="decision-shape" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/diamond.svg')?>" alt="">
+			<div id="document-wrap">
+				<img id="document" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/wavy-rectangle.svg')?>" alt="">
 			</div>
-			<div id="input-output-shape-wrap">
-				<img id="input-output-shape" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/parallelogram.svg')?>" alt="">
+			<div id="decision-wrap">
+				<img id="decision" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/diamond.svg')?>" alt="">
+			</div>
+			<div id="input-output-wrap">
+				<img id="input-output" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/parallelogram.svg')?>" alt="">
 			</div>
 		</div>
 		<div class="target">
 		</div>
 	</div>
 	<script>
+		function coba() {
+			let scheme = [];
+			let a = {};
+			let n = $('.target>div').length;
+			for(i=0;i<n;i++){
+				a['target' + (i+1)] = ({'shape' : $('#target-'+(i+1)+'>img').attr('id')});
+			}
+			scheme.push(a);
+			console.log(scheme[0]);
+		}
 		$(document).ready(function(){
+			$('#diagram-trash').droppable({
+				accept: '.dropped',
+				hoverClass: 'hovered',
+				drop: deleteDiagram
+			})
+
+			function deleteDiagram(event, ui){
+				$(ui.draggable).remove();
+				// $(ui.draggable).position({
+				// 	of: $(this), my: 'center center', at: 'center center'
+				// });
+			}
+
 			$('.diagram-shape').draggable({
 				stack: '.diagram-shape',
 				helper: 'clone',
@@ -42,8 +69,7 @@
 			});
 
 			for ( var i=1; i<=15; i++ ) {
-				// $('<div>' + i + '- <span class=count"'+i+'"></span' + '</div>').data( 'number', i ).appendTo( '.target' ).droppable({
-				$('<div></div>').data( 'number', i ).appendTo( '.target' ).droppable({
+				$('<div id="target-'+i+'"></div>').data( 'number', i ).appendTo( '.target' ).droppable({
 					accept: '.diagram-shape',
 					hoverClass: 'hovered',
 					drop: diagramDrop
@@ -51,18 +77,17 @@
 					// out: diagramOut
 				});
 			}
-			function diagramOver(event, ui){
-				// console.log(ui.draggable);
-				if($(this).hasClass('contained')){
-					console.log('full');
-					// $(this).droppable('option', 'accept', null);
-				}
-			}
-			function diagramOut(event, ui) {
-				$(this).removeClass('contained');
-					$(this).data('count', 0);
-					// console.log('anu');
-			}
+			// function diagramOver(event, ui){
+			// 	if($(this).hasClass('contained')){
+			// 		console.log('full');
+			// 		// $(this).droppable('option', 'accept', null);
+			// 	}
+			// }
+			// function diagramOut(event, ui) {
+			// 	$(this).removeClass('contained');
+			// 		$(this).data('count', 0);
+			// 		// console.log('anu');
+			// }
 			function diagramDrop(event, ui) {
 				if(ui.draggable.hasClass('dropped')){
 					$(this).append($(ui.draggable)).draggable({
@@ -97,29 +122,8 @@
 							of: $(this), my: 'center center', at: 'center center'
 						});
 					}
-					console.log($(ui.draggable).attr('id'));
-					// $(this).data('shape', )
 				}
-				// ui.draggable.droppable('disable');
-				// if ($(this).data('count')) {
-				// 	// $(this).droppable('disable');
-				// }else{
-				// 	ui.draggable.position({
-				// 		of: $(this), my: 'center center', at: 'center center'
-				// 	});
-				// 	let shape = ui.draggable.attr('id');
-				// 	let dropped = ui.draggable.attr('class').split(' ')[4];
-				// 	if(!ui.draggable.hasClass('dropped')){
-				// 		$('<div class="'+shape+'"><div>'+shape+'</div></div>').prependTo('#'+shape+'-wrap').draggable({
-				// 			stack: shapes,
-				// 			cursor: 'move',
-				// 			revert: 'invalid'
-				// 		});
-				// 	}
-				// 	ui.draggable.addClass('dropped');
-				// 	$(this).addClass('contained');
-				// 	$(this).data('count', 1);
-				// }
+				
 			}
 		})
 	</script>
