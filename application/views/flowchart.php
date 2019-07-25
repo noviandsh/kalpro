@@ -12,6 +12,7 @@
 </head>
 <body>
 	<button onClick="coba()">coba</button>
+	<button onClick="makeTarget()">target</button>
 	<div id="content">
 		<div id="diagram-container">
 			<div id="diagram-trash">
@@ -47,7 +48,87 @@
 			scheme.push(a);
 			console.log(scheme[0]);
 		}
+		let drop = 7;
+		let arrow = 8;
+		function makeTarget(){
+			let n = 0;
+			let change = true;
+			for ( let i=0; i<=9; i++ ) {
+				n++;
+				if(!change){
+					if(n%2 === 0){
+						console.log('a - ' + n);
+						$('.target').append('<div>droppable - '+drop+'</div>');
+						drop++;
+					}else{
+						console.log('b - ' + n);
+						$('.target').append('<div class="arrow">'+arrow+'</div>');
+						arrow++;
+					}
+				}else{
+					if(n%2 === 1){
+						console.log('b - ' + n);
+						$('.target').append('<div class="arrow">'+arrow+'</div>');
+						arrow++;
+					}else{
+						console.log('c - ' + n);
+						$('.target').append('<div class="kosong"></div>');
+					}
+				}
+				if(n%5 === 0){
+					change = !change;
+				}
+				// $('<div id="target-'+i+'"></div>').data( 'number', i ).appendTo( '.target' ).droppable({
+				// 	accept: '.diagram-shape',
+				// 	hoverClass: 'hovered',
+				// 	drop: diagramDrop
+				// 	// over: diagramOver,
+				// 	// out: diagramOut
+				// });
+			}
+		}
+		function firstTarget(){
+			let n = 0;
+			let drop = 1;
+			let arrow = 1;
+			let change = true;
+			for ( let i=0; i<=14; i++ ) {
+				n++;
+				if(change){
+					if(n%2 === 1){
+						console.log('a - ' + n);
+						$('.target').append('<div>droppable - '+drop+'</div>');
+						drop++;
+					}else{
+						console.log('b - ' + n);
+						$('.target').append('<div class="arrow">'+arrow+'</div>');
+						arrow++;
+					}
+				}else{
+					if(n%2 === 0){
+						console.log('b - ' + n);
+						$('.target').append('<div class="arrow">'+arrow+'</div>');
+						arrow++;
+					}else{
+						console.log('c - ' + n);
+						$('.target').append('<div class="kosong"></div>');
+					}
+				}
+				if(n%5 === 0){
+					change = !change;
+				}
+				// $('<div id="target-'+i+'"></div>').data( 'number', i ).appendTo( '.target' ).droppable({
+				// 	accept: '.diagram-shape',
+				// 	hoverClass: 'hovered',
+				// 	drop: diagramDrop
+				// 	// over: diagramOver,
+				// 	// out: diagramOut
+				// });
+			}
+		}
 		$(document).ready(function(){
+			firstTarget();
+
 			$('#diagram-trash').droppable({
 				accept: '.dropped',
 				hoverClass: 'hovered',
@@ -68,15 +149,7 @@
 				revert: 'invalid'
 			});
 
-			for ( var i=1; i<=15; i++ ) {
-				$('<div id="target-'+i+'"></div>').data( 'number', i ).appendTo( '.target' ).droppable({
-					accept: '.diagram-shape',
-					hoverClass: 'hovered',
-					drop: diagramDrop
-					// over: diagramOver,
-					// out: diagramOut
-				});
-			}
+			
 			// function diagramOver(event, ui){
 			// 	if($(this).hasClass('contained')){
 			// 		console.log('full');

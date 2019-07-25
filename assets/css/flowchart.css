@@ -1,4 +1,4 @@
-
+/* Flowchart */
 #content {
     text-align: center;
     -moz-user-select: none;
@@ -9,18 +9,20 @@
 }
 #diagram-container{
     text-align: center;
+    display: none;
 }
 .target{
     display: grid;
-    grid-template-columns: auto auto auto;
-    width: 600px;
-    height: 1000px;
+    grid-template-columns: auto auto auto auto auto;
+    width: 750px;
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
 }
 .target>div{
     position: relative;
     width: 200px;
     height: 200px;
-    border: 1px solid black;
+    border: 1px solid #eee;
 }
 .target>div>img{
     margin: 0;
@@ -30,6 +32,17 @@
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
+.arrow{
+    /* background: blue; */
+    height: 50px !important;
+    width: 50px !important;
+    margin: auto auto;
+}
+.kosong{
+    background: green;
+    height: 50px !important;
+    width: 50px !important;
+}
 .diagram-shape{
     stroke: black;
     stroke-width: 1px;
@@ -38,4 +51,27 @@
     height: 200px;
     width: 200px;
     border: 2px solid black;
+}
+
+/* collision */
+#col-container{
+    width: 700px;
+    display: grid;
+    grid-template-columns: 200px 50px 200px 50px 200px;
+    grid-template-rows: repeat(100, 200px 50px);
+}
+.bigbox{
+    width: 200px;
+    height: 200px;
+    border: 1px solid blue;
+    text-align: center;
+    line-height: 200px;
+}
+.smallbox{
+    border: 1px solid red;
+    width: 50px;
+    height: 50px;
+    margin: auto auto;
+    text-align: center;
+    line-height: 50px;
 }

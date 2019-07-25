@@ -15,6 +15,9 @@
     <script src="<?=base_url('assets/js/jquery.min.js')?>"></script>
     <script src="<?=base_url('assets/js/jquery-ui.js')?>"></script>
     <script src="<?=base_url('assets/js/jquery-ui-timepicker-addon.js')?>"></script>
+    <script src="<?=base_url('assets/js/jquery-collision.js')?>"></script>
+    <script src="<?=base_url('assets/js/jquery.connections.js')?>"></script>
+
 </head>
 <body>
     <div id="navbar">
