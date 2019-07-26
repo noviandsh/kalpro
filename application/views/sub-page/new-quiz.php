@@ -14,6 +14,10 @@
                 <div id="trash-top"></div>
                 <div id="trash-btm"></div>
             </div>
+            <div class="menu-btn">
+                <button class="diagram-btn"><i class="fas fa-project-diagram"></i></button>
+                <button class="answer-btn"><i class="fas fa-list-ol"></i></button>
+            </div>
             <div id="diagram-container">
                 <button onClick="coba()">coba</button>
                 <button onClick="makeTarget()">target</button>
@@ -34,14 +38,14 @@
                     <img diagram="input-output" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/parallelogram.svg')?>" alt="">
                 </div>
             </div>
+            <div class="answer-container">
+                <ul>
+                    <li><div class="answer-number">1</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
+                    <li><div class="answer-number">2</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
+                    <li><div class="answer-number">3</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
+                </ul>
+            </div>
             <div id="target" class="target">
-                <svg id="svg1" width="0" height="0" style="position:absolute;">
-                    <path
-                        id="myNewPath"
-                        d="M0 0"             
-                        stroke-width="0.3em"
-                        style="stroke:#555; stroke-width:5; fill:none;  "/>
-                </svg>
                 <div class="empty"></div><div class="empty"></div>
                 <div class="first-diagram">
                     <img src="<?=base_url('assets/img/flowchart-shapes/rounded-rectangle.svg')?>" alt="" style="z-index: 6; position: relative;">

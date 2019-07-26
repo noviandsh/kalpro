@@ -1,10 +1,12 @@
-let droppedShape = 1;
-let droppedArrow = 1;
-let arrowContainer;
-let drop = 7;
-let arrow = 8;
-let state = true;
-let targetRow = 1;
+let droppedShape = 1,
+    droppedArrow = 1,
+    arrowContainer,
+    drop = 7,
+    arrow = 8,
+    state = true,
+    targetRow = 1,
+    diagramContainer = true,
+    answerContainer = true;
 
 $('#addLine').click(function(){
     let a = '';
@@ -141,9 +143,13 @@ function getSibling(obstacle, colls, direction){
 function coba() {
     let scheme = [];
     let a = {};
-    let n = $('.target>.drop').length;
-    for(i=0;i<n;i++){
+    let drop = $('.target>.drop').length;
+    let arrow = $('.target>.arrow').length;
+    for(i=0;i<drop;i++){
         a['target-' + (i+1)] = ({'shape' : $('#drop-'+(i+1)+'>img').attr('diagram')});
+    }
+    for(i=0;i<arrow;i++){
+        a['arrow-'+ (i+1)] = ({'arrow' : $('#arrow-'+(i+1)+'>img').attr('arrow-id')});
     }
     scheme.push(a);
     console.log(scheme[0]);
@@ -163,7 +169,6 @@ function diagramDrop(event, ui) {
         }
         $(this).append($(ui.draggable).draggable({
             stack: '.diagram-shape',
-            cursor: 'move',
             revert: 'invalid'
         }));
         $(ui.draggable).position({
@@ -175,8 +180,9 @@ function diagramDrop(event, ui) {
         }
         $(this).append($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
             stack: '.diagram-shape',
-            cursor: 'move',
             revert: 'invalid'
+        }).droppable({
+            accept: '.answer-number'
         }));
         $(ui.draggable[1]).position({
             of: $(this), my: 'center center', at: 'center center'
@@ -188,72 +194,84 @@ function diagramDrop(event, ui) {
 function arrowDrop(val){
     let arrowList = {
         'arrow1' : {
+            'id' : 'arrow1',
             'file' : 'arrow1',
             'rotate' : 0,
             'direction' : ['S','E'],
             'turn' : 'right'
         },
         'arrow2' : {
+            'id' : 'arrow2',
             'file' : 'arrow1',
             'rotate' : 90,
             'direction' : ['W','S'],
             'turn' : 'right'
         },
         'arrow3' : {
+            'id' : 'arrow3',
             'file' : 'arrow1',
             'rotate' : 180,
             'direction' : ['N','W'],
             'turn' : 'right'
         },
         'arrow4' : {
+            'id' : 'arrow4',
             'file' : 'arrow1',
             'rotate' : 270,
             'direction' : ['E','N'],
             'turn' : 'right'
         },
         'arrow5' : {
+            'id' : 'arrow5',
             'file' : 'arrow2',
             'rotate' : 0,
             'direction' : ['S','W'],
             'turn' : 'left'
         },
         'arrow6' : {
+            'id' : 'arrow6',
             'file' : 'arrow2',
             'rotate' : 90,
             'direction' : ['W','N'],
             'turn' : 'left'
         },
         'arrow7' : {
+            'id' : 'arrow7',
             'file' : 'arrow2',
             'rotate' : 180,
             'direction' : ['N','E'],
             'turn' : 'left'
         },
         'arrow8' : {
+            'id' : 'arrow8',
             'file' : 'arrow2',
             'rotate' : 270,
             'direction' : ['E','S'],
             'turn' : 'left'
         },
         'arrow9' : {
+            'id' : 'arrow9',
             'file' : 'arrow3',
             'rotate' : 0,
             'direction' : null,
             'turn' : null
         },
         'arrow10' : {
+            'id' : 'arrow10',
             'file' : 'arrow3',
             'rotate' : 90,
             'direction' : null,
             'turn' : null
         },
         'arrow11' : {
+            'id' : 'arrow11',
             'file' : 'arrow3',
             'rotate' : 180,
             'direction' : null,
             'turn' : null
         },
         'arrow12' : {
+            'id' : 'arrow12',
             'file' : 'arrow3',
             'rotate' : 270,
             'direction' : null,
@@ -261,6 +279,7 @@ function arrowDrop(val){
         }
     }
     // console.log(arrowList[val].direction);
+    console.log(val);
     return arrowList[val];
 }
 
@@ -304,6 +323,16 @@ function viewArrow(container) {
 
 $(document).ready(function(){
     firstTarget();
+    $('.diagram-btn').click(function(){
+        $('.answer-container').hide();
+        $('#diagram-container').toggle();
+    });
+    
+    $('.answer-btn').click(function(){
+        console.log('wkwk');
+        $('#diagram-container').hide();
+        $('.answer-container').toggle();
+    });
 
     $('.arrow').click(function(){
         viewArrow($(this));
@@ -311,6 +340,11 @@ $(document).ready(function(){
 
     $('#arrow-container').click(function(){
         $(this).hide();
+    });
+
+    $('.answer-number').draggable({
+        stack : '.diagram-shape',
+        revert : 'invalid'
     });
 
     $('.arrow-img').click(function(){
@@ -323,20 +357,24 @@ $(document).ready(function(){
         //     arrowImage.remove();
         // }
         let arrowData = arrowDrop($(this).children().attr('id'));
+        console.log(arrowData);
         let arrowType = arrowData['file'].substring(5);
         console.log(arrowType);
         if(arrowType < 3){
             let firstSibling = getSibling('.drop', arrowContainer, arrowData.direction[0]);
             // $('#'+firstSibling).children('img').remove();
             let secondSibling = getSibling('.arrow', $('#'+firstSibling), arrowData.direction[1]);
-            
-            $(arrowContainer).html($("<img class='empty-arrow arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/empty-arrow.svg' alt=''>"));
-            $('#'+firstSibling).html($("<img id='dropped-arrow-"+droppedArrow+"' class='turn-arrow arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/turn-"+arrowData['turn']+"-arrow.svg'>").css('transform', 'translate(-50%, -50%) rotate('+arrowData['rotate']+'deg)'));
-            $('#'+secondSibling).html($("<img class='empty-arrow arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/empty-arrow.svg'>"));
+            if(!secondSibling){
+                makeTarget();
+                secondSibling = getSibling('.arrow', $('#'+firstSibling), arrowData.direction[1]);
+            }
+            $(arrowContainer).html($("<img arrow-id='tail-"+arrowData['id']+"' class='arrow-tail arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/empty-arrow.svg' alt=''>"));
+            $('#'+firstSibling).html($("<img arrow-id='"+arrowData['id']+"' id='dropped-arrow-"+droppedArrow+"' class='turn-arrow arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/turn-"+arrowData['turn']+"-arrow.svg'>").css('transform', 'translate(-50%, -50%) rotate('+arrowData['rotate']+'deg)'));
+            $('#'+secondSibling).html($("<img arrow-id='head-"+arrowData['id']+"' class='arrow-head arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/empty-arrow.svg'>"));
 
             console.log(firstSibling+'-'+secondSibling);
         }else{
-            $(arrowContainer).html($("<img id='dropped-arrow-"+droppedArrow+"' src='"+baseUrl+"assets/img/"+ arrowData['file'] +".svg' alt=''>").css('transform', 'rotate('+arrowData['rotate']+'deg)'));
+            $(arrowContainer).html($("<img arrow-id="+arrowData['id']+" id='dropped-arrow-"+droppedArrow+"' src='"+baseUrl+"assets/img/"+ arrowData['file'] +".svg' alt=''>").css('transform', 'rotate('+arrowData['rotate']+'deg)'));
         }
         droppedArrow++;
     });
@@ -370,7 +408,6 @@ $(document).ready(function(){
         stack: '.diagram-shape',
         containtment: '#flowchart-container',
         helper: 'clone',
-        cursor: 'move',
         cursorAt: { top: 56, left: 56 },
         revert: 'invalid'
     });

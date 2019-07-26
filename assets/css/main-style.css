@@ -331,16 +331,46 @@ body{
     /* display: grid;
     grid-template-columns: 19% 81%; */
 }
+.menu-btn{
+    position: fixed;
+    top: 300px;
+    width: 150px;
+    height: 50px;
+    background: #00897B;
+}
 #diagram-container{
     text-align: center;
     position: fixed;
     background: #00897B;
+    z-index: 1;
+    width: 150px;
+    top: 360px;
+    display: none;
 }
 .diagram-shape{
     stroke: black;
     stroke-width: 1px;
     max-width: 100%;
     transform: scale(.6);
+}
+.answer-container{
+    position: fixed;
+    background: #00897B;
+    z-index: 1;
+    width: 150px;
+    top: 360px;
+    display: none;
+}
+.answer-container textarea{
+    width: 90%;
+    resize: none;
+}
+.answer-number{
+    background: white;
+    width: 30px;
+    height: 30px;
+    margin: 4px auto;
+    line-height: 30px;
 }
 .target{
     position: relative;
@@ -422,7 +452,7 @@ body{
     position: fixed;
     background: #00897B;
     z-index: 1;
-    padding: 20p;
+    padding: 15px;
 }
 #diagram-trash>#trash-top{
     position: relative;
