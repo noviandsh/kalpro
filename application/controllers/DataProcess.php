@@ -181,6 +181,14 @@ class DataProcess extends CI_Controller {
         $this->load->view('class-page/'.$page, $subData);
         
     }
+    public function newQuestion()
+    {
+        foreach($_POST as $key => $val){
+            $_POST[$key]['answer'] = nl2br($val['answer']);
+        }
+        $store = json_encode($_POST);
+        $this->crud->Insert('question_flow', array('answer'=>$store));
+    }
 }
 
 /* End of file DataProcess.php */

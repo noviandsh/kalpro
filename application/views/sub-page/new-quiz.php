@@ -22,39 +22,39 @@
                 <button onClick="coba()">coba</button>
                 <button onClick="makeTarget()">target</button>
                 <button id="addLine">Garis</button>
-                <div id="start-end-wrap">
-                    <img id="s1" diagram="start-end" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/rounded-rectangle.svg')?>" alt="">
+                <div class="diagram-wrap">
+                    <img class="diagram-shape" diagram="start-end" src="<?=base_url('assets/img/flowchart-shapes/rounded-rectangle.svg')?>" alt="">
                 </div>
-                <div id="process-wrap">
-                    <img id="s2" diagram="process" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/rectangle.svg')?>" alt="">
+                <div class="diagram-wrap">
+                    <img class="diagram-shape" diagram="process" src="<?=base_url('assets/img/flowchart-shapes/rectangle.svg')?>" alt="">
                 </div>
-                <div id="document-wrap">
-                    <img diagram="document" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/wavy-rectangle.svg')?>" alt="">
+                <div class="diagram-wrap">
+                    <img class="diagram-shape" diagram="document" src="<?=base_url('assets/img/flowchart-shapes/wavy-rectangle.svg')?>" alt="">
                 </div>
-                <div id="decision-wrap">
-                    <img diagram="decision" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/diamond.svg')?>" alt="">
+                <div class="diagram-wrap">
+                    <img class="diagram-shape" diagram="decision" src="<?=base_url('assets/img/flowchart-shapes/diamond.svg')?>" alt="">
                 </div>
-                <div id="input-output-wrap">
-                    <img diagram="input-output" class="diagram-shape" src="<?=base_url('assets/img/flowchart-shapes/parallelogram.svg')?>" alt="">
+                <div class="diagram-wrap">
+                    <img class="diagram-shape" diagram="input-output" src="<?=base_url('assets/img/flowchart-shapes/parallelogram.svg')?>" alt="">
                 </div>
-            </div>
-            <div class="answer-container">
-                <ul>
-                    <li><div class="answer-number">1</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
-                    <li><div class="answer-number">2</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
-                    <li><div class="answer-number">3</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
-                </ul>
             </div>
             <div id="target" class="target">
                 <div class="empty"></div><div class="empty"></div>
                 <div class="first-diagram">
-                    <img src="<?=base_url('assets/img/flowchart-shapes/rounded-rectangle.svg')?>" alt="" style="z-index: 6; position: relative;">
+                    <img src="<?=base_url('assets/img/flowchart-shapes/rounded-rectangle.svg')?>" alt="" style="z-index: 1; position: relative;">
                 </div>
                 <div class="empty"></div><div class="empty"></div><div class="empty"></div><div class="empty"></div>
                 <div class="first-arrow">
                     <img src="<?=base_url('assets/img/arrow3.svg')?>" alt="" style="transform: rotate(90deg);">
                 </div>
                 <div class="empty"></div><div class="empty"></div>
+            </div>
+            <div class="answer-container">
+                <ul>
+                    <li id="answer-list-1"><div id="answer-1" class="answer-number">1</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
+                    <li id="answer-list-2"><div id="answer-2" class="answer-number">2</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
+                    <li id="answer-list-3"><div id="answer-3" class="answer-number">3</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
+                </ul>
             </div>
         </div>
     </div>

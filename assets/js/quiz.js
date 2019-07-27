@@ -51,7 +51,7 @@ function makeTarget(){
             if(n%2 === 0){
                 // console.log('a - ' + n);
                 $('.target').append($('<div class="drop" id="drop-'+drop+'"></div>').droppable({
-                    accept: '.diagram-shape',
+                    accept: '.diagram-wrap',
                     hoverClass: 'hovered',
                     drop: diagramDrop
                 }));
@@ -92,7 +92,7 @@ function firstTarget(){
             if(n%2 === 1){
                 // console.log('a - ' + n);
                 $('.target').append($('<div class="drop" id="drop-'+drop+'"></div>').droppable({
-                    accept: '.diagram-shape',
+                    accept: '.diagram-wrap',
                     hoverClass: 'hovered',
                     drop: diagramDrop
                 }));
@@ -146,50 +146,116 @@ function coba() {
     let drop = $('.target>.drop').length;
     let arrow = $('.target>.arrow').length;
     for(i=0;i<drop;i++){
-        a['target-' + (i+1)] = ({'shape' : $('#drop-'+(i+1)+'>img').attr('diagram')});
+        a['target-' + (i+1)] = ({
+            'shape' : $('#drop-'+(i+1)+'>div>img').attr('diagram'),
+            'answer' : $('#answer-'+$('#drop-'+(i+1)+'>div').attr('id')).val()
+        });
     }
     for(i=0;i<arrow;i++){
         a['arrow-'+ (i+1)] = ({'arrow' : $('#arrow-'+(i+1)+'>img').attr('arrow-id')});
     }
     scheme.push(a);
-    console.log(scheme[0]);
+    $.ajax({
+        type  : 'POST',
+        url   : baseUrl+'dataprocess/newQuestion',
+        // dataType: 'json',
+        data : scheme[0],
+        beforeSend: function () {
+            // ... your initialization code here (so show loader) ...
+        },
+        complete: function () {
+            // ... your finalization code here (hide loader) ...
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+            alert(errorThrown.status);
+        },
+        success : function(data){
+            console.log(data);
+            // if(data == 1){
+            //     window.location = "<?=base_url()?>";
+            // }else{
+            //     alert(data);
+            // }
+        }
+    });
+    // console.log(scheme[0]);
 }
 
 function diagramDrop(event, ui) {
     let count = $(this)[0].children.length;
-
+    // console.log($(this)[0].children);
     if($(this).children().hasClass('turn-arrow')){
+        
         let arrowGroup = $(this).children().attr('class').split(' ')[1];
         $('.'+arrowGroup).remove();
     }
 
     if(ui.draggable.hasClass('dropped')){
-        if(count>0){
-            $($(this)[0].children).remove();
+        console.log($(ui.draggable).attr('id'));
+        console.log($(this).children().attr('id'));
+        if(!$(this).children().attr('id') || $(this).children().attr('id') !== $(ui.draggable).attr('id')){
+            console.log('ada');
+            $(this).html($(ui.draggable).draggable({
+                // stack: '.diagram-wrap',
+                zIndex: 2,
+                revert: 'invalid'
+            }));
         }
-        $(this).append($(ui.draggable).draggable({
-            stack: '.diagram-shape',
-            revert: 'invalid'
-        }));
         $(ui.draggable).position({
             of: $(this), my: 'center center', at: 'center center'
         });
     }else{
-        if(count>0){ 
-            $($(this)[0].children).remove();
-        }
-        $(this).append($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
-            stack: '.diagram-shape',
-            revert: 'invalid'
-        }).droppable({
-            accept: '.answer-number'
-        }));
+        $(this).html($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
+                // stack: '.diagram-wrap',
+                zIndex: 2,
+                revert: 'invalid'
+            })
+            .append($('<textarea class="answer-text" name="" id="answer-shape-'+droppedShape+'" cols="30" rows="1"></textarea>')
+            .focus(function(){
+                $(this).css({
+                    'width' : '300px',
+                    'height' : '100px',
+                    'box-shadow' : '6px 6px 9px -5px rgba(0,0,0,0.75)'
+                });
+                $(this).parent().css('z-index', '99');
+            })
+            .focusout(function(){
+                $(this).css({
+                    'width' : '70%',
+                    'height' : '20px',
+                    'box-shadow' : 'none'
+                });
+                $(this).parent().css('z-index', 'auto');
+        })));
         $(ui.draggable[1]).position({
             of: $(this), my: 'center center', at: 'center center'
         });
         droppedShape++;
     }
-    
+    // console.log($(this));
+    // console.log(ui.draggable.attr('id'));
+}
+
+function answerDrop(event, ui){
+    if($(this).children().hasClass('answer-number')){
+        let lastAnswer = $(this).children('.answer-number');
+        console.log(lastAnswer.attr('id').substring(7));
+        $('#answer-list-'+lastAnswer.attr('id').substring(7)).prepend(lastAnswer.draggable({
+            zIndex: 999,
+            revert: 'invalid'
+        }).css({
+            'position' : 'relative',
+            'top' : '0px',
+            'left' : '0px'
+        }));
+    }
+    $(this).append($(ui.draggable).draggable({
+        zIndex : 999,
+        revert : 'invalid'
+    }).css('position', 'absolute'));
+    $(ui.draggable).position({
+        of: $(this), my: 'center center', at: 'center center'
+    });
 }
 function arrowDrop(val){
     let arrowList = {
@@ -343,8 +409,15 @@ $(document).ready(function(){
     });
 
     $('.answer-number').draggable({
-        stack : '.diagram-shape',
-        revert : 'invalid'
+        zIndex : 999,
+        revert : 'invalid',
+        start : function(){
+            console.log('object');
+            // $('.answer-container').css('overflow-y', 'hidden');
+        },
+        stop : function(){
+            // $('.answer-container').css('overflow-y', 'scroll');
+        }
     });
 
     $('.arrow-img').click(function(){
@@ -404,11 +477,11 @@ $(document).ready(function(){
     }
 
 
-    $('.diagram-shape').draggable({
-        stack: '.diagram-shape',
+    $('.diagram-wrap').draggable({
+        // stack: '.diagram-wrap',
+        zIndex: 2,
         containtment: '#flowchart-container',
         helper: 'clone',
-        cursorAt: { top: 56, left: 56 },
         revert: 'invalid'
     });
 
