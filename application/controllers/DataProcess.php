@@ -20,6 +20,7 @@ class DataProcess extends CI_Controller {
         redirect(base_url('login-page'));
     }
         
+    // PROSES LOGIN
     public function login()
     {
         $user = $_POST['username'];
@@ -39,6 +40,7 @@ class DataProcess extends CI_Controller {
         }
     }
 
+    // PROSES USERNAME TERSEDIA
     public function userCheck()
     {
         $user = $this->crud->GetCountWhere('user', array('username'=>$_POST['username']));
@@ -49,6 +51,7 @@ class DataProcess extends CI_Controller {
         }
     }
 
+    // PROSES DAFTAR AKUN BARU
     public function register()
     {
         $user = $_POST['user'];
@@ -62,6 +65,7 @@ class DataProcess extends CI_Controller {
         echo $regist;
     }
 
+    // PROSES BUAT KELAS BARU
     public function newClass()
     {
         $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -88,6 +92,8 @@ class DataProcess extends CI_Controller {
         }
         redirect(base_url('class'));
     }
+
+    // PROSES GABUNG KELAS
     public function joinClass()
 	{
         $id = $_POST['classID'];
@@ -105,6 +111,8 @@ class DataProcess extends CI_Controller {
             }
         }
     }
+
+    // PROSES KIRIM POSTINGAN
     public function post(){
         // date format '2019-07-30 19:30:10'
         $data = array(
@@ -118,6 +126,8 @@ class DataProcess extends CI_Controller {
             redirect(base_url($_POST['prevLink']));
         }
     }
+
+    // PROSES KIRIM KOMENTAR
     public function comment()
     {
         $data = array(
@@ -131,12 +141,16 @@ class DataProcess extends CI_Controller {
             redirect(base_url($_POST['prevLink']));
         }
     }
+
+    // PROSES MENGAMBIL DATA KOMENTAR
     public function getComment($feedID)
     {
         $comment = $this->crud->GetWhere('feed_comment', array('feedID'=>$feedID));
         $commenJSON = json_encode($comment);
         echo $commenJSON;
     }
+
+    // PROSES MENAMPILKAN KONTEN
     public function showContent($page, $classID)
     {
         function clean($string) {
@@ -148,9 +162,11 @@ class DataProcess extends CI_Controller {
             return preg_replace('/-+/', '-', $string); // Replaces multiple hyphens with single one.
         }
         $where = array(
-            'teacher'=>$this->session->username,
             'classID'=>$classID
         );
+        if($this->session->type == 'd'){
+            $where['teacher'] = $this->session->username;
+        }
         $subData['class'] = $this->crud->GetWhere('class', $where);
         switch($page){
             // CASE POST START
@@ -161,14 +177,17 @@ class DataProcess extends CI_Controller {
                 foreach($subData['feed'] as $val){
                     array_push($subData['feedID'], $val['id']);
                 }
-                // print_r($subData['link']);
                 break;
             // CASE POST END
             
             // CASE QUIZ START
             case 'quiz':
-                $subData['link'] = clean($subData['class'][0]['name']).'-'.$subData['class'][0]['classID'].'/quiz';
-                $subData['quiz'] = $this->crud->GetWhere('quiz', array('classID'=>$classID));
+                if($this->session->type == 'd'){
+                    $subData['link'] = clean($subData['class'][0]['name']).'-'.$subData['class'][0]['classID'].'/quiz';
+                    $subData['quiz'] = $this->crud->GetWhere('quiz', array('classID'=>$classID));
+                }else{
+                    show_404();
+                }
                 break;
             // CASE QUIZ END
 
@@ -181,13 +200,110 @@ class DataProcess extends CI_Controller {
         $this->load->view('class-page/'.$page, $subData);
         
     }
+
+    // PROSES MEMBUAT KUIS BARU
     public function newQuestion()
     {
-        foreach($_POST as $key => $val){
-            $_POST[$key]['answer'] = nl2br($val['answer']);
+        foreach($_POST['question'] as $key => $val){
+            
+            if(strpos($key, 'target') !== false){
+                $_POST['question'][$key]['answer'] = nl2br($_POST['question'][$key]['answer']);
+            }
         }
-        $store = json_encode($_POST);
-        $this->crud->Insert('question_flow', array('answer'=>$store));
+        $question = json_encode($_POST['question']);
+        $this->crud->Insert('question_flow', array('quizID'=>$_POST['quizDetail']['id'],'answer'=>$question));
+        $this->crud->Insert('quiz', $_POST['quizDetail']);
+    }
+
+    public function submitAnswer($quizID)
+    {
+        $this->session->unset_userdata('timer');
+        $matchAnswer = 0;
+        $matchShape = 0;
+        $matchArrow = 0;
+        $n = 0;
+        $wrongPlace = 0;
+        //Mengambil kunci jawaban dan menkonversi menjadi array
+        $answer['flowchart'] = $this->crud->GetWhere('question_flow', array('quizID'=>$quizID));
+        $rawAnswer = get_object_vars(json_decode($answer['flowchart'][0]['answer']));
+
+        // Menghitung jumlah bagian soal
+        foreach($rawAnswer as $key => $val){
+            // cek key target
+            if(strpos($key, 'target') === 0){
+                $n += count($val->shape);
+                $n += count($val->answer);
+            }else{
+                // cek turn-arrow
+                if(strpos($val->arrow, '-') === 4){
+                    $n += 0.5;
+                }else{
+                    $n += count($val);
+                }
+            }
+        }
+
+        // Mencocokkan jawaban dengan kunci jawaban
+        foreach($_POST as $key => $val){
+            // cek isi answer 
+            if(isset($val['answer'])){
+                if(!empty($rawAnswer[$key]->answer)){
+                    if($val['answer'] == $rawAnswer[$key]->answer){
+                        $matchAnswer++;
+                    }
+                }else{
+                    $wrongPlace++;
+                }
+            }
+            // cek isi shape
+            if(isset($val['shape'])){
+                if(!empty($rawAnswer[$key]->shape)){
+                    if($val['shape'] == $rawAnswer[$key]->shape){
+                        $matchShape++;
+                    }
+                }else{
+                    $wrongPlace++;
+                }
+            }
+            // cek isi arrow
+            if(isset($val['arrow'])){
+                if(!empty($rawAnswer[$key]->arrow)){
+                    if($val['arrow'] == $rawAnswer[$key]->arrow){
+                        if(strpos($val['arrow'], '-') === 4){
+                            $matchArrow+=0.5;
+                        }else{
+                            $matchArrow++;
+                        }
+                    }
+                }else{
+                    if(strpos($val['arrow'], '-') === 4){
+                        $wrongPlace+=0.5;
+                    }else{
+                        $wrongPlace++;
+                    }
+                }
+            }
+        }
+        
+        // print_r($_POST);
+        // print_r($matchArrow);
+
+        // Menghitung nilai total dan jumlah bagian yang benar
+        // echo round((100/$n)*($matchAnswer+$matchShape+$matchArrow)-($wrongPlace*2)).'|';
+        // echo ($matchAnswer+$matchShape+$matchArrow).'/'.$n;
+        
+        $result = array(
+            'username'=> $this->session->username,
+            'quizID'=> $quizID,
+            'correctAnswer'=> ($matchAnswer+$matchShape+$matchArrow).'/'.$n,
+            'score'=> round((100/$n)*($matchAnswer+$matchShape+$matchArrow)-($wrongPlace*2))
+        );
+        $where =  array(
+            'username'=>$this->session->username,
+            'quizID'=>$quizID
+        );
+        $answerData = $this->crud->Update('user_answer', array('answer'=>json_encode($_POST)), $where);
+        $quizResult = $this->crud->Insert('quiz_result', $result);
     }
 }
 

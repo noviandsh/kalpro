@@ -24,6 +24,7 @@ class Home extends CI_Controller {
         //Do your magic here
         $this->load->helper(array('form', 'url'));
         $this->load->library('encrypt');
+        date_default_timezone_set('Asia/Jakarta');
 	}
 	
 	public function ceklogin()
@@ -109,6 +110,7 @@ class Home extends CI_Controller {
 				show_404();
 			}
 		}
+		$subData['quiz'] = $this->crud->GetWhere('quiz', array('classID'=>$classID));
 		$subData['class'] = $where;
 		$subData['link'] = $link;
 		// http://localhost/kalpro/class/agama-lalapan-RHXwQc
@@ -117,7 +119,66 @@ class Home extends CI_Controller {
 	}
 
 	public function createQuiz(){
-		$data['page'] = $this->load->view('sub-page/new-quiz', null, TRUE);
+		$subData['draft'] = array(
+			'id' => uniqid(),
+			'teacher'=> $this->session->username,
+			'classID'=> substr($this->uri->segment(2), -6),
+			'title'=> 'untitled quiz '.date("Y-m-d")
+		);
+		// $draftQuiz = $this->crud->Insert('quiz', $subData['draft']);
+		$data['page'] = $this->load->view('sub-page/new-quiz', $subData, TRUE);
+		$this->load->view('page/home', $data);
+	}
+
+	public function startQuiz($quizID)
+	{
+		$subData['startTime'] = date("Y-m-d H:i:s");
+		$this->crud->Insert('user_answer', array(
+			'username'=> $this->session->username,
+			'quizID'=> $quizID,
+			'startTime'=> $subData['startTime']
+		));
+
+		$subData['quizDetail'] = $this->crud->GetWhere('quiz', array('id'=>$quizID));
+		$subData['endTime'] = date('Y-m-d H:i:s',strtotime('+'.$subData['quizDetail'][0]['duration'].' minutes',strtotime($subData['startTime'])));
+		$subData['question']['flowchart'] = $this->crud->GetWhere('question_flow', array('quizID'=>$quizID));
+		
+		$jawaban = get_object_vars(json_decode($subData['question']['flowchart'][0]['answer']));
+		$subData['answer'] = array();
+		foreach ($jawaban as $key => $value) {
+			if(!empty($value->answer)){
+				array_push($subData['answer'], $value->answer);
+			}
+		}
+		// array_push($subData['answer'], 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, nostrum! Aut repellat beatae, numquam dolorum fuga sequi quo cupiditate eligendi ab, ea accusamus aliquam sunt saepe hic, commodi ex nobis.');
+		shuffle($subData['answer']);
+		
+		// gak usah
+		// print_r($jawaban);
+		// echo '<hr>';
+		// foreach ($jawaban as $key => $value) {
+		// 	echo $key.' = '.$value['answer'].'<br>';
+		// }
+
+		if(!isset($_SESSION['timer'])){
+			// $this->session->set_userdata('timer', time()+($subData['quizDetail'][0]['duration']*60));
+			$this->session->set_userdata('timer', time()+(30));
+		}
+        // $this->session->unset_userdata('timer');
+
+		$data['page'] = $this->load->view('sub-page/start-quiz', $subData, TRUE);
+		$this->load->view('page/home', $data);
+	}
+
+	public function quizResult($quizID)
+	{
+		$where = array(
+			'username'=>$this->session->username,
+			'quizID'=>$quizID
+		); 
+		$subData['result'] = $this->crud->GetWhere('quiz_result', $where);
+		
+		$data['page'] = $this->load->view('sub-page/quiz-result', $subData, TRUE);
 		$this->load->view('page/home', $data);
 	}
 }

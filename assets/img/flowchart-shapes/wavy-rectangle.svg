@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="200px" height="120px" viewBox="0 0 200 120" enable-background="new 0 0 200 120" xml:space="preserve">
-<rect fill="#FF0000" width="200" height="91"/>
-<path fill="#FF0000" d="M200,89.407v17.816c0,0-48.834-29.454-100-0.089c-51.167,29.366-100-0.087-100-0.087V89.407H200z"/>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="200px"
+	 height="120px" viewBox="0 0 200 120" enable-background="new 0 0 200 120" xml:space="preserve">
+<g id="Layer_1" display="none">
+	<rect display="inline" fill="#485456" width="200" height="91"/>
+	<path display="inline" fill="#485456" d="M200,89.407v17.815c0,0-48.834-29.453-100-0.089C48.833,136.5,0,107.047,0,107.047v-17.64
+		H200z"/>
+</g>
+<g id="Layer_2">
+	<g>
+		<path fill="#FFFFFF" d="M49.741,118.846C23.178,118.844,4.162,108.345,1,106.482V1h198v104.809
+			c-1.029-0.351-2.603-1.047-4.341-1.816c-8.485-3.755-24.281-10.744-45.566-10.744c-16.593,0-33.267,4.345-49.558,12.914
+			c-16.001,8.416-32.753,12.684-49.789,12.684C49.744,118.846,49.743,118.846,49.741,118.846z"/>
+		<path fill="#485456" d="M198,2v102.353c-0.873-0.362-1.913-0.822-2.936-1.274c-8.554-3.785-24.475-10.83-45.972-10.83
+			c-16.757,0-33.587,4.384-50.024,13.028c-15.856,8.341-32.453,12.569-49.328,12.569c-25.155,0-43.509-9.533-47.741-11.94V2H198
+			 M200,0H0v107.047c0,0,20.114,12.799,49.741,12.799c14.816,0,32.007-3.198,50.259-12.799
+			c18.249-9.599,34.861-12.799,49.093-12.799c28.464,0,47.407,12.799,50.907,12.799V0L200,0z"/>
+	</g>
+</g>
 </svg>

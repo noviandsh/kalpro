@@ -10,20 +10,32 @@ let droppedShape = 1,
 
 window.onbeforeunload = function() {
     // return 'You have unsaved changes!';
-    // $('.answer-container').show
 }
-// setInterval(function(){ console.log("Hello"); }, 1000);
-function submitQuiz() {
-    let quizDetail = {
-      'id' : $('#quiz-id').val(),
-      'teacher' : $('#quiz-teacher').val(),
-      'classID' : $('#quiz-classID').val(),
-      'title' : $('#quiz-title').val(),
-      'date' : $('#startDate').val(),
-      'dueDate' : $('#dueDate').val(),
-      'duration' : $('#quiz-duration').val()
-    };
-    // console.log(quizDetail);
+
+function countDown() {
+    let date = Math.round((timeLimit-new Date())/1000);
+    let hours = Math.floor(date/3600);
+    date = date - (hours*3600);
+    let mins = Math.floor(date/60);
+    date = date - (mins*60);
+    let secs = date;
+    if (hours<10) hours = '0'+hours;
+    if (mins<10) mins = '0'+mins;
+    if (secs<10) secs = '0'+secs;
+    $('#timer').html(hours+':'+mins+':'+secs);
+    // if(secs == 0){
+        // }
+    let coba = setTimeout("countDown()",1000);
+    if(hours == 0 && mins == 0 && secs == 0){
+        clearTimeout(coba);
+        submitAnswer();
+        // $.post("<?=base_url('dataprocess/endtime')?>",function(data){
+        //     // if you want you can show some message to user here
+        // });
+    }
+}
+function submitAnswer() {
+    // console.log(answer[$('#drop-2>div>div').attr('id').substring(7)-1]);
     let scheme = [];
     let a = {};
     let drop = $('.target>.drop').length;
@@ -31,7 +43,7 @@ function submitQuiz() {
     for(i=0;i<drop;i++){
         a['target-' + (i+1)] = ({
             'shape' : $('#drop-'+(i+1)+'>div>img').attr('diagram'),
-            'answer' : $('#answer-'+$('#drop-'+(i+1)+'>div').attr('id')).val()
+            'answer' : $('#drop-'+(i+1)+'>div>div').attr('id') ? answer[$('#drop-'+(i+1)+'>div>div').attr('id').substring(7)-1] : undefined
         });
     }
     for(i=0;i<arrow;i++){
@@ -40,9 +52,9 @@ function submitQuiz() {
     scheme.push(a);
     $.ajax({
         type  : 'POST',
-        url   : baseUrl+'dataprocess/newQuestion',
+        url   : baseUrl+'dataprocess/submitAnswer/'+quizID,
         // dataType: 'json',
-        data : {'quizDetail': quizDetail, 'question': scheme[0]},
+        data : scheme[0],
         beforeSend: function () {
             // ... your initialization code here (so show loader) ...
         },
@@ -53,7 +65,8 @@ function submitQuiz() {
             alert(errorThrown.status);
         },
         success : function(data){
-            console.log(data);
+            // console.log(data);
+            window.location.replace(baseUrl+'start-quiz/'+quizID+'/result');
         }
     });
 }
@@ -173,10 +186,10 @@ function diagramDrop(event, ui) {
         let arrowGroup = $(this).children().attr('class').split(' ')[1];
         $('.'+arrowGroup).remove();
     }
-
+    answerBack($(this).children());
     if(ui.draggable.hasClass('dropped')){
-        console.log($(ui.draggable).attr('id'));
-        console.log($(this).children().attr('id'));
+        // console.log($(ui.draggable).attr('id'));
+        // console.log($(this).children().attr('id'));
         if(!$(this).children().attr('id') || $(this).children().attr('id') !== $(ui.draggable).attr('id')){
             console.log('ada');
             $(this).html($(ui.draggable).draggable({
@@ -189,28 +202,26 @@ function diagramDrop(event, ui) {
             of: $(this), my: 'center center', at: 'center center'
         });
     }else{
-        $(this).html($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
-                // stack: '.diagram-wrap',
-                zIndex: 2,
-                revert: 'invalid'
-            })
-            .append($('<textarea class="answer-text" name="" id="answer-shape-'+droppedShape+'" cols="30" rows="1"></textarea>')
-            .focus(function(){
-                $(this).css({
-                    'width' : '300px',
-                    'height' : '100px',
-                    'box-shadow' : '6px 6px 9px -5px rgba(0,0,0,0.75)'
-                });
-                $(this).parent().css('z-index', '99');
-            })
-            .focusout(function(){
-                $(this).css({
-                    'width' : '70%',
-                    'height' : '20px',
-                    'box-shadow' : 'none'
-                });
-                $(this).parent().css('z-index', 'auto');
-        })));
+        if(ui.draggable.children().attr('diagram') == 'start-end'){
+            $(this).html($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
+                    // stack: '.diagram-wrap',
+                    zIndex: 2,
+                    revert: 'invalid'
+                })
+            );
+            $(this).children().append('<span>Selesai</span>')
+        }else{
+            $(this).html($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
+                    // stack: '.diagram-wrap',
+                    zIndex: 2,
+                    revert: 'invalid'
+                })
+                .droppable({
+                    accept: '.answer-number',
+                    drop: answerDrop
+                })
+            );
+        }
         $(ui.draggable[1]).position({
             of: $(this), my: 'center center', at: 'center center'
         });
@@ -221,22 +232,43 @@ function diagramDrop(event, ui) {
 function answerDrop(event, ui){
     if($(this).children().hasClass('answer-number')){
         let lastAnswer = $(this).children('.answer-number');
-        $('#answer-list-'+lastAnswer.attr('id').substring(7)).prepend(lastAnswer.draggable({
+        $('.answer-container').append(lastAnswer.draggable({
             zIndex: 999,
             revert: 'invalid'
         }).css({
-            'position' : 'relative',
-            'top' : '0px',
-            'left' : '0px'
+            'position': 'relative',
+            'top': '0',
+            'left': '0'
         }));
     }
     $(this).append($(ui.draggable).draggable({
         zIndex : 999,
         revert : 'invalid'
-    }).css('position', 'absolute'));
+    }).css('position', 'absolute')
+    .hover(
+        function() {
+            $(this).parent().parent().css('z-index', '99');
+        }, function() {
+            $(this).parent().parent().css('z-index', 'auto');
+        }
+    ));
     $(ui.draggable).position({
         of: $(this), my: 'center center', at: 'center center'
     });
+}
+
+function answerBack(drop){
+    if(drop.children().hasClass('answer-number')){
+        $('.answer-container').append(drop.children('.answer-number').draggable({
+            zIndex: 999,
+            revert: 'invalid'
+        }).css({
+            'position': 'relative',
+            'top': '0',
+            'left': '0'
+        }));
+        drop.parent().css('z-index', 'auto');
+    }
 }
 function arrowDrop(val){
     let arrowList = {
@@ -366,6 +398,7 @@ function viewArrow(container) {
 
 $(document).ready(function(){
     firstTarget();
+    countDown();
     $('.diagram-btn').click(function(){
         $('.answer-container').hide();
         $('#diagram-container').toggle();
@@ -389,7 +422,7 @@ $(document).ready(function(){
         zIndex : 999,
         revert : 'invalid',
         start : function(){
-            console.log('object');
+            // console.log('object');
             // $('.answer-container').css('overflow-y', 'hidden');
         },
         stop : function(){
@@ -404,6 +437,7 @@ $(document).ready(function(){
             $(this).find('p').hide();
         }
     );
+    
 
     $('.arrow-img').click(function(){
         let arrowImage = $(arrowContainer).children('img');
@@ -436,6 +470,7 @@ $(document).ready(function(){
         hoverClass: 'hovered',
         drop: function(event, ui){
             $('#diagram-trash>#trash-top').css('transform', 'rotate(0deg)');
+            answerBack(ui.draggable);
             $(ui.draggable).remove();
         },
         over: function(event, ui){
@@ -453,7 +488,8 @@ $(document).ready(function(){
         zIndex: 2,
         containtment: '#flowchart-container',
         helper: 'clone',
-        revert: 'invalid'
+        revert: 'invalid',
+        cursorAt: { left: 45 }
     });
 
     // ADD QUIZ NUMBER FUNCTION

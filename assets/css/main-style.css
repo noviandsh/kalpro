@@ -342,10 +342,17 @@ body{
 }
 .menu-btn{
     position: fixed;
-    top: 300px;
-    width: 150px;
-    height: 50px;
+    top: 248px;
+    width: 180px;
+    height: 25px;
     background: #00897B;
+    line-height: 25px;
+    display: grid;
+    grid-template-columns: auto auto;
+}
+.menu-btn button{
+    background: none;
+    border: 2px solid #212f32;
 }
 #diagram-container{
     text-align: center;
@@ -353,7 +360,8 @@ body{
     background: #00897B;
     z-index: 1;
     width: 150px;
-    top: 350px;
+    top: 370px;
+    padding: 30px 0;
 }
 .diagram-wrap{
     max-width: 100%;
@@ -361,6 +369,7 @@ body{
 }
 .diagram-wrap img{
     width: 90px;
+    cursor: grab;
 }
 .diagram-wrap textarea{
     position: absolute;
@@ -379,30 +388,12 @@ body{
     position: fixed;
     background: #00897B;
     z-index: 1;
-    width: 150px;
-    height: 550px;
-    top: 350px;
+    width: 160px;
+    padding: 10px;
+    top: 273px;
+    grid-template-columns: repeat(4, auto);
+    grid-auto-rows: 40px;
     display: none;
-    overflow-y: scroll;
-}
-/* width */
-.answer-container::-webkit-scrollbar {
-    width: 10px;
-}
-
-/* Track */
-.answer-container::-webkit-scrollbar-track {
-    background: #f1f1f1; 
-}
-
-/* Handle */
-.answer-container::-webkit-scrollbar-thumb {
-    background: #888; 
-}
-
-/* Handle on hover */
-.answer-container::-webkit-scrollbar-thumb:hover {
-    background: #555; 
 }
 .answer-container textarea{
     width: 90%;
@@ -412,8 +403,37 @@ body{
     background: white;
     width: 30px;
     height: 30px;
-    margin: 4px auto;
+    text-align: center;
     line-height: 30px;
+    margin: auto auto;
+    border: 2px solid #212f32;
+    cursor: grab;
+}
+.answer-number p{
+    background: rgba(33, 47, 50, 0.76);
+    width: 200px;
+    color: white;
+    position: absolute;
+    top: -40px;
+    left: 80px;
+    border: 2px solid #0de1c9;
+    border-radius: 5px;
+    z-index: 99;
+    min-height: 106px;
+    padding: 0 10px;
+    display: none;
+}
+.answer-number p::before{
+    content: '';
+    display: block;
+    position: absolute;
+    top: 1px;
+    left: -50px;
+    border-right: 48px solid rgba(33, 47, 50, 0.83);
+    border-bottom: 35px solid transparent;
+    border-top: 35px solid transparent;
+    height: 0;
+    height: 34px;
 }
 .target{
     position: relative;
@@ -423,14 +443,14 @@ body{
     grid-auto-rows: 200px 45px;
     margin: 0 auto;
 }
-.target canvas{
-    border: 1px solid blue;
+.target span{
+    z-index: 2;
     position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    width: 100%;
-    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: sans-serif;
+    font-size: 20px;
 }
 .target>div{
     position: relative;
@@ -607,17 +627,80 @@ body{
     margin: 0;
     transform: translate(-50%, -50%) rotate(720deg);
 }
-/* .arrow-img:nth-child(6){
-    transform: rotate(90deg);
+#add-line{
+    padding: 20px 0;
 }
-.arrow-img:nth-child(7){
-    transform: rotate(180deg);
+#add-line button{
+    width: 70px;
+    height: 50px;
+    font-size: 40px;
 }
-.arrow-img:nth-child(8){
-    transform: rotate(270deg);
-} */
+/* START QUIZ STYLE */
+#start-quiz-container{
+    margin: 0 auto;
+    max-width: 1140px;
+    padding: 110px 15px 10px 15px;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 20% 75% 5%;
+}
+#start-quiz-detail{
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+}
+#start-quiz-content{
+    background: white;
+    padding: 20px;
+}
+#start-quiz-number{
+    background: #0b897b;
+}
+#start-quiz-detail>#diagram-trash{
+    top: 160px;
+    width: 150px;
+}
+#start-quiz-detail>#diagram-container{
+    top: 273px;
+    width: 180px;
+}
+#start-quiz-detail .diagram-btn{
+    width: 140px;
+    border-right-width: 1px;
+}
+#start-quiz-detail .answer-btn{
+    width: 40px;
+    border-left-width: 1px;
+}
+#quiz-title{
+    font-size: 24px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+#quiz-title button{
+    float: right;
+}
+#start-quiz-number ul{
 
-connection{
-    border: 24px solid #b51c29;
-    border-radius: 31px;
+}
+#start-quiz-number ul>li{
+    list-style: none;
+    line-height: 30px;
+    display: inline;
+}
+#start-quiz-number a{
+    color: #7e7e7e;
+    text-decoration: none;
+    padding: 6px 10px;
+    background: #212f32;
+}
+#start-quiz-number a:hover{
+    color: black;
+    background: white;
+    padding: 6px 18px;
+}
+#start-quiz-number a.selected{
+    color: black;
+    background: white;
+    padding: 6px 18px;
 }

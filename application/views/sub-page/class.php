@@ -2,7 +2,10 @@
     <div id="side-menu">
         <ul>
             <li id="post" class="side-btn">Kiriman</li>
-            <li id="quiz" class="side-btn">Kuis</li>
+            <?php if($this->session->type == 'd'){
+                    echo "<li id='quiz' class='side-btn'>Kuis</li>";
+                }
+            ?>
             <li id="member" class="side-btn">Member</li>
         </ul>
     </div>
@@ -10,15 +13,28 @@
         
     </div>
     <div>
-    <span id="classID"><?=$class['classID']?></span><?=$this->uri->segment(2)?>
+        <?php
+            foreach($quiz as $val){
+                echo "<div class='quiz-list-box'>
+                        <span class='quiz-title'>".$val['title']."</span><br>
+                        <span class='quiz-date'>".$val['date']."</span> | <span class='quiz-due-date'>".$val['dueDate']."</span><br>
+                        <div class='quiz-option-btn'>
+                            <div></div>
+                        </div>
+                        <span class='quiz-total'>2 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']."</span><br/>
+                        <a href='".base_url('start-quiz/').$val['id']."'>Ambil</a>
+                    </div>";
+            }
+        ?>
     </div>
 </div>
+
 <script language="JavaScript" type="text/javascript">
 $( document ).ready(function() {
     const link = '<?=base_url("class/".$link)?>';
     let menu = jQuery.makeArray($('.side-btn'));
     const uri = <?=$this->uri->segment(3)?>;
-    const currentClass = $('#classID').html();
+    const currentClass = '<?=$class['classID']?>';
     menu.forEach(m => {
         if(m.id === uri.id){
             $('#'+m.id).toggleClass('selected');
