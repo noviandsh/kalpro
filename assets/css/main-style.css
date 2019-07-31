@@ -188,7 +188,7 @@ body{
     padding: 10px;
     background: white;
     border-radius: 20px;
-    height: 2000px;
+    /* height: 2000px; */
 }
 #profile{
     text-align: center;
@@ -219,6 +219,10 @@ body{
 .comment-container{
     width: 100%;
     background: #009688;
+    color: white;
+}
+.comment-container>div{
+    margin: 5px;
 }
 .comment-form form{
     display: grid;
@@ -228,16 +232,20 @@ body{
 .comment-form textarea{
     resize: vertical;
 }
-.user-comment div{
+.user-comment{
     position: relative;
-    right: 0;
-    top: 0;
+}
+.user-comment div{
+    position: absolute;
+    right: 6px;
+    top: 5px;
 }
 #side-menu ul>li{
     cursor: pointer;
     padding: 10px;
     background: #c2e6e3;
     font-family: fonta;
+    list-style: none;
 }
 #side-menu ul>li.selected{
     background: #00897B;
@@ -703,4 +711,22 @@ body{
     color: black;
     background: white;
     padding: 6px 18px;
+}
+#quiz-result{
+    max-width: 1140px;
+    padding: 200px 0;
+    background: white;
+    margin: 0 auto;
+}
+#result-card{
+    background: #0b897b;
+    width: 430px;
+    height: 180px;
+    margin: 0 auto;
+    padding: 20px;
+    color: white;
+    font-family: sans-serif;
+    -webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
 }

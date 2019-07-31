@@ -10,7 +10,7 @@
     foreach($feed as $val){
         ?>
         <div class="feed-container">
-            <b><?=$val['sender']?></b> => <?=$class[0]['name']?><br>
+            <b><?=$val['sender']?></b> mengirim ke <b><?=$class[0]['name']?></b><br>
             <small><?=$val['date']?></small><br>
             <?=$val['content']?>
             <div class="comment-container">
@@ -53,7 +53,7 @@
                                     '<small>'+data[i].date+'</small><br>'+
                                     data[i].comment+
                                     '<div><i class="fas fa-ellipsis-v fa-xs"></i></div>'+
-                                '</div>';
+                                '</div><hr>';
                     }
                     $('.comment-box-'+item).html(html);
                 }

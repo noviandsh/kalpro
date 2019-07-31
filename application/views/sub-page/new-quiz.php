@@ -21,14 +21,7 @@
                         <div id="trash-top"></div>
                         <div id="trash-btm"></div>
                     </div>
-                    <div class="menu-btn">
-                        <button class="diagram-btn"><i class="fas fa-project-diagram"></i></button>
-                        <button class="answer-btn"><i class="fas fa-list-ol"></i></button>
-                    </div>
                     <div id="diagram-container">
-                        <button onClick="coba()">coba</button>
-                        <button onClick="makeTarget()">target</button>
-                        <button id="addLine">Garis</button>
                         <div class="diagram-wrap">
                             <img class="diagram-shape" diagram="start-end" src="<?=base_url('assets/img/flowchart-shapes/rounded-rectangle.svg')?>" alt="">
                         </div>
@@ -61,13 +54,7 @@
                         <div class="empty"></div>
                         <div class="empty"></div>
                     </div>
-                    <div class="answer-container">
-                        <ul>
-                            <li id="answer-list-1"><div id="answer-1" class="answer-number">1</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
-                            <li id="answer-list-2"><div id="answer-2" class="answer-number">2</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
-                            <li id="answer-list-3"><div id="answer-3" class="answer-number">3</div><textarea name="" id="" cols="30" rows="10"></textarea></li>
-                        </ul>
-                    </div>
+                    <div id="add-line"><button onClick="makeTarget()">+</button></div>
                 </div>
             </div>
         </div>

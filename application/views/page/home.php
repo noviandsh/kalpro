@@ -23,17 +23,17 @@
     <div id="navbar">
         <div id="logo"></div>
             <div id="menubar-atas">
-                <a href="<?=base_url('dataprocess/logout')?>" style="right: 220px;position: absolute;color: white;">LOGOUT</a>
                 <div id="search-box">
                     <input type="" id="search" name="search" placeholder="Search">
                     <i id="search-btn" class="fa fa-search" aria-hidden="true"></i>
                 </div>
             </div>
             <div id="menubar-bawah">
-                    <div class="menu"><a href="<?php echo base_url('message');?>"><p><i class="fas fa-comments fa-sm"></i> Pesan</p></a></div>
-                    <div class="menu"><a href="<?php echo base_url('archive');?>"><p><i class="fas fa-file-archive fa-sm"></i> Arsip</p></a></div>
-                    <div class="menu"><a href="<?php echo base_url('class');?>"><p><i class="fas fa-school fa-sm"></i> Kelas</p></a></div>
-                    <div class="active menu"><a href="<?php echo base_url();?>"><p><i class="fas fa-home fa-sm"></i> Beranda</p></a></div>
+                    <div class="menu"><a href="<?=base_url('dataprocess/logout')?>"><p><i class="fas fa-comments fa-sm"></i> Logout</p></a></div>
+                    <div class="menu"><a href="<?=base_url('message');?>"><p><i class="fas fa-comments fa-sm"></i> Pesan</p></a></div>
+                    <div class="menu"><a href="<?=base_url('archive');?>"><p><i class="fas fa-file-archive fa-sm"></i> Arsip</p></a></div>
+                    <div class="menu"><a href="<?=base_url('class');?>"><p><i class="fas fa-school fa-sm"></i> Kelas</p></a></div>
+                    <div class="active menu"><a href="<?=base_url();?>"><p><i class="fas fa-home fa-sm"></i> Beranda</p></a></div>
                 </div>
                 <i id="menu-bar" class="fa fa-bars fa-2x" aria-hidden="true"></i>
                 <div id="menu-dropdown-par">

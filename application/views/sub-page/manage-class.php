@@ -1,8 +1,10 @@
 <div id="container">
     <div>
-        <form action="<?=base_url('dataprocess/newClass')?>" method="post">
-            <input type="text" name="className" placeholder="Nama Kelas" id="className"><button>buat kelas</button>
-        </form><br>
+        <?php if($this->session->type == 'd'){ ?>
+            <form action="<?=base_url('dataprocess/newClass')?>" method="post">
+                <input type="text" name="className" placeholder="Nama Kelas" id="className"><button>buat kelas</button>
+            </form><br>
+        <?php } ?>
     </div>
     <div>
         <?php 

@@ -1,35 +1,38 @@
 <div id="container">
     <div id="profile">
         <div class="photo">
-            <img src="<?=base_url('assets/img/poto.jpg')?>" alt="">
+            <img src="<?=base_url('assets/img/images.png')?>" alt="">
         </div>
         login as <b><?=$this->session->username;?></b><br>
+        <?php if($this->session->type == 'm'){ ?>
         <form action="<?=base_url('dataprocess/joinClass')?>" method="post">
             <input type="text" name="classID" placeholder="Masukkan Kode Kelas">
             <button>Gabung Kelas</button>
         </form>
+        <?php } ?>
     </div>
     <div id="content">
         <div id="post-form">
             <form action="<?=base_url('dataprocess/post')?>" method="post">
+                <input type="hidden" value="home" name="prevLink">
+                <textarea name="content" id="blas" cols="30" rows="10"></textarea>
                 <select name="classID">
                     <?php
+                        $className = array();
                         foreach($class as $val){
                             echo "<option value=".$val['classID'].">".$val['name']."</option>";
+                            $className[$val['classID']] = $val['name'];
                         }
                     ?>
                 </select>
-                <input type="hidden" value="home" name="prevLink">
-                <textarea name="content" id="blas" cols="30" rows="10"></textarea>
                 <button onClick="test()">Kirim</button>
             </form>
         </div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores aspernatur facere dolore aperiam, voluptatem ullam consequuntur assumenda at? Sapiente expedita vero cumque quaerat corporis explicabo laudantium deserunt! Sit, non rem.
             <?php
                 foreach($feed as $val){
                     ?>
                     <div class="feed-container">
-                        <b><?=$val['sender']?></b> => <?=$val['classID']?><br>
+                        <b><?=$val['sender']?></b> mengirim ke <b><?=$className[$val['classID']]?></b><br>
                         <small><?=$val['date']?></small><br>
                         <?=$val['content']?>
                         <div class="comment-container">
@@ -52,11 +55,23 @@
             ?>
     </div>
     <div id="sidebar">
-
+        <?php
+            foreach($quiz as $val){
+                echo "<div class='quiz-list-box'>
+                        <span class='quiz-title'>".$val['title']."</span><br>
+                        <span class='quiz-date'>".$val['date']."</span> | <span class='quiz-due-date'>".$val['dueDate']."</span><br>
+                        <div class='quiz-option-btn'>
+                            <div></div>
+                        </div>
+                        <span class='quiz-total'>2 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']."</span><br/>
+                        <a href='".base_url('start-quiz/').$val['id']."'>Ambil</a>
+                    </div>";
+            }
+        ?>
     </div>
 </div>
 <script>
-    var feed = [<?php echo '"'.implode('","', $feedID).'"' ?>];
+    let feed = [<?php echo '"'.implode('","', $feedID).'"' ?>];
     feed.forEach(showComment);
     function showComment(item, index) {
         $.ajax({
@@ -67,16 +82,16 @@
             dataType: 'json',
             success : function(data){
                 console.log(data.length);
-                var html = '';
-                var i;
-                var arrId = [];
+                let html = '';
+                let i;
+                let arrId = [];
                 for(i=0; i<data.length; i++){
                     html += '<div class="user-comment user-comment-'+data[i].id+'">'+
                                 '<b>'+data[i].sender+'</b><br>'+
                                 '<small>'+data[i].date+'</small><br>'+
                                 data[i].comment+
                                 '<div><i class="fas fa-ellipsis-v fa-xs"></i></div>'+
-                            '</div>';
+                            '</div><hr>';
                             // '<td><input id="tipe-'+data[i].id+'" name="tipe-'+data[i].id+'" value="'+data[i].tipe+'"></td>'+
                             // '<td><input id="harga-'+data[i].id+'" name="harga-'+data[i].id+'" value="'+data[i].harga+'"></td>'+
                             // '<td><button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#myModal2" data-nama="'+data[i].tipe+'" data-id="'+data[i].id+'" data-delete="one">'+

@@ -54,6 +54,11 @@ class Home extends CI_Controller {
 		}else{
 			$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->username));
 		}
+		$subData['quiz'] = array();
+		foreach($subData['class'] as $key => $val){
+			array_push($subData['quiz'], $this->crud->GetWhere('quiz', array('classID'=>$val['classID'])));
+		}
+		$subData['quiz'] = $subData['quiz'][0];
 		$subData['feed'] = $this->crud->GetOrWhereOrder('feed', 'classID', $subData['class'], 'date', 'DESC');
 		$subData['feedID'] = array();
 		foreach($subData['feed'] as $val){
@@ -140,7 +145,7 @@ class Home extends CI_Controller {
 		));
 
 		$subData['quizDetail'] = $this->crud->GetWhere('quiz', array('id'=>$quizID));
-		$subData['endTime'] = date('Y-m-d H:i:s',strtotime('+'.$subData['quizDetail'][0]['duration'].' minutes',strtotime($subData['startTime'])));
+		$subData['endTime'] = date('Y-m-d H:i:s', strtotime('+'.$subData['quizDetail'][0]['duration'].' minutes',strtotime($subData['startTime'])));
 		$subData['question']['flowchart'] = $this->crud->GetWhere('question_flow', array('quizID'=>$quizID));
 		
 		$jawaban = get_object_vars(json_decode($subData['question']['flowchart'][0]['answer']));
@@ -177,7 +182,8 @@ class Home extends CI_Controller {
 			'quizID'=>$quizID
 		); 
 		$subData['result'] = $this->crud->GetWhere('quiz_result', $where);
-		
+		$subData['userAnswer'] = $this->crud->GetWhere('user_answer', $where);
+		$subData['quizDetail'] = $this->crud->GetWhere('quiz', array('id'=>$quizID));	
 		$data['page'] = $this->load->view('sub-page/quiz-result', $subData, TRUE);
 		$this->load->view('page/home', $data);
 	}

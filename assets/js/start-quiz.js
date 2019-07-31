@@ -9,7 +9,7 @@ let droppedShape = 1,
     questionDataVariable;
 
 window.onbeforeunload = function() {
-    // return 'You have unsaved changes!';
+    return 'You have unsaved changes!';
 }
 
 function countDown() {
