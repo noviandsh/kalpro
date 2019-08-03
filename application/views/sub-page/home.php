@@ -7,9 +7,13 @@
         <?php if($this->session->type == 'm'){ ?>
         <form action="<?=base_url('dataprocess/joinClass')?>" method="post">
             <input type="text" name="classID" placeholder="Masukkan Kode Kelas">
-            <button>Gabung Kelas</button>
+            <button class="styled-btn">Gabung Kelas</button>
         </form>
-        <?php } ?>
+        <?php } 
+        if(!empty($this->session->joinStat)){
+            echo $this->session->joinStat;
+        }
+        ?>
     </div>
     <div id="content">
         <div id="post-form">
@@ -25,7 +29,7 @@
                         }
                     ?>
                 </select>
-                <button onClick="test()">Kirim</button>
+                <button class="styled-btn" onClick="test()">Kirim</button>
             </form>
         </div>
             <?php
@@ -45,7 +49,7 @@
                                 <form action="<?=base_url('dataprocess/comment')?>" method="post">
                                     <input type="hidden" name="feedID" value="<?=$val['id']?>">
                                     <input type="hidden" name="prevLink" value="home">
-                                    <textarea name="comment" placeholder="Tulis Komentar..."></textarea><button>Kirim</button>
+                                    <textarea name="comment" placeholder="Tulis Komentar..."></textarea><button class="styled-btn">Kirim</button>
                                 </form>
                             </div>
                         </div>
@@ -56,16 +60,18 @@
     </div>
     <div id="sidebar">
         <?php
-            foreach($quiz as $val){
-                echo "<div class='quiz-list-box'>
-                        <span class='quiz-title'>".$val['title']."</span><br>
-                        <span class='quiz-date'>".$val['date']."</span> | <span class='quiz-due-date'>".$val['dueDate']."</span><br>
-                        <div class='quiz-option-btn'>
-                            <div></div>
-                        </div>
-                        <span class='quiz-total'>2 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']."</span><br/>
-                        <a href='".base_url('start-quiz/').$val['id']."'>Ambil</a>
-                    </div>";
+            if(isset($quiz)){
+                foreach($quiz as $val){
+                    echo "<div class='quiz-list-box'>
+                            <span class='quiz-title'>".$val['title']."</span><br>
+                            <span class='quiz-date'>".$val['date']."</span> | <span class='quiz-due-date'>".$val['dueDate']."</span><br>
+                            <div class='quiz-option-btn'>
+                                <div></div>
+                            </div>
+                            <span class='quiz-total'>1 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']." Menit</span><br/>
+                            <a href='".base_url('start-quiz/').$val['id']."'>Ambil</a>
+                        </div>";
+                }
             }
         ?>
     </div>

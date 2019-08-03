@@ -21,7 +21,7 @@
                         <div class='quiz-option-btn'>
                             <div></div>
                         </div>
-                        <span class='quiz-total'>2 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']."</span><br/>
+                        <span class='quiz-total'>1 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']." Menit</span><br/>
                         <a href='".base_url('start-quiz/').$val['id']."'>Ambil</a>
                     </div>";
             }

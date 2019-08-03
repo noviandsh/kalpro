@@ -8,9 +8,9 @@ let droppedShape = 1,
     answerContainer = true,
     questionDataVariable;
 
-window.onbeforeunload = function() {
-    return 'You have unsaved changes!';
-}
+// window.onbeforeunload = function() {
+//     return 'You have unsaved changes!';
+// }
 
 function countDown() {
     let date = Math.round((timeLimit-new Date())/1000);

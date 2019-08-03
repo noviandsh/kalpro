@@ -10,7 +10,7 @@
         </div>
         <div class="menu-btn">
             <button class="diagram-btn"><i class="fas fa-project-diagram"></i> Diagram</button>
-            <button class="answer-btn"><i class="fas fa-list-ol"></i></button>
+            <button class="answer-btn"><i class="fas fa-list-ol"></i> Jawaban</button>
         </div>
         <div id="diagram-container">
             <div class="diagram-wrap">
@@ -47,14 +47,14 @@
 
     </div>
     <div id="start-quiz-content">
-        <div id="quiz-title"><?=$quizDetail[0]['title']?> | <span id="timer"></span> <button onClick="submitAnswer()">Selesai</button></div>
+        <div id="quiz-title"><?=$quizDetail[0]['title']?> | <span id="timer"></span> <button class="styled-btn" onClick="submitAnswer()">Selesai</button></div>
         <?php
             // print_r($quizDetail);
             // echo '<hr>';
             // print_r($question['flowchart']);
         ?>
         <hr><br>
-        <div id="quiz-question">Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, nostrum! Aut repellat beatae, numquam dolorum fuga sequi quo cupiditate eligendi ab, ea accusamus aliquam sunt saepe hic, commodi ex nobis.</div>
+        <div id="quiz-question"><?=$soal[0]['question']?></div>
         <br>
         <div id="flowchart-container">
             <div id="target" class="target">
@@ -74,7 +74,7 @@
                 <div class="empty"></div>
                 <div class="empty"></div>
             </div>
-            <div id="add-line"><button onClick="makeTarget()">+</button></div>
+            <div id="add-line"><button class="styled-btn" onClick="makeTarget()">+</button></div>
         </div>
     </div>
     <div id="start-quiz-number">

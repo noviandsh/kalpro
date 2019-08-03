@@ -21,7 +21,7 @@ function submitQuiz() {
       'title' : $('#quiz-title').val(),
       'date' : $('#startDate').val(),
       'dueDate' : $('#dueDate').val(),
-      'duration' : $('#quiz-duration').val()
+      'duration' : $('#quiz-duration').val(),
     };
     // console.log(quizDetail);
     let scheme = [];
@@ -42,7 +42,7 @@ function submitQuiz() {
         type  : 'POST',
         url   : baseUrl+'dataprocess/newQuestion',
         // dataType: 'json',
-        data : {'quizDetail': quizDetail, 'question': scheme[0]},
+        data : {'quizDetail': quizDetail, 'question': $('#question-form').val(), 'answer': scheme[0]},
         beforeSend: function () {
             // ... your initialization code here (so show loader) ...
         },
@@ -53,7 +53,8 @@ function submitQuiz() {
             alert(errorThrown.status);
         },
         success : function(data){
-            console.log(data);
+            // console.log(data);
+            history.go(-1);
         }
     });
 }

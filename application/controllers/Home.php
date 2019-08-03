@@ -58,7 +58,9 @@ class Home extends CI_Controller {
 		foreach($subData['class'] as $key => $val){
 			array_push($subData['quiz'], $this->crud->GetWhere('quiz', array('classID'=>$val['classID'])));
 		}
-		$subData['quiz'] = $subData['quiz'][0];
+		if(isset($subData['quiz'])){
+			$subData['quiz'] = $subData['quiz'][0];
+		}
 		$subData['feed'] = $this->crud->GetOrWhereOrder('feed', 'classID', $subData['class'], 'date', 'DESC');
 		$subData['feedID'] = array();
 		foreach($subData['feed'] as $val){
@@ -157,17 +159,11 @@ class Home extends CI_Controller {
 		}
 		// array_push($subData['answer'], 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, nostrum! Aut repellat beatae, numquam dolorum fuga sequi quo cupiditate eligendi ab, ea accusamus aliquam sunt saepe hic, commodi ex nobis.');
 		shuffle($subData['answer']);
-		
-		// gak usah
-		// print_r($jawaban);
-		// echo '<hr>';
-		// foreach ($jawaban as $key => $value) {
-		// 	echo $key.' = '.$value['answer'].'<br>';
-		// }
+		$subData['soal'] = $this->crud->GetWhere('question_flow', array('quizID'=>$quizID));
 
 		if(!isset($_SESSION['timer'])){
-			// $this->session->set_userdata('timer', time()+($subData['quizDetail'][0]['duration']*60));
-			$this->session->set_userdata('timer', time()+(30));
+			$this->session->set_userdata('timer', time()+($subData['quizDetail'][0]['duration']*60));
+			// $this->session->set_userdata('timer', time()+(30));
 		}
         // $this->session->unset_userdata('timer');
 

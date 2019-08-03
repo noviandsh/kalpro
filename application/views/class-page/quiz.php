@@ -7,7 +7,7 @@
                     <div class='quiz-option-btn'>
                         <div></div>
                     </div>
-                    <span class='quiz-total'>2 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']."</span>
+                    <span class='quiz-total'>1 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']." Menit</span>
                 </div>";
         }
     ?>

@@ -2,7 +2,7 @@
     <div>
         <?php if($this->session->type == 'd'){ ?>
             <form action="<?=base_url('dataprocess/newClass')?>" method="post">
-                <input type="text" name="className" placeholder="Nama Kelas" id="className"><button>buat kelas</button>
+                <input type="text" name="className" placeholder="Nama Kelas" id="className"><button class="styled-btn">buat kelas</button>
             </form><br>
         <?php } ?>
     </div>
@@ -17,10 +17,12 @@
                 return preg_replace('/-+/', '-', $string); // Replaces multiple hyphens with single one.
             }
             foreach($class as $val){?>
-                <div class="class-div">
-                    <?=$val['name']?>
-                    <a href="<?=base_url('class/'.clean($val['name']).'-'.$val['classID'].'/post')?>">Link</a><br>
+                <div class="class-div" style="height: 100px;background: white;padding: 20px;font-family: sans-serif;">
                     
+                    <a style="font-size: 20px;text-decoration: none;font-weight: bold;" href="<?=base_url('class/'.clean($val['name']).'-'.$val['classID'].'/post')?>"><?=$val['name']?></a><br><br><br>
+                    <?php
+                        echo $this->crud->GetCountWhere('class_member', array('classID'=>$val['classID'])).' anggota';
+                    ?>
                 </div>
                 <hr>
             <?php
@@ -28,6 +30,5 @@
         ?>
     </div>
     <div>
-        kelas
     </div>
 </div>

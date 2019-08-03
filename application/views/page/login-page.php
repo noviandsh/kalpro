@@ -10,6 +10,7 @@
     <script src="<?=base_url('assets/js/particles.js')?>"></script>
 </head>
 <body id="particles-js">
+<div>
     <div id="container">
         <div id="login-container">
             <form id="logForm">
@@ -23,6 +24,10 @@
                 <div>
                     <button id="login-btn">Masuk</button>
                 </div>
+                <br><br><br>
+                <div>
+                    <?=$this->session->regist?>
+                </div>
             </form>
         </div>
         <div id="register-container">
@@ -34,8 +39,9 @@
                     <input type="radio" name="type" value="m">Mahasiswa
                 </div>
                 <div>
-                    <input type="text" name="user" id="userRegist" placeholder="Username" onChange="userCheck()"><span id="user-availability-status"></span> 
+                    <input type="text" name="user" id="userRegist" placeholder="Username" onChange="userCheck()">
                 </div>
+                <div><span id="user-availability-status"></span> </div>
                 <div>
                     <input type="password" name="pass" id="passRegist" placeholder="Password">
                 </div>
@@ -46,12 +52,13 @@
         </div>
         <div id="front-mask">
             <div>
-                <span id="logo">Kalpro</span>
+                <span id="logo">Kalpro</span><br><br>
                 <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque rerum magni corrupti odio, voluptatem maiores porro aspernatur eaque eum possimus doloremque vel!</p>
                 <button id="mask-btn">Daftar</button>
             </div>
         </div>
     </div>
+</div>
     <script src="<?=base_url('assets/js/TweenMax.js')?>"></script>
     <script src="<?=base_url('assets/js/TimelineMax.js')?>"></script>
     <script>
@@ -116,7 +123,7 @@
                 data:'username='+$("#userRegist").val(),
                 type: "POST",
                 beforeSend: function () {
-                    $("#user-availability-status").html("<span style='color:yellow'> Memeriksa Ketersediaan Username.</span>");
+                    $("#user-availability-status").html("<span style='color:yellow;font-size: 16px;'> Memeriksa Ketersediaan Username.</span>");
                 },
                 success:function(data){
                     $("#user-availability-status").html(data);

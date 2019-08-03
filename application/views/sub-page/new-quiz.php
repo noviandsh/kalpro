@@ -8,7 +8,7 @@
         <input readonly="readonly" type="text" id="dueDate" placeholder="Waktu Selesai">
         <input type="text" id="quiz-duration" placeholder="Durasi"><br><br>
     </form>
-    <button onClick="submitQuiz()">Simpan</button><br><br>
+    <button class="styled-btn" onClick="submitQuiz()">Simpan</button><br><br>
     <div id="new-quiz-number">
         <ul>
             <li class="selected"><a href="#">1</a></li>
@@ -17,11 +17,12 @@
         <div class="new-quiz-form">
             <div id="question-1">
                 <div id="flowchart-container">
-                    <div id="diagram-trash">
+                    <textarea id="question-form" placeholder="Pertanyaan" cols="100" rows="10"></textarea>
+                    <div id="diagram-trash" style="top:240px;">
                         <div id="trash-top"></div>
                         <div id="trash-btm"></div>
                     </div>
-                    <div id="diagram-container">
+                    <div id="diagram-container" style="top:320px;">
                         <div class="diagram-wrap">
                             <img class="diagram-shape" diagram="start-end" src="<?=base_url('assets/img/flowchart-shapes/rounded-rectangle.svg')?>" alt="">
                         </div>
@@ -54,7 +55,7 @@
                         <div class="empty"></div>
                         <div class="empty"></div>
                     </div>
-                    <div id="add-line"><button onClick="makeTarget()">+</button></div>
+                    <div id="add-line"><button class="styled-btn" onClick="makeTarget()">+</button></div>
                 </div>
             </div>
         </div>

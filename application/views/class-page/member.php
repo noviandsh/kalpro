@@ -1,4 +1,7 @@
-member:
+Dosen: <br>
+<span><?=$class[0]['teacher']?></span><br><br>
+
+Member:
 <ul> 
     <?php
     foreach($member as $mhs){

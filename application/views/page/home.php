@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div id="menubar-bawah">
-                    <div class="menu"><a href="<?=base_url('dataprocess/logout')?>"><p><i class="fas fa-comments fa-sm"></i> Logout</p></a></div>
+                    <div class="menu"><a href="<?=base_url('dataprocess/logout')?>"><p><i class="fas fa-sign-out-alt fa-sm"></i> Logout</p></a></div>
                     <div class="menu"><a href="<?=base_url('message');?>"><p><i class="fas fa-comments fa-sm"></i> Pesan</p></a></div>
                     <div class="menu"><a href="<?=base_url('archive');?>"><p><i class="fas fa-file-archive fa-sm"></i> Arsip</p></a></div>
                     <div class="menu"><a href="<?=base_url('class');?>"><p><i class="fas fa-school fa-sm"></i> Kelas</p></a></div>

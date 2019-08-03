@@ -45,9 +45,9 @@ class DataProcess extends CI_Controller {
     {
         $user = $this->crud->GetCountWhere('user', array('username'=>$_POST['username']));
         if($user>0){
-            echo "<span style='color:red'> Username Tidak Tersedia.</span>";
+            echo "<span style='color:red;font-size: 16px;'> Username Tidak Tersedia.</span>";
         }else{
-            echo "<span style='color:green'> Username Tersedia.</span>";
+            echo "<span style='color:green;font-size: 16px;'> Username Tersedia.</span>";
         }
     }
 
@@ -62,7 +62,10 @@ class DataProcess extends CI_Controller {
             "password"=>$pass,
             "type"=>$type
         ));
-        echo $regist;
+        if($regist){
+            $this->session->set_flashdata("regist", "<span style='color:green;font-size: 16px;'> Berhasil mendaftar, silahkan login untuk melanjutkan.</span>");
+        }
+        redirect(base_url('login-page'));
     }
 
     // PROSES BUAT KELAS BARU
@@ -105,9 +108,12 @@ class DataProcess extends CI_Controller {
             );
             $checkMember = $this->crud->GetCountWhere('class_member', $data);
             if($checkMember>0){
-                echo "wes tau bergabung";
+                $this->session->set_flashdata('joinStat', 'Anda sudah bergabung di kelas ini.');
+                redirect(base_url());
             }else{
                 $join = $this->crud->Insert('class_member', $data);
+                $this->session->set_flashdata('joinStat', 'Anda berhasil bergabung di kelas ini.');
+                redirect(base_url());
             }
         }
     }
@@ -194,6 +200,7 @@ class DataProcess extends CI_Controller {
             // CASE MEMBER START
             case 'member':
                 $subData['member'] = $this->crud->GetWhere('class_member', array('classID'=> $classID));
+                $subData['class'] = $this->crud->GetWhere('class', array('classID'=> $classID));
                 break;
             // CASE MEMBER END
         }
@@ -204,14 +211,14 @@ class DataProcess extends CI_Controller {
     // PROSES MEMBUAT KUIS BARU
     public function newQuestion()
     {
-        foreach($_POST['question'] as $key => $val){
+        foreach($_POST['answer'] as $key => $val){
             
             if(strpos($key, 'target') !== false){
-                $_POST['question'][$key]['answer'] = nl2br($_POST['question'][$key]['answer']);
+                $_POST['answer'][$key]['answer'] = nl2br($_POST['answer'][$key]['answer']);
             }
         }
-        $question = json_encode($_POST['question']);
-        $this->crud->Insert('question_flow', array('quizID'=>$_POST['quizDetail']['id'],'answer'=>$question));
+        $question = json_encode($_POST['answer']);
+        $this->crud->Insert('question_flow', array('quizID'=>$_POST['quizDetail']['id'],'question'=>$_POST['question'],'answer'=>$question));
         $this->crud->Insert('quiz', $_POST['quizDetail']);
     }
 

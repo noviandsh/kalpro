@@ -3,7 +3,7 @@
         <input type="hidden" value="class/<?=$link?>" name="prevLink">
         <input type="hidden" value="<?=$class[0]['classID']?>" name="classID">
         <textarea name="content" id="blas" cols="30" rows="10"></textarea>
-        <button>Kirim</button>
+        <button class="styled-btn">Kirim</button>
     </form>
 </div>
 <?php
@@ -23,7 +23,7 @@
                     <form action="<?=base_url('dataprocess/comment')?>" method="post">
                         <input type="hidden" name="feedID" value="<?=$val['id']?>">
                         <input type="hidden" name="prevLink" value="home">
-                        <textarea name="comment" placeholder="Tulis Komentar..."></textarea><button>Kirim</button>
+                        <textarea name="comment" placeholder="Tulis Komentar..."></textarea><button class="styled-btn">Kirim</button>
                     </form>
                 </div>
             </div>

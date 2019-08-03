@@ -2,12 +2,24 @@
     font-family: font-logo;
     src: url(../fonts/MajorMonoDisplay-Regular.ttf);
 }
+*{
+    margin: 0;
+    padding: 0;
+}
 html{
     height: 100%;
+    width: 100%;
 }
 body{
     height: 100%;
-    background: #eee;
+    width: 100%;
+    background: url('../img/wall.jpg');
+    background-size: cover;
+}
+body>div{
+    height: 100%;
+    width: 100%;
+    background: rgba(32, 58, 134, 0.55);
 }
 input, select {
     /* width: 100%; */
