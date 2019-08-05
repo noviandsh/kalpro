@@ -9,7 +9,7 @@
             <div id="trash-btm"></div>
         </div>
         <div class="menu-btn">
-            <button class="diagram-btn"><i class="fas fa-project-diagram"></i> Diagram</button>
+            <button class="diagram-btn"><i class="fas fa-shapes"></i> Diagram</button>
             <button class="answer-btn"><i class="fas fa-list-ol"></i> Jawaban</button>
         </div>
         <div id="diagram-container">

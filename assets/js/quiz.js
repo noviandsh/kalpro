@@ -12,7 +12,7 @@ window.onbeforeunload = function() {
     // return 'You have unsaved changes!';
     // $('.answer-container').show
 }
-// setInterval(function(){ console.log("Hello"); }, 1000);
+
 function submitQuiz() {
     let quizDetail = {
       'id' : $('#quiz-id').val(),
@@ -23,7 +23,6 @@ function submitQuiz() {
       'dueDate' : $('#dueDate').val(),
       'duration' : $('#quiz-duration').val(),
     };
-    // console.log(quizDetail);
     let scheme = [];
     let a = {};
     let drop = $('.target>.drop').length;
@@ -63,12 +62,10 @@ function makeTarget(){
     let n = 0;
     let change = true;
     targetRow++;
-    // $('.target').css('grid-template-rows', 'repeat('+targetRow+', 200px 50px)');
     for ( let i=0; i<=9; i++ ) {
         n++;
         if(!change){
             if(n%2 === 0){
-                // console.log('a - ' + n);
                 $('.target').append($('<div class="drop" id="drop-'+drop+'"></div>').droppable({
                     accept: '.diagram-wrap',
                     hoverClass: 'hovered',
@@ -76,7 +73,6 @@ function makeTarget(){
                 }));
                 drop++;
             }else{
-                // console.log('b - ' + n);
                 $('.target').append($('<div class="arrow" id="arrow-'+arrow+'"></div>').click(function(){
                     viewArrow($(this));
                 }));
@@ -84,13 +80,11 @@ function makeTarget(){
             }
         }else{
             if(n%2 === 1){
-                // console.log('b - ' + n);
                 $('.target').append($('<div class="arrow" id="arrow-'+arrow+'"></div>').click(function(){
                     viewArrow($(this));
                 }));
                 arrow++;
             }else{
-                // console.log('c - ' + n);
                 $('.target').append('<div class="empty"></div>');
             }
         }
@@ -98,8 +92,8 @@ function makeTarget(){
             change = !change;
         }
     }
-    console.log(n);
 }
+
 function firstTarget(){
     let n = 0;
     let drop = 1;
@@ -109,7 +103,6 @@ function firstTarget(){
         n++;
         if(change){
             if(n%2 === 1){
-                // console.log('a - ' + n);
                 $('.target').append($('<div class="drop" id="drop-'+drop+'"></div>').droppable({
                     accept: '.diagram-wrap',
                     hoverClass: 'hovered',
@@ -117,17 +110,14 @@ function firstTarget(){
                 }));
                 drop++;
             }else{
-                // console.log('b - ' + n);
                 $('.target').append('<div class="arrow" id="arrow-'+arrow+'"></div>');
                 arrow++;
             }
         }else{
             if(n%2 === 0){
-                // console.log('b - ' + n);
                 $('.target').append('<div class="arrow" id="arrow-'+arrow+'"></div>');
                 arrow++;
             }else{
-                // console.log('c - ' + n);
                 $('.target').append('<div class="empty"></div>');
             }
         }
@@ -145,7 +135,6 @@ function getSibling(obstacle, colls, direction){
         obstacleData: 'odata',
         directionData: 'ddata'
     });
-    // console.log($(collision[1]).data());
     for(let i=0; i<collision.length; i++){
         let o = $(collision[i]).data("odata");
         let c = $(collision[i]).data("cdata");
@@ -174,10 +163,7 @@ function diagramDrop(event, ui) {
         let arrowGroup = $(this).children().attr('class').split(' ')[1];
         $('.'+arrowGroup).remove();
     }
-
     if(ui.draggable.hasClass('dropped')){
-        console.log($(ui.draggable).attr('id'));
-        console.log($(this).children().attr('id'));
         if(!$(this).children().attr('id') || $(this).children().attr('id') !== $(ui.draggable).attr('id')){
             console.log('ada');
             $(this).html($(ui.draggable).draggable({
@@ -190,28 +176,38 @@ function diagramDrop(event, ui) {
             of: $(this), my: 'center center', at: 'center center'
         });
     }else{
-        $(this).html($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
-                // stack: '.diagram-wrap',
-                zIndex: 2,
-                revert: 'invalid'
-            })
-            .append($('<textarea class="answer-text" name="" id="answer-shape-'+droppedShape+'" cols="30" rows="1"></textarea>')
-            .focus(function(){
-                $(this).css({
-                    'width' : '300px',
-                    'height' : '100px',
-                    'box-shadow' : '6px 6px 9px -5px rgba(0,0,0,0.75)'
-                });
-                $(this).parent().css('z-index', '99');
-            })
-            .focusout(function(){
-                $(this).css({
-                    'width' : '70%',
-                    'height' : '20px',
-                    'box-shadow' : 'none'
-                });
-                $(this).parent().css('z-index', 'auto');
-        })));
+        if(ui.draggable.children().attr('diagram') == 'start-end'){
+            $(this).html($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
+                    // stack: '.diagram-wrap',
+                    zIndex: 2,
+                    revert: 'invalid'
+                })
+            );
+            $(this).children().append('<span>Selesai</span>')
+        }else{
+            $(this).html($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
+                    // stack: '.diagram-wrap',
+                    zIndex: 2,
+                    revert: 'invalid'
+                })
+                .append($('<textarea class="answer-text" name="" id="answer-shape-'+droppedShape+'" cols="30" rows="1"></textarea>')
+                .focus(function(){
+                    $(this).css({
+                        'width' : '300px',
+                        'height' : '100px',
+                        'box-shadow' : '6px 6px 9px -5px rgba(0,0,0,0.75)'
+                    });
+                    $(this).parent().css('z-index', '99');
+                })
+                .focusout(function(){
+                    $(this).css({
+                        'width' : '70%',
+                        'height' : '21px',
+                        'box-shadow' : 'none'
+                    });
+                    $(this).parent().css('z-index', 'auto');
+            })));
+        }
         $(ui.draggable[1]).position({
             of: $(this), my: 'center center', at: 'center center'
         });
@@ -219,26 +215,6 @@ function diagramDrop(event, ui) {
     }
 }
 
-function answerDrop(event, ui){
-    if($(this).children().hasClass('answer-number')){
-        let lastAnswer = $(this).children('.answer-number');
-        $('#answer-list-'+lastAnswer.attr('id').substring(7)).prepend(lastAnswer.draggable({
-            zIndex: 999,
-            revert: 'invalid'
-        }).css({
-            'position' : 'relative',
-            'top' : '0px',
-            'left' : '0px'
-        }));
-    }
-    $(this).append($(ui.draggable).draggable({
-        zIndex : 999,
-        revert : 'invalid'
-    }).css('position', 'absolute'));
-    $(ui.draggable).position({
-        of: $(this), my: 'center center', at: 'center center'
-    });
-}
 function arrowDrop(val){
     let arrowList = {
         'arrow1' : {
@@ -407,11 +383,15 @@ $(document).ready(function(){
     );
 
     $('.arrow-img').click(function(){
+        // replace turned arrow
         let arrowImage = $(arrowContainer).children('img');
         if(arrowImage.hasClass('empty-arrow')){
-            let arrowGroup = arrowImage.attr('class').split(' ')[1];
+            console.log('wkwk');
+            let arrowGroup = arrowImage.attr('class').split(' ')[2];
+            console.log(arrowGroup);
             $('.'+arrowGroup).remove();
         }
+
         let arrowData = arrowDrop($(this).children().attr('id'));
         let arrowType = arrowData['file'].substring(5);
         if(arrowType < 3){
@@ -421,9 +401,9 @@ $(document).ready(function(){
                 makeTarget();
                 secondSibling = getSibling('.arrow', $('#'+firstSibling), arrowData.direction[1]);
             }
-            $(arrowContainer).html($("<img arrow-id='tail-"+arrowData['id']+"' class='arrow-tail arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/empty-arrow.svg' alt=''>"));
+            $(arrowContainer).html($("<img arrow-id='tail-"+arrowData['id']+"' class='empty-arrow arrow-tail arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/empty-arrow.svg' alt=''>"));
             $('#'+firstSibling).html($("<img arrow-id='"+arrowData['id']+"' id='dropped-arrow-"+droppedArrow+"' class='turn-arrow arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/turn-"+arrowData['turn']+"-arrow.svg'>").css('transform', 'translate(-50%, -50%) rotate('+arrowData['rotate']+'deg)'));
-            $('#'+secondSibling).html($("<img arrow-id='head-"+arrowData['id']+"' class='arrow-head arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/empty-arrow.svg'>"));
+            $('#'+secondSibling).html($("<img arrow-id='head-"+arrowData['id']+"' class='empty-arrow arrow-head arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/empty-arrow.svg'>"));
 
             console.log(firstSibling+'-'+secondSibling);
         }else{
@@ -454,7 +434,8 @@ $(document).ready(function(){
         zIndex: 2,
         containtment: '#flowchart-container',
         helper: 'clone',
-        revert: 'invalid'
+        revert: 'invalid',
+        cursorAt: { left: 45 }
     });
 
     // ADD QUIZ NUMBER FUNCTION

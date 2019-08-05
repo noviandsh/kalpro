@@ -23,8 +23,6 @@ function countDown() {
     if (mins<10) mins = '0'+mins;
     if (secs<10) secs = '0'+secs;
     $('#timer').html(hours+':'+mins+':'+secs);
-    // if(secs == 0){
-        // }
     let coba = setTimeout("countDown()",1000);
     if(hours == 0 && mins == 0 && secs == 0){
         clearTimeout(coba);
@@ -35,7 +33,6 @@ function countDown() {
     }
 }
 function submitAnswer() {
-    // console.log(answer[$('#drop-2>div>div').attr('id').substring(7)-1]);
     let scheme = [];
     let a = {};
     let drop = $('.target>.drop').length;
@@ -75,12 +72,10 @@ function makeTarget(){
     let n = 0;
     let change = true;
     targetRow++;
-    // $('.target').css('grid-template-rows', 'repeat('+targetRow+', 200px 50px)');
     for ( let i=0; i<=9; i++ ) {
         n++;
         if(!change){
             if(n%2 === 0){
-                // console.log('a - ' + n);
                 $('.target').append($('<div class="drop" id="drop-'+drop+'"></div>').droppable({
                     accept: '.diagram-wrap',
                     hoverClass: 'hovered',
@@ -88,7 +83,6 @@ function makeTarget(){
                 }));
                 drop++;
             }else{
-                // console.log('b - ' + n);
                 $('.target').append($('<div class="arrow" id="arrow-'+arrow+'"></div>').click(function(){
                     viewArrow($(this));
                 }));
@@ -96,13 +90,11 @@ function makeTarget(){
             }
         }else{
             if(n%2 === 1){
-                // console.log('b - ' + n);
                 $('.target').append($('<div class="arrow" id="arrow-'+arrow+'"></div>').click(function(){
                     viewArrow($(this));
                 }));
                 arrow++;
             }else{
-                // console.log('c - ' + n);
                 $('.target').append('<div class="empty"></div>');
             }
         }
@@ -110,8 +102,8 @@ function makeTarget(){
             change = !change;
         }
     }
-    console.log(n);
 }
+
 function firstTarget(){
     let n = 0;
     let drop = 1;
@@ -121,7 +113,6 @@ function firstTarget(){
         n++;
         if(change){
             if(n%2 === 1){
-                // console.log('a - ' + n);
                 $('.target').append($('<div class="drop" id="drop-'+drop+'"></div>').droppable({
                     accept: '.diagram-wrap',
                     hoverClass: 'hovered',
@@ -129,17 +120,14 @@ function firstTarget(){
                 }));
                 drop++;
             }else{
-                // console.log('b - ' + n);
                 $('.target').append('<div class="arrow" id="arrow-'+arrow+'"></div>');
                 arrow++;
             }
         }else{
             if(n%2 === 0){
-                // console.log('b - ' + n);
                 $('.target').append('<div class="arrow" id="arrow-'+arrow+'"></div>');
                 arrow++;
             }else{
-                // console.log('c - ' + n);
                 $('.target').append('<div class="empty"></div>');
             }
         }
@@ -157,7 +145,6 @@ function getSibling(obstacle, colls, direction){
         obstacleData: 'odata',
         directionData: 'ddata'
     });
-    // console.log($(collision[1]).data());
     for(let i=0; i<collision.length; i++){
         let o = $(collision[i]).data("odata");
         let c = $(collision[i]).data("cdata");
@@ -188,8 +175,6 @@ function diagramDrop(event, ui) {
     }
     answerBack($(this).children());
     if(ui.draggable.hasClass('dropped')){
-        // console.log($(ui.draggable).attr('id'));
-        // console.log($(this).children().attr('id'));
         if(!$(this).children().attr('id') || $(this).children().attr('id') !== $(ui.draggable).attr('id')){
             console.log('ada');
             $(this).html($(ui.draggable).draggable({
@@ -491,32 +476,4 @@ $(document).ready(function(){
         revert: 'invalid',
         cursorAt: { left: 45 }
     });
-
-    // ADD QUIZ NUMBER FUNCTION
-    let n = 1;
-    $("#add-quiz").click(function(e){
-        e.preventDefault();
-        n++;
-        $("#add-quiz-id").before('<li><a href="#">'+n+'</a></li>');
-    })
-
-    // DATE PICKER FUNCTION
-    $("#startDate").datetimepicker({ 
-        minDate: 1,
-        changeMonth: true,
-        dateFormat: "yy-mm-dd",
-        onSelect: function(date){
-            let selectedDate = new Date(date);
-            let msecsInADay = 86400000;
-            let endDate = new Date(selectedDate.getTime() + msecsInADay);
-
-            //Set Minimum Date of EndDatePicker After Selected Date of StartDatePicker
-            $("#dueDate").datepicker( "option", "minDate", endDate );
-        }
-    });
-    $("#dueDate").datetimepicker({ 
-        dateFormat: 'yy-mm-dd',
-        changeMonth: true
-    });
-
 })

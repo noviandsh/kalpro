@@ -44,6 +44,7 @@
                         <div class="empty"></div>
                         <div class="first-diagram">
                             <img src="<?=base_url('assets/img/flowchart-shapes/rounded-rectangle.svg')?>" alt="" style="z-index: 1; position: relative;">
+                            <span>Mulai</span>
                         </div>
                         <div class="empty"></div>
                         <div class="empty"></div>
