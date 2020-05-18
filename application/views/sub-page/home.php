@@ -19,7 +19,7 @@
         <div id="post-form">
             <form action="<?=base_url('dataprocess/post')?>" method="post">
                 <input type="hidden" value="home" name="prevLink">
-                <textarea name="content" id="blas" cols="30" rows="10"></textarea>
+                <textarea placeholder="Ketik di sini..." name="content" id="blas" cols="30" rows="10"></textarea>
                 <select name="classID">
                     <?php
                         $className = array();
@@ -29,7 +29,7 @@
                         }
                     ?>
                 </select>
-                <button class="styled-btn" onClick="test()">Kirim</button>
+                <button class="styled-btn" onClick="test()" data-icon='&#xf1d8'>Kirim</button>
             </form>
         </div>
             <?php
@@ -49,7 +49,7 @@
                                 <form action="<?=base_url('dataprocess/comment')?>" method="post">
                                     <input type="hidden" name="feedID" value="<?=$val['id']?>">
                                     <input type="hidden" name="prevLink" value="home">
-                                    <textarea name="comment" placeholder="Tulis Komentar..."></textarea><button class="styled-btn">Kirim</button>
+                                    <textarea name="comment" placeholder="Tulis Komentar..."></textarea><button class="styled-btn" data-icon="&#xf1d8">Kirim</button>
                                 </form>
                             </div>
                         </div>
@@ -69,7 +69,7 @@
                                 <div></div>
                             </div>
                             <span class='quiz-total'>1 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']." Menit</span><br/>
-                            <a href='".base_url('start-quiz/').$val['id']."'>Ambil</a>
+                            <a href='".base_url('start-quiz/').$val['id']."' class='styled-btn' data-icon='&#xf0ae'>Ambil</a>
                         </div>";
                 }
             }
