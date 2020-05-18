@@ -5,60 +5,71 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Masuk | Kalpro</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="<?=base_url('assets/css/all.min.css')?>">
     <link rel="stylesheet" type="text/css" media="screen" href="<?=base_url('assets/css/login-style.css')?>">
     <script src="<?=base_url('assets/js/jquery.min.js')?>"></script>
     <script src="<?=base_url('assets/js/particles.js')?>"></script>
 </head>
 <body id="particles-js">
-<div>
+    <div id="navbar">
+        <span id="logo">K</span>
+    </div>
     <div id="container">
-        <div id="login-container">
-            <form id="logForm">
-                <span>Login</span>
-                <div>
-                    <input type="text" name="user" id="user" placeholder="Username">
-                </div>
-                <div>
-                   <input type="password" name="pass" id="pass" placeholder="Password">
-                </div>
-                <div>
-                    <button id="login-btn">Masuk</button>
-                </div>
-                <br><br><br>
-                <div>
-                    <?=$this->session->regist?>
-                </div>
-            </form>
-        </div>
-        <div id="register-container">
-            <form id="regForm" action="<?=base_url('dataprocess/register')?>" method="post">
-                <span>Register</span>
-                <div>
-                    <label for="">Tipe</label>
-                    <input type="radio" name="type" value="d">Dosen
-                    <input type="radio" name="type" value="m">Mahasiswa
-                </div>
-                <div>
-                    <input type="text" name="user" id="userRegist" placeholder="Username" onChange="userCheck()">
-                </div>
-                <div><span id="user-availability-status"></span> </div>
-                <div>
-                    <input type="password" name="pass" id="passRegist" placeholder="Password">
-                </div>
-                <div>
-                    <button id="reg-btn">Masuk</button>
-                </div>
-            </form>
-        </div>
-        <div id="front-mask">
-            <div>
-                <span id="logo">Kalpro</span><br><br>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque rerum magni corrupti odio, voluptatem maiores porro aspernatur eaque eum possimus doloremque vel!</p>
-                <button id="mask-btn">Daftar</button>
+        <div id="form-container">
+            <div id="desc"><span>Kalpro</span> merupakan sebuah platform untuk sarana pembelajaran kuis algoritma pemrograman yang dikembangkan untuk Dosen dan Mahasiswa. Mempermudah dosen untuk memanajemen kuis algoritma pemrograman dan mempermudah mahasiswa untuk mempelajari dan berdiskusi tentang algoritma pemrograman.</div>
+            <span id="login-tab" class="tab-btn active" tab="login">Masuk</span> &nbsp;&nbsp;|&nbsp;&nbsp; <span id="register-tab" class="tab-btn" tab="register">Daftar</span>
+            <div id="login-container">
+                <form id="logForm">
+                    <div class="input-group user">
+                        <input class="fancy-input" type="text" name="user" id="user" placeholder=" ">
+                        <span class="floating-label">Username</span>
+                    </div>
+                    <div class="input-group pass">
+                        <input class="fancy-input" type="password" name="pass" id="pass" placeholder=" ">
+                        <span class="floating-label">Password</span>
+                    </div>
+                    <div>
+                        <button id="login-btn">Masuk</button>
+                    </div>
+                    <br><br><br>
+                    <div>
+                        <?=$this->session->regist?>
+                    </div>
+                </form>
             </div>
+            <div id="register-container">
+                <br><br>
+                <form id="regForm" action="<?=base_url('dataprocess/register')?>" method="post">
+                    <div>
+                        <label for="">Tipe :</label> 
+                        <input type="radio" name="type" value="d"> Dosen
+                        <input type="radio" name="type" value="m"> Mahasiswa
+                    </div>
+                    <div class="input-group user">
+                        <input class="fancy-input" type="text" name="user" id="userRegist" placeholder=" " onChange="userCheck()">
+                        <span class="floating-label">Username</span>
+                    </div>
+                    <div><span id="user-availability-status"></span> </div>
+                    <div class="input-group pass">
+                        <input class="fancy-input" type="password" name="pass" id="passRegist" placeholder=" ">
+                        <span class="floating-label">Password</span>
+                    </div>
+                    <div>
+                        <button id="reg-btn">Daftar</button>
+                    </div>
+                </form>
+            </div>
+            <!-- <div id="front-mask">
+                <div>
+                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque rerum magni corrupti odio, voluptatem maiores porro aspernatur eaque eum possimus doloremque vel!</p>
+                    <button id="mask-btn">Daftar</button>
+                </div>
+            </div> -->
+        </div>
+        <div id="vector-img">
+            <img src="<?=base_url()?>assets/img/front-vector.svg" alt="">
         </div>
     </div>
-</div>
     <script src="<?=base_url('assets/js/TweenMax.js')?>"></script>
     <script src="<?=base_url('assets/js/TimelineMax.js')?>"></script>
     <script>
@@ -89,6 +100,20 @@
             mask = !mask;
         })
 
+        let tab;
+        $('.tab-btn').click(function(){
+            tab = $(this).attr('tab');
+            if(tab=='login'){
+                $('#register-container').hide();
+                $('#register-tab').removeClass('active');
+            }else if(tab=='register'){
+                $('#login-container').hide();
+                $('#login-tab').removeClass('active');
+            }
+            $('#'+tab+'-container').show();
+            $(this).addClass('active');
+        });
+
         $('#logForm').submit(function(e){
 			e.preventDefault();
             var user = $("#user").val();
@@ -108,10 +133,10 @@
                     alert(errorThrown.status);
                 },
                 success : function(data){
-                    if(data == 1){
+                    if(data.status == 1){
                         window.location = "<?=base_url()?>";
                     }else{
-                        alert(data);
+                        console.log(data.msg);
                     }
                 }
             });
