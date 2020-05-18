@@ -23,7 +23,7 @@ class Home extends CI_Controller {
         parent::__construct();
         //Do your magic here
         $this->load->helper(array('form', 'url'));
-        $this->load->library('encrypt');
+        // $this->load->library('encrypt');
         date_default_timezone_set('Asia/Jakarta');
 	}
 	
@@ -40,7 +40,7 @@ class Home extends CI_Controller {
 		$akun = $this->crud->Get('user');
 		foreach($akun as $val){
 			echo 'Username: '.$val['username'].
-			'<br> Password: '.$this->encrypt->decode($val['password']).
+			// '<br> Password: '.$this->encrypt->decode($val['password']).
 			'<br> Type    : '.$val['type'].'<hr>';
 		}
 	}
@@ -181,6 +181,12 @@ class Home extends CI_Controller {
 		$subData['userAnswer'] = $this->crud->GetWhere('user_answer', $where);
 		$subData['quizDetail'] = $this->crud->GetWhere('quiz', array('id'=>$quizID));	
 		$data['page'] = $this->load->view('sub-page/quiz-result', $subData, TRUE);
+		$this->load->view('page/home', $data);
+	}
+	
+	public function messagePage()
+	{
+		$data['page'] = $this->load->view('sub-page/message', null, TRUE);
 		$this->load->view('page/home', $data);
 	}
 }
