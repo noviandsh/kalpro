@@ -8,7 +8,7 @@ class DataProcess extends CI_Controller {
     {
         parent::__construct();
         $this->load->helper('url');
-        $this->load->library('encrypt');
+        // $this->load->library('encrypt');
         $this->load->model('Crud');
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -25,19 +25,30 @@ class DataProcess extends CI_Controller {
     {
         $user = $_POST['username'];
         $pass = $_POST['password'];
+        $res = array();
         $getUser = $this->crud->GetWhere('user', array('username'=>$user));
         if(!empty($getUser)){
-            $storedPass = $this->encrypt->decode($getUser[0]['password']);
-            if($storedPass == $pass){
+            if(password_verify($pass, $getUser[0]['password'])){
                 $this->session->set_userdata('username', $getUser[0]['username']);
                 $this->session->set_userdata('type', $getUser[0]['type']);
-                echo "1";
+                $res = array(
+                    'status' => 1,
+                    'msg' => 'Login berhasil'
+                );
             }else{
-                echo "Password Salah";
+                $res = array(
+                    'status' => 0,
+                    'msg' => 'Password yang anda masukkan salah'
+                );
             }
         }else{
-            echo "Username Salah";
+            $res = array(
+                'status' => 0,
+                'msg' => 'Username tidak ditemukan'
+            );
         }
+        header('Content-Type: application/json');
+        echo json_encode($res);
     }
 
     // PROSES USERNAME TERSEDIA
@@ -55,7 +66,7 @@ class DataProcess extends CI_Controller {
     public function register()
     {
         $user = $_POST['user'];
-        $pass = $this->encrypt->encode($_POST['pass']);
+        $pass = password_hash($_POST['pass'], PASSWORD_DEFAULT);
         $type = $_POST['type'];
         $regist = $this->crud->Insert('user', array(
             "username"=>$user,
