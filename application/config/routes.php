@@ -56,6 +56,7 @@ $route['class/(:any)/(:any)'] = 'home/classPage';
 $route['class/(:any)/(:any)/new-quiz'] = 'home/createQuiz';
 $route['start-quiz/(:any)'] = 'home/startQuiz/$1';
 $route['start-quiz/(:any)/result'] = 'home/quizResult/$1';
+$route['message'] = 'home/messagePage';
 $route['akun'] = 'home/akun';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = TRUE;
