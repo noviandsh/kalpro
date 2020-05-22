@@ -13,6 +13,56 @@ class DataProcess extends CI_Controller {
         date_default_timezone_set('Asia/Jakarta');
     }
     
+    // GOOGLE LOGIN
+    public function googleLogin()
+    {
+        require APPPATH . 'vendor\google\google-api-php-client\vendor\autoload.php';
+        // require base_url() . 'application/vendor/google/google-api-php-client/vendor/autoload.php';
+        $CLIENT_ID = '629518986414-8j66q6m7h3mf08kh51n18cpsrkigl1kk.apps.googleusercontent.com';
+        $id_token = $_POST['token'];
+        $name = $_POST['name'];
+        $photo = $_POST['photo'];
+        $email = $_POST['email'];
+        // Get $id_token via HTTPS POST.
+
+        $client = new Google_Client(['client_id' => $CLIENT_ID]);  // Specify the CLIENT_ID of the app that accesses the backend
+        $payload = $client->verifyIdToken($id_token);
+        if ($payload) {
+            $userid = $payload['sub'];
+            $getUser = $this->crud->GetWhere('user', array('id'=>$userid));
+            if(!empty($getUser)){
+                $this->session->set_userdata('id', $getUser[0]['id']);
+                $this->session->set_userdata('name', $getUser[0]['name']);
+                $this->session->set_userdata('type', $getUser[0]['type']);
+                $res = array(
+                    'status' => 1,
+                    'msg' => 'Login berhasil'
+                );
+            }else{
+                // $data = array(
+                //     'id' => $userid,
+                //     'name' => $name,
+                //     'photo' => $photo,
+                //     'email' => $email,
+                //     'type' => 'd',
+                //     'google' => 1
+                // );
+                // $regist = $this->crud->Insert('user', $data);
+                $res = array(
+                    'status' => 0,
+                    'msg' => 'Login berhasil'
+                );
+            }
+            // If request specified a G Suite domain:
+            //$domain = $payload['hd'];
+        } else {
+            // Invalid ID token
+            echo 'gagal';
+        }
+        header('Content-Type: application/json');
+        echo json_encode($res);
+    }
+
     // PROSES LOGOUT
     public function logout() 
     {
@@ -23,13 +73,14 @@ class DataProcess extends CI_Controller {
     // PROSES LOGIN
     public function login()
     {
-        $user = $_POST['username'];
+        $email = $_POST['email'];
         $pass = $_POST['password'];
         $res = array();
-        $getUser = $this->crud->GetWhere('user', array('username'=>$user));
+        $getUser = $this->crud->GetWhere('user', array('email'=>$email,'google'=>0));
         if(!empty($getUser)){
             if(password_verify($pass, $getUser[0]['password'])){
-                $this->session->set_userdata('username', $getUser[0]['username']);
+                $this->session->set_userdata('id', $getUser[0]['id']);
+                $this->session->set_userdata('name', $getUser[0]['name']);
                 $this->session->set_userdata('type', $getUser[0]['type']);
                 $res = array(
                     'status' => 1,
@@ -44,7 +95,7 @@ class DataProcess extends CI_Controller {
         }else{
             $res = array(
                 'status' => 0,
-                'msg' => 'Username tidak ditemukan'
+                'msg' => 'Email tidak ditemukan'
             );
         }
         header('Content-Type: application/json');
@@ -65,14 +116,43 @@ class DataProcess extends CI_Controller {
     // PROSES DAFTAR AKUN BARU
     public function register()
     {
-        $user = $_POST['user'];
+        $id_token = $_POST['idtoken'];
+        $google = $_POST['google-acc'];
+        $email = $_POST['reg-email'];
+        $name = $_POST['reg-name'];
+        $photo = $_POST['photo'];
         $pass = password_hash($_POST['pass'], PASSWORD_DEFAULT);
         $type = $_POST['type'];
-        $regist = $this->crud->Insert('user', array(
-            "username"=>$user,
-            "password"=>$pass,
-            "type"=>$type
-        ));
+        $data = array(
+            'name' => $name,
+            'email' => $email,
+            'type' => $type,
+            'google' => $google
+        );
+        if($google){
+            require APPPATH . 'vendor\google\google-api-php-client\vendor\autoload.php';
+            $CLIENT_ID = '629518986414-8j66q6m7h3mf08kh51n18cpsrkigl1kk.apps.googleusercontent.com';
+            $client = new Google_Client(['client_id' => $CLIENT_ID]);  // Specify the CLIENT_ID of the app that accesses the backend
+            $payload = $client->verifyIdToken($id_token);
+            if ($payload) {
+                $data2 = array(
+                    'id' => $payload['sub'],
+                    'photo' => $photo
+                );
+                // If request specified a G Suite domain:
+                //$domain = $payload['hd'];
+            } else {
+                // Invalid ID token
+                echo 'gagal';
+            }
+        }else{
+            $data2 = array(
+                'id' => $payload['sub'],
+                'photo' => base_url('assets/img/photos/default.png'),
+                'password' => $pass
+            );
+        }
+        $regist = $this->crud->Insert('user', array_merge($data, $data2));
         if($regist){
             $this->session->set_flashdata("regist", "<span style='color:green;font-size: 16px;'> Berhasil mendaftar, silahkan login untuk melanjutkan.</span>");
         }
@@ -95,7 +175,7 @@ class DataProcess extends CI_Controller {
         }
         $newClass = array(
             'classID'=>generate_string($permitted_chars, 6),
-            'teacher'=>$this->session->username,
+            'teacher'=>$this->session->name,
             'name'=>$_POST['className'] 
         );
         $insert = $this->crud->Insert('class', $newClass);
@@ -114,7 +194,7 @@ class DataProcess extends CI_Controller {
         $checkClass = $this->crud->GetCountWhere('class', array('classID'=>$id));
         if($checkClass){
             $data = array(
-                'username'=> $this->session->username,
+                'username'=> $this->session->name,
                 'classID'=> $id
             );
             $checkMember = $this->crud->GetCountWhere('class_member', $data);
@@ -133,7 +213,7 @@ class DataProcess extends CI_Controller {
     public function post(){
         // date format '2019-07-30 19:30:10'
         $data = array(
-            'sender'=> $this->session->username,
+            'sender'=> $this->session->name,
             'classID'=> $_POST['classID'],
             'date'=> date("Y-m-d H:i:s"),
             'content'=> nl2br($_POST['content'])
@@ -148,7 +228,7 @@ class DataProcess extends CI_Controller {
     public function comment()
     {
         $data = array(
-            'sender'=> $this->session->username,
+            'sender'=> $this->session->name,
             'feedID'=> $_POST['feedID'],
             'comment'=> nl2br($_POST['comment']),
             'date'=> date("Y-m-d H:i:s")
@@ -182,7 +262,7 @@ class DataProcess extends CI_Controller {
             'classID'=>$classID
         );
         if($this->session->type == 'd'){
-            $where['teacher'] = $this->session->username;
+            $where['teacher'] = $this->session->name;
         }
         $subData['class'] = $this->crud->GetWhere('class', $where);
         switch($page){
@@ -311,17 +391,63 @@ class DataProcess extends CI_Controller {
         // echo ($matchAnswer+$matchShape+$matchArrow).'/'.$n;
         
         $result = array(
-            'username'=> $this->session->username,
+            'username'=> $this->session->name,
             'quizID'=> $quizID,
             'correctAnswer'=> ($matchAnswer+$matchShape+$matchArrow).'/'.$n,
             'score'=> round((100/$n)*($matchAnswer+$matchShape+$matchArrow)-($wrongPlace*2))
         );
         $where =  array(
-            'username'=>$this->session->username,
+            'username'=>$this->session->name,
             'quizID'=>$quizID
         );
         $answerData = $this->crud->Update('user_answer', array('answer'=>json_encode($_POST)), $where);
         $quizResult = $this->crud->Insert('quiz_result', $result);
+    }
+    public function deleteclass()
+    {
+        $class = $_POST['id'];
+        $teacher = $this->session->name;
+        $del = $this->crud->Delete('class', array('classID'=>$class, 'teacher'=>$teacher));
+        if($del){
+            $res = 1;
+        }else{
+            $res = 0;
+        }
+        
+        header('Content-Type: application/json');
+        echo json_encode($res);
+    }
+    public function deletequiz()
+    {
+        $id = $_POST['id'];
+        $teacher = $this->session->name;
+        $del = $this->crud->Delete('quiz', array('id'=>$id, 'teacher'=>$teacher));
+        if($del){
+            $res = 1;
+        }else{
+            $res = 0;
+        }
+        
+        header('Content-Type: application/json');
+        echo json_encode($res);
+    }
+    public function deletepost()
+    {
+        $id = $_POST['id'];
+        $type = $_POST['table'];
+        $table = array(
+            'kiriman'=>'feed',
+            'komentar'=>'feed_comment'
+        );
+        $del = $this->crud->Delete($table[$type], array('id'=>$id));
+        if($del){
+            $res = 1;
+        }else{
+            $res = 0;
+        }
+        
+        header('Content-Type: application/json');
+        echo json_encode($res);
     }
 }
 
