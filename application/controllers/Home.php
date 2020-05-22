@@ -28,12 +28,12 @@ class Home extends CI_Controller {
 	}
 	
 	public function ceklogin()
-  {
-		$username = $this->session->username;
-		if (!isset($username)) {
+  	{
+		$id = $this->session->id;
+		if (!isset($id)) {
 			redirect(base_url('login-page'));
 		}
-   }
+   	}
 	
 	public function akun()
 	{
@@ -49,10 +49,10 @@ class Home extends CI_Controller {
 		$this->ceklogin();
 		$type = $this->session->type;
 		if($type=='m'){
-			$class = $this->crud->GetSelectWhere('class_member', 'classID', array('username'=>$this->session->username));
+			$class = $this->crud->GetSelectWhere('class_member', 'classID', array('username'=>$this->session->name));
 			$subData['class'] = $this->crud->GetOrWhere('class', 'classID', $class);
 		}else{
-			$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->username));
+			$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->name));
 		}
 		$subData['quiz'] = array();
 		foreach($subData['class'] as $key => $val){
@@ -66,13 +66,15 @@ class Home extends CI_Controller {
 		foreach($subData['feed'] as $val){
 			array_push($subData['feedID'], $val['id']);
 		}
+		$subData['acc'] = $this->crud->GetWhere('user', array('id'=>$this->session->id))[0];
+		$subData['allAcc'] = $this->crud->Get('user');
 		$data['page'] = $this->load->view('sub-page/home', $subData, TRUE);
 		$this->load->view('page/home', $data);
 	}
 	public function login()
 	{
-		$username = $this->session->username;
-		if (isset($username)) {
+		$id = $this->session->id;
+		if (isset($id)) {
 			redirect(base_url(''));
 		}
 		$this->load->view('page/login-page');
@@ -83,10 +85,10 @@ class Home extends CI_Controller {
 		$this->ceklogin();
 		$type = $this->session->type;
 		if($type=='m'){
-			$class = $this->crud->GetSelectWhere('class_member', 'classID', array('username'=>$this->session->username));
+			$class = $this->crud->GetSelectWhere('class_member', 'classID', array('username'=>$this->session->name));
 			$subData['class'] = $this->crud->GetOrWhere('class', 'classID', $class);
 		}else{
-			$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->username));
+			$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->name));
 		}
 		$data['page'] = $this->load->view('sub-page/manage-class', $subData, TRUE);
 		$this->load->view('page/home', $data);
@@ -101,7 +103,7 @@ class Home extends CI_Controller {
 		$link = $this->uri->segment(2);
 		$className = clean(substr($link, 0, -7));
 		$classID = substr($link, -6);
-		$username = $this->session->username;
+		$username = $this->session->name;
 		$type = $this->session->type;
 
 		$where = array(
@@ -128,7 +130,7 @@ class Home extends CI_Controller {
 	public function createQuiz(){
 		$subData['draft'] = array(
 			'id' => uniqid(),
-			'teacher'=> $this->session->username,
+			'teacher'=> $this->session->name,
 			'classID'=> substr($this->uri->segment(2), -6),
 			'title'=> 'untitled quiz '.date("Y-m-d")
 		);
@@ -141,7 +143,7 @@ class Home extends CI_Controller {
 	{
 		$subData['startTime'] = date("Y-m-d H:i:s");
 		$this->crud->Insert('user_answer', array(
-			'username'=> $this->session->username,
+			'username'=> $this->session->name,
 			'quizID'=> $quizID,
 			'startTime'=> $subData['startTime']
 		));
@@ -174,7 +176,7 @@ class Home extends CI_Controller {
 	public function quizResult($quizID)
 	{
 		$where = array(
-			'username'=>$this->session->username,
+			'username'=>$this->session->name,
 			'quizID'=>$quizID
 		); 
 		$subData['result'] = $this->crud->GetWhere('quiz_result', $where);
