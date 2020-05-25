@@ -13,6 +13,7 @@ window.onbeforeunload = function() {
     // $('.answer-container').show
 }
 
+// fungsi submit kuis
 function submitQuiz() {
     let quizDetail = {
       'id' : $('#quiz-id').val(),
@@ -34,9 +35,10 @@ function submitQuiz() {
         });
     }
     for(i=0;i<arrow;i++){
-        a['arrow-'+ (i+1)] = ({'arrow' : $('#arrow-'+(i+1)+'>img').attr('arrow-id')});
+        a['arrow-'+ (i+1)] = ({'arrow' : $('#arrow-'+(i+1)+'>div>img').attr('arrow-id')});
     }
     scheme.push(a);
+    // console.log(scheme);
     $.ajax({
         type  : 'POST',
         url   : baseUrl+'dataprocess/newQuestion',
@@ -58,6 +60,7 @@ function submitQuiz() {
     });
 }
 
+// fungsi menambahkan target
 function makeTarget(){
     let n = 0;
     let change = true;
@@ -94,6 +97,7 @@ function makeTarget(){
     }
 }
 
+// fungsi membuat target awal
 function firstTarget(){
     let n = 0;
     let drop = 1;
@@ -127,6 +131,7 @@ function firstTarget(){
     }
 }
 
+// fungsi mencari element terdekat
 function getSibling(obstacle, colls, direction){
     let collision = colls.collision(obstacle, {
         relative: 'obstacle',
@@ -156,6 +161,7 @@ function coba() {
     console.log(arrowContainer);
 }
 
+// fungsi drop diagram
 function diagramDrop(event, ui) {
     let count = $(this)[0].children.length;
     if($(this).children().hasClass('turn-arrow')){
@@ -215,6 +221,7 @@ function diagramDrop(event, ui) {
     }
 }
 
+// fungsi drop arrow
 function arrowDrop(val){
     let arrowList = {
         'arrow1' : {
@@ -306,6 +313,7 @@ function arrowDrop(val){
     return arrowList[val];
 }
 
+// fungsi menampilkan pilihan arrow
 function viewArrow(container) {
     let arrowList = {
         '-2' : [
@@ -343,25 +351,31 @@ function viewArrow(container) {
 
 $(document).ready(function(){
     firstTarget();
+
+    // button menampilkan diagram container
     $('.diagram-btn').click(function(){
         $('.answer-container').hide();
         $('#diagram-container').toggle();
     });
     
+    // button menampilkan anwer container
     $('.answer-btn').click(function(){
         $('#diagram-container').hide();
         $('.answer-container').toggle();
         $('.answer-container').css('display', 'grid');
     });
 
+    // button menampilkan arrow container
     $('.arrow').click(function(){
         viewArrow($(this));
     });
 
+    // menyembunyikan arrow container
     $('#arrow-container').click(function(){
         $(this).hide();
     });
 
+    // inisiasi answer number sebagai draggable
     $('.answer-number').draggable({
         zIndex : 999,
         revert : 'invalid',
@@ -374,6 +388,7 @@ $(document).ready(function(){
         }
     });
 
+    // menampilkan keterangan jawaban
     $(".answer-number").hover(
         function() {
             $(this).find('p').show();
@@ -382,6 +397,7 @@ $(document).ready(function(){
         }
     );
 
+    // fungsi arrow drop
     $('.arrow-img').click(function(){
         // replace turned arrow
         let arrowImage = $(arrowContainer).children('img');
@@ -401,17 +417,37 @@ $(document).ready(function(){
                 makeTarget();
                 secondSibling = getSibling('.arrow', $('#'+firstSibling), arrowData.direction[1]);
             }
-            $(arrowContainer).html($("<img arrow-id='tail-"+arrowData['id']+"' class='empty-arrow arrow-tail arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/empty-arrow.svg' alt=''>"));
-            $('#'+firstSibling).html($("<img arrow-id='"+arrowData['id']+"' id='dropped-arrow-"+droppedArrow+"' class='turn-arrow arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/turn-"+arrowData['turn']+"-arrow.svg'>").css('transform', 'translate(-50%, -50%) rotate('+arrowData['rotate']+'deg)'));
-            $('#'+secondSibling).html($("<img arrow-id='head-"+arrowData['id']+"' class='empty-arrow arrow-head arrow-group-"+droppedArrow+"' src='"+baseUrl+"assets/img/empty-arrow.svg'>"));
+
+            $(arrowContainer).html(
+                $(`<div><img arrow-id="tail-${arrowData['id']}" class='empty-arrow arrow-tail arrow-group-${droppedArrow}" src="${baseUrl}assets/img/empty-arrow.svg" alt=""></div>`
+            ));
+
+            $('#'+firstSibling).html(
+                $(`<img arrow-id="${arrowData['id']}" id="dropped-arrow-${droppedArrow}" class="turn-arrow arrow-group-${droppedArrow}" src="${baseUrl}assets/img/turn-${arrowData['turn']}-arrow.svg">`
+            ).css('transform', `translate(-50%, -50%) rotate(${arrowData['rotate']}deg)`));
+
+            $('#'+secondSibling).html(
+                $(`<div><img arrow-id="head-${arrowData['id']}" class="empty-arrow arrow-head arrow-group-${droppedArrow}" src="${baseUrl}assets/img/empty-arrow.svg"></div>`
+            ));
 
             console.log(firstSibling+'-'+secondSibling);
         }else{
-            $(arrowContainer).html($("<img arrow-id="+arrowData['id']+" id='dropped-arrow-"+droppedArrow+"' src='"+baseUrl+"assets/img/"+ arrowData['file'] +".svg' alt=''>").css('transform', 'rotate('+arrowData['rotate']+'deg)'));
+            $(arrowContainer).html($(`
+                <div>
+                    <img arrow-id="${arrowData['id']}" id="dropped-arrow-${droppedArrow}" src="${baseUrl}assets/img/${arrowData['file']}.svg" alt="">
+                </div>
+            `).css({
+                'transform': `rotate(${arrowData['rotate']}deg)`,
+                'position': 'relative',
+                'line-height': '53px',
+                'width': '100%',
+                'height': '100%',
+            }));
         }
         droppedArrow++;
     });
 
+    // inisiasi diagram trash sebagai droppable
     $('#diagram-trash').droppable({
         accept: '.dropped',
         hoverClass: 'hovered',
@@ -429,7 +465,7 @@ $(document).ready(function(){
         }
     })
 
-
+    // inisiasi diagram sebagai draggable
     $('.diagram-wrap').draggable({
         zIndex: 2,
         containtment: '#flowchart-container',
@@ -447,8 +483,11 @@ $(document).ready(function(){
     })
 
     // DATE PICKER FUNCTION
+    
+    let tgl = new Date();
+    tgl.setHours(tgl.getHours()+1);
     $("#startDate").datetimepicker({ 
-        minDate: 1,
+        minDate: tgl,
         changeMonth: true,
         dateFormat: "yy-mm-dd",
         onSelect: function(date){
@@ -464,5 +503,4 @@ $(document).ready(function(){
         dateFormat: 'yy-mm-dd',
         changeMonth: true
     });
-
 })
