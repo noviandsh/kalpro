@@ -92,17 +92,17 @@
 	-webkit-transform	: $deg;
 }
 
-@mixin scale ($axis, $multiplier) {
-	@if $axis == 2d {
-		$type:  null;
-	}@else{
-		$type: $axis;
-	}
-	transform			: scale#{$axis}($multiplier);
-	-moz-transform		: scale#{$axis}($multiplier);
-	-ms-transform		: scale#{$axis}($multiplier);
-	-o-transform		: scale#{$axis}($multiplier);
-	-webkit-transform	: scale#{$axis}($multiplier);
+@mixin scale ($multiplier) {
+	// @if $axis == 2d {
+	// 	$type:  null;
+	// }@else{
+	// 	$type: $axis;
+	// }
+	transform			: scale($multiplier);
+	-moz-transform		: scale($multiplier);
+	-ms-transform		: scale($multiplier);
+	-o-transform		: scale($multiplier);
+	-webkit-transform	: scale($multiplier);
 }
 
 @mixin rotate ($deg) {
