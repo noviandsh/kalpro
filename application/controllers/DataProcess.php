@@ -190,6 +190,7 @@ class DataProcess extends CI_Controller {
     // PROSES GABUNG KELAS
     public function joinClass()
 	{
+        $url = $_POST['url'];
         $id = $_POST['classID'];
         $checkClass = $this->crud->GetCountWhere('class', array('classID'=>$id));
         if($checkClass){
@@ -204,7 +205,7 @@ class DataProcess extends CI_Controller {
             }else{
                 $join = $this->crud->Insert('class_member', $data);
                 $this->session->set_flashdata('joinStat', 'Anda berhasil bergabung di kelas ini.');
-                redirect(base_url());
+                redirect(base_url($url));
             }
         }
     }
@@ -269,6 +270,7 @@ class DataProcess extends CI_Controller {
             // CASE POST START
             case 'post':
                 $subData['feed'] = $this->crud->GetWhereOrder('feed', array('classID'=>$classID), 'date', 'DESC');
+                $subData['allAcc'] = $this->crud->Get('user');
                 $subData['feedID'] = array();
                 $subData['link'] = clean($subData['class'][0]['name']).'-'.$subData['class'][0]['classID'].'/post';
                 foreach($subData['feed'] as $val){
@@ -292,6 +294,7 @@ class DataProcess extends CI_Controller {
             case 'member':
                 $subData['member'] = $this->crud->GetWhere('class_member', array('classID'=> $classID));
                 $subData['class'] = $this->crud->GetWhere('class', array('classID'=> $classID));
+                $subData['user'] = $this->crud->Get('user');
                 break;
             // CASE MEMBER END
         }
