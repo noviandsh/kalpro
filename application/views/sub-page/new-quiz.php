@@ -8,7 +8,7 @@
         <input readonly="readonly" type="text" id="dueDate" placeholder="Waktu Selesai">
         <input type="text" id="quiz-duration" placeholder="Durasi"><br><br>
     </form>
-    <button class="styled-btn" onClick="submitQuiz()">Simpan</button><br><br>
+    <button class="styled-btn" onClick="submitQuiz()" class='styled-btn' data-icon='&#xf0c7'>Simpan</button><br><br>
     <div id="new-quiz-number">
         <ul>
             <li class="selected"><a href="#">1</a></li>
@@ -56,7 +56,7 @@
                         <div class="empty"></div>
                         <div class="empty"></div>
                     </div>
-                    <div id="add-line"><button class="styled-btn" onClick="makeTarget()">+</button></div>
+                    <div id="add-line"><button class="styled-btn" data-icon='&#xf067' onClick="makeTarget()">Tambah baris</button></div>
                 </div>
             </div>
         </div>
