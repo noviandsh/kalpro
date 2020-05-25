@@ -46,7 +46,7 @@ html, body, #container{
 }
 #form-container{
     padding: 120px 110px 0 30px;
-    background: url('../img/form-bg.svg');
+    background: url('../img/form-bg-green.svg');
     background-size: cover;
     background-position: right;
     color: #b2b2d1;
@@ -61,7 +61,7 @@ html, body, #container{
     width: 50%; */
 }
 #register-container{
-    display: none;
+    /* display: none; */
 }
 #desc{
     font-size: 16px;
@@ -88,11 +88,14 @@ html, body, #container{
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
 }
-.input-group.user::before{
+.input-group.user::before, .input-group.name-reg::before{
     content: "\f007";
 }
 .input-group.pass::before{
     content: "\f023";
+}
+.input-group.email-reg::before, .input-group.email::before{
+    content: "\f0e0";
 }
 .fancy-input:focus + span, .fancy-input:not(:placeholder-shown) + .floating-label {
     opacity:1;
@@ -127,12 +130,81 @@ html, body, #container{
     transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
     opacity:0.5;
 }
-button{
-    padding: 8px 40px;
+.styled-btn{
+    cursor: pointer;
+    text-decoration: none;
+    background: white;
+    color: black;
+    border: 0px;
     border-radius: 20px;
-    color: #b2b2d1;
-    background: #0d0d45;
-    border: 2px solid #2c2c60;
+    padding: 6px 65px 6px 20px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    font-family: arial;
+    font-weight: 400;
+    font-size: 13px;
+    border: 2px solid white;
+}
+.styled-btn::after{
+    /* content: "\f039"; */
+    content: attr(data-icon);
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 17px;
+    color: white;
+}
+.styled-btn::before{
+    content: '';
+    position: absolute;
+    display: block;
+    background: #08808e;
+    height: 30px;
+    width: 60px;
+    top: 0;
+    right: -13px;
+    transform: skewX(25deg);
+    z-index: -1;
+}
+.modal-btn{
+    cursor: pointer;
+    text-decoration: none;
+    background: #005059;
+    color: white;
+    border: 0px;
+    border-radius: 20px;
+    padding: 6px 65px 6px 20px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    font-family: arial;
+    font-weight: 400;
+    font-size: 13px;
+    border: 2px solid white;
+    margin-right: 5px;
+    margin-top: 15px;
+}
+.modal-btn::after{
+    /* content: "\f039"; */
+    content: attr(data-icon);
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 17px;
+    color: white;
+}
+.modal-btn::before{
+    content: '';
+    position: absolute;
+    display: block;
+    background: #08808e;
+    height: 30px;
+    width: 60px;
+    top: 0;
+    right: -13px;
+    transform: skewX(25deg);
+    z-index: -1;
 }
 .tab-btn{
     color: #2c2c60;
