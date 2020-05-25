@@ -50,21 +50,26 @@ class Home extends CI_Controller {
 		$type = $this->session->type;
 		if($type=='m'){
 			$class = $this->crud->GetSelectWhere('class_member', 'classID', array('username'=>$this->session->name));
-			$subData['class'] = $this->crud->GetOrWhere('class', 'classID', $class);
+			if(!empty($class)){
+				$subData['class'] = $this->crud->GetOrWhere('class', 'classID', $class);
+			}
 		}else{
 			$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->name));
 		}
-		$subData['quiz'] = array();
-		foreach($subData['class'] as $key => $val){
-			array_push($subData['quiz'], $this->crud->GetWhere('quiz', array('classID'=>$val['classID'])));
-		}
-		if(isset($subData['quiz'])){
-			$subData['quiz'] = $subData['quiz'][0];
-		}
-		$subData['feed'] = $this->crud->GetOrWhereOrder('feed', 'classID', $subData['class'], 'date', 'DESC');
-		$subData['feedID'] = array();
-		foreach($subData['feed'] as $val){
-			array_push($subData['feedID'], $val['id']);
+		// print_r($subData['class']);
+		if(!empty($class) || $type = 'd'){
+			$subData['quiz'] = array();
+			foreach($subData['class'] as $key => $val){
+				array_push($subData['quiz'], $this->crud->GetWhere('quiz', array('classID'=>$val['classID'])));
+			}
+			if(isset($subData['quiz'])){
+				$subData['quiz'] = $subData['quiz'][0];
+			}
+			$subData['feed'] = $this->crud->GetOrWhereOrder('feed', 'classID', $subData['class'], 'date', 'DESC');
+			$subData['feedID'] = array();
+			foreach($subData['feed'] as $val){
+				array_push($subData['feedID'], $val['id']);
+			}
 		}
 		$subData['acc'] = $this->crud->GetWhere('user', array('id'=>$this->session->id))[0];
 		$subData['allAcc'] = $this->crud->Get('user');
@@ -86,7 +91,11 @@ class Home extends CI_Controller {
 		$type = $this->session->type;
 		if($type=='m'){
 			$class = $this->crud->GetSelectWhere('class_member', 'classID', array('username'=>$this->session->name));
-			$subData['class'] = $this->crud->GetOrWhere('class', 'classID', $class);
+			if(!empty($class)){
+				$subData['class'] = $this->crud->GetOrWhere('class', 'classID', $class);
+			}else{
+				$subData = '';
+			}
 		}else{
 			$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->name));
 		}
@@ -106,18 +115,23 @@ class Home extends CI_Controller {
 		$username = $this->session->name;
 		$type = $this->session->type;
 
-		$where = array(
-			'teacher'=>$username,
-			'name'=>$className,
-			'classID'=>$classID
-		);
 		if($type=='m'){
-			// echo "haha";
+			$where = array(
+				'username'=>$username,
+				'classID'=>$classID
+			);
+			$table = 'class_member';
 		}else{
-			$classCheck = $this->crud->GetCountWhere('class', $where);
-			if($classCheck==0){
-				show_404();
-			}
+			$where = array(
+				'teacher'=>$username,
+				'name'=>$className,
+				'classID'=>$classID
+			);
+			$table = 'class';
+		}
+		$classCheck = $this->crud->GetCountWhere($table, $where);
+		if($classCheck==0){
+			show_404();
 		}
 		$subData['quiz'] = $this->crud->GetWhere('quiz', array('classID'=>$classID));
 		$subData['class'] = $where;
@@ -178,10 +192,10 @@ class Home extends CI_Controller {
 		$where = array(
 			'username'=>$this->session->name,
 			'quizID'=>$quizID
-		); 
+		);
 		$subData['result'] = $this->crud->GetWhere('quiz_result', $where);
 		$subData['userAnswer'] = $this->crud->GetWhere('user_answer', $where);
-		$subData['quizDetail'] = $this->crud->GetWhere('quiz', array('id'=>$quizID));	
+		$subData['quizDetail'] = $this->crud->GetWhere('quiz', array('id'=>$quizID));
 		$data['page'] = $this->load->view('sub-page/quiz-result', $subData, TRUE);
 		$this->load->view('page/home', $data);
 	}
