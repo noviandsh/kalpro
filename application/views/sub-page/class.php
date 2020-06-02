@@ -14,17 +14,19 @@
     </div>
     <div>
         <?php
-            foreach($quiz as $val){
-                echo "<div class='quiz-list-box'>
-                        <span class='quiz-title'>".$val['title']."</span><br>
-                        <span class='quiz-date'>".$val['date']."</span> | <span class='quiz-due-date'>".$val['dueDate']."</span><br>
-                        <div class='quiz-option-btn'>
+            foreach($quiz as $val): ?>
+                <div class="quiz-list-box">
+                    <div class="quiz-info">
+                        <span class="quiz-title"><?=$val['title']?></span><br>
+                        <span class="quiz-date"><?=tgl_indo($val['date'])?></span> | <span class="quiz-due-date"><?=tgl_indo($val['dueDate'])?></span><br>
+                        <div class="quiz-option-btn">
                             <div></div>
                         </div>
-                        <span class='quiz-total'>1 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']." Menit</span><br/>
-                        <a href='".base_url('start-quiz/').$val['id']."' class='styled-btn' data-icon='&#xf0ae'>Ambil</a>
-                    </div>";
-            }
+                        <span class="quiz-total">1 Pertanyaan</span> - <span class="quiz-duration"><?=$val['duration']?> Menit</span><br/>
+                    </div>
+                    <a href="<?=base_url('start-quiz/').$val['id']?>" class="styled-btn" data-icon="&#xf0ae">Ambil</a>
+                </div>
+    <?php   endforeach;
         ?>
     </div>
 </div>
@@ -37,7 +39,7 @@ $( document ).ready(function() {
     const currentClass = '<?=$class['classID']?>';
     menu.forEach(m => {
         if(m.id === uri.id){
-            $('#'+m.id).toggleClass('selected');
+            $('#'+m.id).addClass('selected');
             showPage(m.id, currentClass);
         }else{
             $('#'+m.id).removeClass('selected');
@@ -47,7 +49,7 @@ $( document ).ready(function() {
     function selectMenu(id) {
         menu.forEach(m => {
             if(m.id === id){
-                $('#'+m.id).toggleClass('selected');
+                $('#'+m.id).addClass('selected');
                 showPage(m.id, currentClass);
             }else{
                 $('#'+m.id).removeClass('selected');

@@ -1,16 +1,33 @@
+<?php
+    function takenQuiz($id, $res){
+        foreach($res as $val){
+            if(in_array($id, $val)){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+?>
 <div id="container">
     <div id="profile">
         <div class="photo">
             <img src="<?=$acc['photo'];?>" alt="">
         </div><br>
         <b><?=$acc['name'];?></b><br>
-        <?php if($this->session->type == 'm'){ ?>
-            <br><hr><br>
+        <br><hr><br>
+        <?php if($this->session->type == 'm'): ?>
             <form action="<?=base_url('dataprocess/joinClass')?>" method="post">
                 <input type="text" name="classID" placeholder="Masukkan Kode Kelas"><br><br>
                 <button class="styled-btn" data-icon='&#xf549'>Gabung Kelas</button>
             </form>
-        <?php } 
+        <?php else: ?>
+            <span>Tambah kelas baru</span><br><br>
+            <form action="<?=base_url('dataprocess/newClass')?>" method="post">
+                <input type="text" name="className" placeholder="Nama Kelas" id="className"><br><br>
+                <button class="styled-btn" data-icon='&#xf549'>buat kelas</button>
+            </form><br>
+        <?php endif;
         if(!empty($this->session->joinStat)){
             echo $this->session->joinStat;
         }
@@ -18,30 +35,37 @@
     </div>
     <div id="content">
         <div id="post-form">
-            <form action="<?=base_url('dataprocess/post')?>" method="post">
-                <input type="hidden" value="home" name="prevLink">
-                <textarea placeholder="Ketik di sini..." name="content" id="blas" cols="30" rows="10"></textarea>
-                <select name="classID">
-                    <?php
-                        $className = array();
-                        if(!empty($class)){
-                            foreach($class as $val){
-                                echo "<option value=".$val['classID'].">".$val['name']."</option>";
-                                $className[$val['classID']] = $val['name'];
+            <?php if(!empty($class)): ?>
+                <form action="<?=base_url('dataprocess/post')?>" method="post">
+                    <input type="hidden" value="home" name="prevLink">
+                    <textarea placeholder="Ketik di sini..." name="content" id="blas" cols="30" rows="10"></textarea>
+                    <select name="classID">
+                        <?php
+                            $className = array();
+                            if(!empty($class)){
+                                foreach($class as $val){
+                                    echo "<option value=".$val['classID'].">".$val['name']."</option>";
+                                    $className[$val['classID']] = $val['name'];
+                                }
+                            }else{
+                                echo "<option disabled selected>- Kosong -</option>";
                             }
-                        }else{
-                            echo "<option disabled selected>- Kosong -</option>";
-                        }
-                    ?>
-                </select>
-                <button class="styled-btn" onClick="test()" data-icon='&#xf1d8'>Kirim</button>
-            </form>
+                        ?>
+                    </select>
+                    <button class="styled-btn" onClick="test()" data-icon='&#xf1d8'>Kirim</button>
+                </form>
+            <?php else: ?>
+                <div id="no-class">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h2>Anda belum tergabung dalam kelas manapun.</h2>
+                </div>
+            <?php endif; ?>
         </div>
             <?php
             
                 if(!empty($class)){
                     if(!empty($feed)){
-                        foreach($feed as $val){
+                        foreach($feed as $val):
                             ?>
                             <div class="feed-container">
                                 <div class="feed-photo">
@@ -56,7 +80,7 @@
                                     </div>
                                     <div>
                                         <b><?=$val['sender']?></b> mengirim ke <b><?=$className[$val['classID']]?></b><br>
-                                        <small><?=$val['date']?></small><br>
+                                        <small><i class="far fa-clock"></i> <?=tgl_indo($val['date'])?></small><br>
                                     </div>
                                 </div>
                                 <div class="feed-content">
@@ -81,26 +105,30 @@
                                 <?php endif; ?>
                             </div>
                             <?php
-                        }
+                        endforeach;
                     }
                 }
             ?>
     </div>
     <div id="sidebar">
         <?php
-            if(isset($quiz)){
-                foreach($quiz as $val){
-                    echo "<div class='quiz-list-box'>
-                            <span class='quiz-title'>".$val['title']."</span><br>
-                            <span class='quiz-date'>".$val['date']."</span> | <span class='quiz-due-date'>".$val['dueDate']."</span><br>
-                            <div class='quiz-option-btn'>
-                                <div></div>
+            if(isset($quiz)):
+                foreach($quiz as $val): 
+                    if(takenQuiz($val['id'], $quizRes)):?>
+                        <div class="quiz-list-box">
+                            <div class="quiz-info">
+                                <span class="quiz-title"><?=$val['title']?></span><br>
+                                <span class="quiz-date"><?=tgl_indo($val['date'])?></span> | <span class="quiz-due-date"><?=tgl_indo($val['dueDate'])?></span><br>
+                                <div class="quiz-option-btn">
+                                    <div></div>
+                                </div>
+                                <span class="quiz-total">1 Pertanyaan</span> - <span class="quiz-duration"><?=$val['duration']?> Menit</span><br/>
                             </div>
-                            <span class='quiz-total'>1 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']." Menit</span><br/>
-                            <a href='".base_url('start-quiz/').$val['id']."' class='styled-btn' data-icon='&#xf0ae'>Ambil</a>
-                        </div>";
-                }
-            }
+                            <a href="<?=base_url('start-quiz/').$val['id']?>" class="styled-btn" data-icon="&#xf0ae">Ambil</a>
+                        </div>
+        <?php       endif;
+                endforeach;
+            endif;
         ?>
     </div>
 </div>
@@ -111,8 +139,10 @@
     <a style="color: #6b6a6a;" href="#" rel="modal:close">Batal</a>
 </div>
 <script>
-    let feed = [<?php echo '"'.implode('","', $feedID).'"' ?>];
-    feed.forEach(showComment);
+    let feed = <?php echo isset($feedID) ? '["'.implode('","', $feedID).'"]' : 'null'; ?>;
+    if(feed !== null){
+        feed.forEach(showComment);
+    }
     function showComment(item, index) {
         $.ajax({
             type  : 'POST',
