@@ -22,7 +22,7 @@ class Home extends CI_Controller {
     {
         parent::__construct();
         //Do your magic here
-        $this->load->helper(array('form', 'url'));
+        $this->load->helper(array('form', 'url', 'tgl'));
         // $this->load->library('encrypt');
         date_default_timezone_set('Asia/Jakarta');
 	}
@@ -39,8 +39,8 @@ class Home extends CI_Controller {
 	{
 		$akun = $this->crud->Get('user');
 		foreach($akun as $val){
-			echo 'Username: '.$val['username'].
-			// '<br> Password: '.$this->encrypt->decode($val['password']).
+			echo 'Email: '.$val['email'].
+			'<br> Name: '.$val['name'].
 			'<br> Type    : '.$val['type'].'<hr>';
 		}
 	}
@@ -48,16 +48,17 @@ class Home extends CI_Controller {
 	{
 		$this->ceklogin();
 		$type = $this->session->type;
+		// login as mahasiswa
 		if($type=='m'){
 			$class = $this->crud->GetSelectWhere('class_member', 'classID', array('username'=>$this->session->name));
 			if(!empty($class)){
 				$subData['class'] = $this->crud->GetOrWhere('class', 'classID', $class);
 			}
-		}else{
+		}else{ // login as dosen
 			$subData['class'] = $this->crud->GetWhere('class', array('teacher'=>$this->session->name));
 		}
-		// print_r($subData['class']);
-		if(!empty($class) || $type = 'd'){
+		
+		if(!empty($subData['class'])){
 			$subData['quiz'] = array();
 			foreach($subData['class'] as $key => $val){
 				array_push($subData['quiz'], $this->crud->GetWhere('quiz', array('classID'=>$val['classID'])));
@@ -71,6 +72,7 @@ class Home extends CI_Controller {
 				array_push($subData['feedID'], $val['id']);
 			}
 		}
+		$subData['quizRes'] = $this->crud->GetWhere('quiz_result', array('username'=>$this->session->name));
 		$subData['acc'] = $this->crud->GetWhere('user', array('id'=>$this->session->id))[0];
 		$subData['allAcc'] = $this->crud->Get('user');
 		$data['page'] = $this->load->view('sub-page/home', $subData, TRUE);
