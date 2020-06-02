@@ -2,22 +2,25 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class DataProcess extends CI_Controller {
+class Dataprocess extends CI_Controller {
     
     public function __construct()
     {
         parent::__construct();
-        $this->load->helper('url');
+        $this->load->helper(array('url', 'tgl', 'form'));
         // $this->load->library('encrypt');
         $this->load->model('Crud');
         date_default_timezone_set('Asia/Jakarta');
     }
+    public function index()
+    {
+        echo 'coba';
+    }
     
     // GOOGLE LOGIN
-    public function googleLogin()
+    public function googlelogin()
     {
         require APPPATH . 'vendor\google\google-api-php-client\vendor\autoload.php';
-        // require base_url() . 'application/vendor/google/google-api-php-client/vendor/autoload.php';
         $CLIENT_ID = '629518986414-8j66q6m7h3mf08kh51n18cpsrkigl1kk.apps.googleusercontent.com';
         $id_token = $_POST['token'];
         $name = $_POST['name'];
@@ -29,7 +32,9 @@ class DataProcess extends CI_Controller {
         $payload = $client->verifyIdToken($id_token);
         if ($payload) {
             $userid = $payload['sub'];
+            // get user data
             $getUser = $this->crud->GetWhere('user', array('id'=>$userid));
+            // user google found
             if(!empty($getUser)){
                 $this->session->set_userdata('id', $getUser[0]['id']);
                 $this->session->set_userdata('name', $getUser[0]['name']);
@@ -38,19 +43,10 @@ class DataProcess extends CI_Controller {
                     'status' => 1,
                     'msg' => 'Login berhasil'
                 );
-            }else{
-                // $data = array(
-                //     'id' => $userid,
-                //     'name' => $name,
-                //     'photo' => $photo,
-                //     'email' => $email,
-                //     'type' => 'd',
-                //     'google' => 1
-                // );
-                // $regist = $this->crud->Insert('user', $data);
+            }else{ // user google not found 
                 $res = array(
                     'status' => 0,
-                    'msg' => 'Login berhasil'
+                    'msg' => 'Anda belum terdaftar'
                 );
             }
             // If request specified a G Suite domain:
@@ -77,8 +73,10 @@ class DataProcess extends CI_Controller {
         $pass = $_POST['password'];
         $res = array();
         $getUser = $this->crud->GetWhere('user', array('email'=>$email,'google'=>0));
+        // user found
         if(!empty($getUser)){
-            if(password_verify($pass, $getUser[0]['password'])){
+            if(password_verify($pass, $getUser[0]['password'])){ // password verify success
+                // set user data to session
                 $this->session->set_userdata('id', $getUser[0]['id']);
                 $this->session->set_userdata('name', $getUser[0]['name']);
                 $this->session->set_userdata('type', $getUser[0]['type']);
@@ -86,13 +84,13 @@ class DataProcess extends CI_Controller {
                     'status' => 1,
                     'msg' => 'Login berhasil'
                 );
-            }else{
+            }else{  // password verify failed
                 $res = array(
                     'status' => 0,
                     'msg' => 'Password yang anda masukkan salah'
                 );
             }
-        }else{
+        }else{ // user not found
             $res = array(
                 'status' => 0,
                 'msg' => 'Email tidak ditemukan'
@@ -103,19 +101,37 @@ class DataProcess extends CI_Controller {
     }
 
     // PROSES USERNAME TERSEDIA
-    public function userCheck()
+    public function usercheck()
     {
-        $user = $this->crud->GetCountWhere('user', array('username'=>$_POST['username']));
+        $val = $_POST['val'];
+        $col = $_POST['col'];
+        $text = array(
+            'email'=>'Email',
+            'name'=>'Nama'
+        );
+        $user = $this->crud->GetCountWhere('user', array($col=>$val));
         if($user>0){
-            echo "<span style='color:red;font-size: 16px;'> Username Tidak Tersedia.</span>";
+            $res = array(
+                'color' => '#c23a3a',
+                'msg' => $text[$col]." tidak tersedia"
+            );
         }else{
-            echo "<span style='color:green;font-size: 16px;'> Username Tersedia.</span>";
+            $res = array(
+                'color' => '#0cbe73',
+                'msg' => $text[$col]." tersedia"
+            );
         }
+        header('Content-Type: application/json');
+        echo json_encode($res);
     }
 
     // PROSES DAFTAR AKUN BARU
     public function register()
     {
+        // load library form validation
+        $this->load->library('form_validation');
+        // declare variable
+        $id = $_POST['id'];
         $id_token = $_POST['idtoken'];
         $google = $_POST['google-acc'];
         $email = $_POST['reg-email'];
@@ -129,38 +145,88 @@ class DataProcess extends CI_Controller {
             'type' => $type,
             'google' => $google
         );
+        // Form validation
+        $this->form_validation->set_rules('type', 'Tipe akun', 'required',
+            array(
+                'required' => '{field} wajib diisi',
+                'valid_email' => '{field} tidak valid'
+            ));
+        $this->form_validation->set_rules('reg-email', 'Email', 'required|valid_email',
+            array(
+                'required' => '{field} wajib diisi',
+                'valid_email' => '{field} tidak valid'
+            ));
+        $this->form_validation->set_rules('reg-name', 'Nama', 'required|alpha_numeric_spaces',
+            array(
+                'required' => '{field} wajib diisi',
+                'alpha_numeric_spaces' => '{field} hanya dapat berisi huruf, angka dan spasi'
+            ));
+
+        // google account verify id token
         if($google){
-            require APPPATH . 'vendor\google\google-api-php-client\vendor\autoload.php';
-            $CLIENT_ID = '629518986414-8j66q6m7h3mf08kh51n18cpsrkigl1kk.apps.googleusercontent.com';
-            $client = new Google_Client(['client_id' => $CLIENT_ID]);  // Specify the CLIENT_ID of the app that accesses the backend
-            $payload = $client->verifyIdToken($id_token);
-            if ($payload) {
-                $data2 = array(
-                    'id' => $payload['sub'],
-                    'photo' => $photo
-                );
-                // If request specified a G Suite domain:
-                //$domain = $payload['hd'];
-            } else {
-                // Invalid ID token
-                echo 'gagal';
+            if($id == 0){ 
+                require APPPATH . 'vendor\google\google-api-php-client\vendor\autoload.php';
+                $CLIENT_ID = '629518986414-8j66q6m7h3mf08kh51n18cpsrkigl1kk.apps.googleusercontent.com';
+                $client = new Google_Client(['client_id' => $CLIENT_ID]);  // Specify the CLIENT_ID of the app that accesses the backend
+                $payload = $client->verifyIdToken($id_token);
+                if ($payload) {
+                    $data2['id'] = $payload['sub'];
+                    // If request specified a G Suite domain:
+                    //$domain = $payload['hd'];
+                } else {
+                    // Invalid ID token
+                    echo 'gagal';
+                }
+            }else{
+                $data2['id'] = $id;
             }
-        }else{
+            $data['photo'] = $photo;
+        }else{ // non google account
             $data2 = array(
-                'id' => $payload['sub'],
                 'photo' => base_url('assets/img/photos/default.png'),
                 'password' => $pass
             );
+            if($id == 0){ 
+                $data2['id'] = uniqid();
+            }else{
+                $data2['id'] = $id;
+            }
+            // addition form validation for password input
+            $this->form_validation->set_rules('pass', 'Password', 'required|alpha_numeric_spaces|min_length[5]',
+                array(
+                    'required' => '{field} wajib diisi',
+                    'alpha_numeric_spaces' => '{field} hanya dapat berisi huruf, angka dan spasi',
+                    'min_length' => '{field} harus lebih dari {param} karakter'
+                ));
+            $this->form_validation->set_rules('passconf', 'Konfirmasi password', 'required|matches[pass]|alpha_numeric_spaces',
+                array(
+                    'required' => '{field} wajib diisi',
+                    'matches' => '{field} tidak cocok dengan {param} yang telah anda masukkan',
+                    'alpha_numeric_spaces' => '{field} hanya dapat berisi huruf, angka dan spasi'
+                ));
         }
-        $regist = $this->crud->Insert('user', array_merge($data, $data2));
-        if($regist){
-            $this->session->set_flashdata("regist", "<span style='color:green;font-size: 16px;'> Berhasil mendaftar, silahkan login untuk melanjutkan.</span>");
+        
+        // form validation failed
+        if ($this->form_validation->run() == FALSE){
+            $remove_p = str_replace('<p>', '', validation_errors());
+            $remove_nl = explode('</p>', $remove_p);
+            $count = count($remove_nl);
+            unset($remove_nl[$count-1]);
+            $data2['validation_error'] = preg_replace("/[^A-Za-z0-9 ]/", '', $remove_nl);
+            $this->session->set_flashdata('data', array_merge($data, $data2));
+            // print_r($_SESSION['data']);
+            redirect(base_url('login-page'));
+        }else{ // form validation success
+            $regist = $this->crud->Insert('user', array_merge($data, $data2));
+            if($regist){
+                $this->session->set_flashdata("regist", "Berhasil mendaftar, silahkan masuk");
+                redirect(base_url('login-page'));
+            }
         }
-        redirect(base_url('login-page'));
     }
 
     // PROSES BUAT KELAS BARU
-    public function newClass()
+    public function newclass()
     {
         $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         function generate_string($input, $strength = 16) {
@@ -188,7 +254,7 @@ class DataProcess extends CI_Controller {
     }
 
     // PROSES GABUNG KELAS
-    public function joinClass()
+    public function joinclass()
 	{
         $url = $_POST['url'];
         $id = $_POST['classID'];
@@ -241,15 +307,20 @@ class DataProcess extends CI_Controller {
     }
 
     // PROSES MENGAMBIL DATA KOMENTAR
-    public function getComment($feedID)
+    public function getcomment($feedID)
     {
+        $n = 0;
         $comment = $this->crud->GetWhere('feed_comment', array('feedID'=>$feedID));
+        foreach($comment as $val){
+            $comment[$n]['date'] = tgl_indo($val['date']);
+            $n++;
+        }
         $commenJSON = json_encode($comment);
         echo $commenJSON;
     }
 
     // PROSES MENAMPILKAN KONTEN
-    public function showContent($page, $classID)
+    public function showcontent($page, $classID)
     {
         function clean($string) {
             $string = strtolower($string);
@@ -302,8 +373,14 @@ class DataProcess extends CI_Controller {
         
     }
 
+    public function quizresultlist($id)
+    {
+        $data['result'] = $this->crud->GetWhere('quiz_result', array('quizID' => $id));
+        $this->load->view('class-page/quiz-result', $data);
+    }
+
     // PROSES MEMBUAT KUIS BARU
-    public function newQuestion()
+    public function newquestion()
     {
         foreach($_POST['answer'] as $key => $val){
             
@@ -316,7 +393,7 @@ class DataProcess extends CI_Controller {
         $this->crud->Insert('quiz', $_POST['quizDetail']);
     }
 
-    public function submitAnswer($quizID)
+    public function submitanswer($quizID)
     {
         $this->session->unset_userdata('timer');
         $matchAnswer = 0;
@@ -454,4 +531,4 @@ class DataProcess extends CI_Controller {
     }
 }
 
-/* End of file DataProcess.php */
+/* End of file Dataprocess.php */
