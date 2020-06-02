@@ -8,6 +8,8 @@
 //     font-family: fontb;
 //     src: url(../fonts/MajorMonoDisplay-Regular.ttf);
 // }
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,700');
 @include font(fonta, ReemKufi);
 @include font(fontb, MajorMonoDisplay-Regular);
 
@@ -48,6 +50,7 @@ $slight-color: #C8E8EA;
 *{
     margin: 0;
     padding: 0;
+    font-family: sans-serif;
 }
 input, select {
     border: 2px solid $sub-color;
@@ -202,7 +205,7 @@ body{
     border-bottom: 1px solid #eee;
 }
 #menu-div{
-    padding-top: 10px;
+    // padding-top: 10px;
 }
 .menu{
 	position: relative;
@@ -218,15 +221,15 @@ body{
         left: 0;
         background-color: #009688;
         visibility: hidden;
-        // transform: scaleX(0);
+        transform: scaleX(0);
         
-        // -webkit-transition: all 0.3s ease-in-out;
-        // transition: all 0.3s ease-in-out;
+        -webkit-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
         @include transition(all, .3s, ease-in-out);
     }
     &:hover:before {
         visibility: visible;
-        // transform: scaleX(1);
+        transform: scaleX(1);
     }
     a{
         font-size: 22px;
@@ -302,11 +305,22 @@ body{
     padding: 15px;
 }
 
+#no-class{
+    padding: 80px 20px;
+    text-align: center;
+    color: #e23232;
+    i{
+        font-size: 90px;
+        margin-bottom: 40px;
+    }
+}
+
 .feed-container{
     padding: 5px;
     margin-top: 10px;
     border: 1px solid #eee;
     position: relative;
+    font-size: 15px;
 }
 .feed-photo{
     width: 100%;
@@ -330,6 +344,8 @@ body{
 }
 .feed-content{
     // margin-right: 10px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
 }
 .comment-container{
     width: 100%;
@@ -353,6 +369,7 @@ body{
 .user-comment{
     position: relative;
     padding: 10px;
+    font-size: 14px;
 }
 .dots{
     position: absolute;
@@ -364,13 +381,67 @@ body{
     ul>li{
         cursor: pointer;
         padding: 10px;
+        padding-left: 40px;
         background: #c2e6e3;
         font-family: fonta;
         list-style: none;
+        position: relative;
+        overflow: hidden;
+        &:hover::before{
+            left: -15px;
+            transform: skewX(30deg);
+        }
+        &:hover::after{
+            left: -30px;
+            transform: skewX(-50deg);
+        }
+        &::before{
+            @include transition(all, .3s, ease-in-out);
+            content: '';
+            display: block;
+            background-color: $base-color;
+            position: absolute;
+            height: 43px;
+            width: 35px;
+            top: 0;
+            // LEFT ELEMENT
+            transform: skewX(10deg);
+            left: -25px; 
+            box-shadow: -1px 0px 4px 0px black;
+            // RIGHT ELEMENT
+            // right: -70px;
+            // transform: skewX(-25deg);
+            // box-shadow: -1px 0px 4px 0px black;
+        }
+        &::after{
+            @include transition(all, .3s, ease-in-out);
+            content: '';
+            display: block;
+            background-color: $sub-color;
+            position: absolute;
+            height: 43px;
+            width: 40px;
+            top: 0;
+            // LEFT ELEMENT
+            transform: skewX(-30deg); 
+            left: -35px;
+            box-shadow: -1px 0px 5px 1px black;
+            // RIGHT ELEMENT
+            // right: -70px;
+            // transform: skewX(25deg);
+            // box-shadow: -1px 0px 5px 1px black;
+        }
     }
     ul>li.selected{
-        background: $base-color;
-        color: white;
+        background: #8dcec8;
+        &::before{
+            left: -15px;
+            transform: skewX(30deg);
+        }
+        &:after{
+            left: -30px;
+            transform: skewX(-50deg);
+        }
     }
 } 
 
@@ -397,15 +468,14 @@ body{
     }
 }
 .styled-card{
-    height: 60px;
+    height: 80px;
     background: white;
-    padding: 40px 0;
+    padding: 30px 0;
     padding-left: 100px;
     font-family: sans-serif;
     position: relative;
     overflow: hidden;
     box-shadow: 2px 3px 7px -2px #676767;
-    border: .5px solid #eee;
     &:hover::before{
         transform: skewX(10deg);
         left: -100px;
@@ -453,6 +523,14 @@ body{
 .class-div, .quiz-list-div{
     position: relative;
 }
+.quiz-list-div{
+    a{
+        position: absolute;
+        bottom: 15px;
+        left: 100px;
+        width:62px
+    }
+}
 .trash{
     @include transition(all, .3s, ease-in-out);
     position: absolute;
@@ -471,7 +549,76 @@ body{
         @include scale(1.2);
     }
 }
+#quiz-result-container{
+    table{
+        margin: 1em 0;
+        width: 100%;
+        min-width: 300px;
+        background: #34495E;
+        color: #fff;
+        border-radius: .4em;
+        overflow: hidden;
+        font-size: 12px;
 
+        tr{
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            border-color: lighten(#34495E, 10%);
+        }
+        th{
+            display: none;
+            color: #dd5;
+        }
+        td{
+            display: block; 
+    
+            &:first-child {
+                padding-top: .5em;
+            }
+            &:last-child {
+                padding-bottom: .5em;
+            }
+
+            &:before {
+                content: attr(data-th)": "; // who knew you could do this? The internet, that's who.
+                font-weight: bold;
+
+                // optional stuff to make it look nicer
+                width: 6.5em; // magic number :( adjust according to your own content
+                display: inline-block;
+                // end options
+            
+                @media (min-width: 480px) {
+                    display: none;
+                }
+            }
+        }
+        th, td {
+            text-align: left;
+            margin: .5em 1em;
+            @media (min-width: 480px) { 
+              padding: 1em !important; 
+            }
+            
+            @media (min-width: 480px) {
+                display: table-cell;
+                padding: .25em .5em;
+                
+                &:first-child {
+                    padding-left: 0;
+                }
+                
+                &:last-child {
+                    padding-right: 0;
+                }
+            }
+
+            &:before{
+                color: #dd5;
+            }
+        }
+    }
+}
 .member-list{
     display: grid;
     grid-template-columns: 90px auto;
@@ -493,47 +640,24 @@ body{
 }
 .quiz-list-box{
     margin-bottom: 20px;
-    height: 120px;
-    padding: 5px;
-    // -webkit-box-shadow: 0 0 5px -1px rgba(0,0,0,0.5);
-    // -moz-box-shadow: 0 0 5px -1px rgba(0,0,0,0.5);
-    // box-shadow: 0 0 5px -1px rgba(0,0,0,0.5);
     @include box-shadow(0, 0, 5px, -1px, rgba(0,0,0,0.5));
     background-color: white;
-    border: 2px solid #b9b9b9;
-    @include border-radius(4px);
+    @include border-radius(5px);
     position: relative;
+    padding-bottom: 50px;
     a{
-        // text-decoration: none;
-        // background: $sub-color;
-        // color: white;
-        // border-radius: 20px;
-        // padding: 6px 65px 6px 20px;
         position: absolute;
         bottom: 10px;
         left: 10px;
-        // z-index: 1;
-        // overflow: hidden;
-        // &::after{
-        //     // content: "\f039";
-        //     content: attr(data-icon);
-        //     font-family: "Font Awesome 5 Free";
-        //     font-weight: 900;
-        //     position: absolute;
-        //     right: 17px;
-        // }
-        // &::before{
-        //     content: '';
-        //     position: absolute;
-        //     display: block;
-        //     background: #005059;
-        //     height: 30px;
-        //     width: 60px;
-        //     top: 0;
-        //     right: -13px;
-        //     transform: skewX(25deg);
-        //     z-index: -1;
-        // }
+    }
+    .quiz-info{
+        background: url(../img/top-bg.svg);
+        background-size: cover;
+        background-position: bottom;
+        color: white;
+        padding: 5px;
+        padding-bottom: 30px;
+        @include border-radius(5px);
     }
 }
 .quiz-title{
@@ -628,7 +752,7 @@ body{
 }
 .menu-btn{
     position: fixed;
-    top: 248px;
+    top: 258px;
     width: 180px;
     height: 25px;
     background: $base-color;
@@ -637,7 +761,7 @@ body{
     grid-template-columns: auto auto;
     button{
         background: none;
-        border: 2px solid #212f32;
+        border: 2px solid white;
     }
 }
 #diagram-container{
@@ -676,7 +800,7 @@ body{
     z-index: 1;
     width: 160px;
     padding: 10px;
-    top: 273px;
+    top: 283px;
     grid-template-columns: repeat(4, auto);
     grid-auto-rows: 40px;
     display: none;
@@ -774,7 +898,7 @@ body{
     width: 45px !important;
     margin: auto auto;
     cursor: pointer;
-    /* line-height: 50px; */
+    // line-height: 50px;
     &:empty::before{
         font-family: "Font Awesome 5 Free";
         content: '\f542';
@@ -829,7 +953,7 @@ body{
         position: relative;
         width: 43px;
         height: 5px;
-        background: black;
+        background: white;
         @include custom-border-radius(5px, 5px, 0, 0);
         margin: 0 auto;
         margin-top: 8px;
@@ -841,7 +965,7 @@ body{
         content: '';
         position: absolute;
         display: block;
-        border: 4px solid black;
+        border: 4px solid white;
         @include border-radius(9px);
         width: 13px;
         height: 2px;
@@ -852,7 +976,7 @@ body{
         position: relative;
         height: 35px;
         width: 30px;
-        border: 4px solid black;
+        border: 4px solid white;
         @include custom-border-radius(0, 0, 10px, 10px);
         margin: 0 auto;
         margin-top: 2px;
@@ -861,7 +985,7 @@ body{
         content: '';
         position: absolute;
         display: block;
-        background: black;
+        background: white;
         width: 4px;
         height: 25px;
         @include border-radius(4px);
@@ -872,7 +996,7 @@ body{
         content: '';
         position: absolute;
         display: block;
-        background: black;
+        background: white;
         width: 4px;
         height: 25px;
         @include border-radius(4px);
@@ -956,20 +1080,22 @@ body{
     margin-right: 10px;
     padding: 20px;
     >#diagram-trash{
-        top: 160px;
+        top: 170px;
         width: 150px;
     }
     >#diagram-container{
-        top: 273px;
+        top: 283px;
         width: 180px;
     }
     .diagram-btn{
         width: 90px;
         border-right-width: 1px;
+        color: white;
     }
     .answer-btn{
         width: 90px;
         border-left-width: 1px;
+        color: white;
     }
 }
 #quiz-title{
@@ -1064,4 +1190,24 @@ body{
         // transform: skewX(25deg);
         // box-shadow: -1px 0px 5px 1px black;
     }
+}
+
+
+/*
+| -------------------------------------------------------------------------
+| MEDIA QUERIES
+| -------------------------------------------------------------------------
+*/
+@media all and (min-width: 1024px) { 
+}
+
+@media all and (min-width: 768px) and (max-width: 1023px) { 
+}
+
+@media all and (min-width: 480px) and (max-width: 767px) { 
+    
+}
+
+@media all and (max-width: 479px) {
+    
 }
