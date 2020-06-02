@@ -1,20 +1,23 @@
 <div id="quiz-list-container">
     <?php
-        foreach($quiz as $val){
-            echo "<div class='quiz-list-div'>
-                    <div class='styled-card'>
-                        <span class='quiz-title'>".$val['title']."</span><br>
-                        <span class='quiz-date'>".$val['date']."</span> | <span class='quiz-due-date'>".$val['dueDate']."</span><br>
-                        <div class='quiz-option-btn'>
-                            <div></div>
-                        </div>
-                        <span class='quiz-total'>1 Pertanyaan</span> - <span class='quiz-duration'>".$val['duration']." Menit</span>
-                    </div>";
-            if($val['teacher'] == $this->session->name){
-                echo "<div class='trash' data-id='".$val['id']."' data-title='".$val['title']."'><i class='fas fa-trash-alt fa-s'></i></div>";
-            }
-            echo "</div>";
-        }
+        foreach($quiz as $val): ?>
+            <div class="quiz-list-div">
+                <div class="styled-card">
+                    <span class="quiz-title"><?=$val['title']?></span><br>
+                    <span class="quiz-date"><?=$val['date']?></span> | <span class="quiz-due-date"><?=$val['dueDate']?></span><br>
+                    <div class="quiz-option-btn">
+                        <div></div>
+                    </div>
+                    <span class="quiz-total">1 Pertanyaan</span> - <span class="quiz-duration"><?=$val['duration']?> Menit</span><br>
+                </div>
+                <?php
+                    if($val['teacher'] == $this->session->name){
+                        echo "<div class='trash' data-id='".$val['id']."' data-title='".$val['title']."'><i class='fas fa-trash-alt fa-s'></i></div>";
+                    } 
+                    ?>
+                <a href="#" data-title="<?=$val['title']?>" data-id="<?=$val['id']?>" class="styled-btn show-result" data-icon="&#xf0ae">Lihat Hasil</a>
+            </div>
+    <?php endforeach;
     ?>
     <a href="<?=base_url('class/'.$link).'/new-quiz'?>">
     <div class="quiz-list-box" id="new-quiz">
@@ -27,7 +30,31 @@
     <button delete-id="" id="delete-btn" class="styled-btn" data-icon='&#xf2ed' style="margin-right: 10px;">Hapus</button>
     <a style="color: #6b6a6a;" href="#" rel="modal:close">Batal</a>
 </div>
+<div id="modal-result" class="modal">
+    <h3>Hasil kuis - <span></span></h3>
+    <div></div>
+</div>
 <script>
+    $('.show-result').click(function(){
+        // alert('asdas');
+        let id = $(this).attr('data-id');
+        let title = $(this).attr('data-title');
+        console.log(title);
+        $("#modal-result span").html(title);
+        $("#modal-result").modal({
+            fadeDuration: 100
+        });
+        $.ajax({
+            type  : 'POST',
+            url   : '<?= base_url()?>dataprocess/quizResultList/'+id,
+            error: function (jqXHR, textStatus, errorThrown){
+                alert(jqXHR.status);
+            },
+            success : function(data){
+                $('#modal-result>div').html(data);
+            }
+        });
+    });
     $('.trash').click(function() {
         $("#modal").modal({
             fadeDuration: 100
