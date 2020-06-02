@@ -10,7 +10,7 @@
     </form>
     <button class="styled-btn" onClick="submitQuiz()" class='styled-btn' data-icon='&#xf0c7'>Simpan</button><br><br>
     <div id="new-quiz-number">
-        <ul>
+        <ul style="display:none;">
             <li class="selected"><a href="#">1</a></li>
             <li id="add-quiz-id"><a id="add-quiz" href="">+</a></li>
         </ul>
