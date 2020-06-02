@@ -34,7 +34,7 @@
                                 </a>
                                 <br>
                                 <?php
-                                    echo '<small>'.$this->crud->GetCountWhere('class_member', array('classID'=>$val['classID'])).' anggota</small><br>';
+                                    echo '<small>'.$this->crud->GetCountWhere('class_member', array('classID'=>$val['classID'])).' anggota</small><br><br>';
                                     echo $val['classID'];
                                 ?>
                             </div>
