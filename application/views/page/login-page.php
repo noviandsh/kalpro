@@ -20,8 +20,22 @@
     </div>
     <div id="container">
         <div id="form-container">
+            <div id="hide-form"><i class="fas fa-arrow-left"></i></div>
             <div id="desc"><span>Kalpro</span> merupakan sebuah platform untuk sarana pembelajaran kuis algoritma pemrograman yang dikembangkan untuk Dosen dan Mahasiswa. Mempermudah dosen untuk memanajemen kuis algoritma pemrograman dan mempermudah mahasiswa untuk mempelajari dan berdiskusi tentang algoritma pemrograman.</div>
-            <!-- <span id="login-tab" class="tab-btn active" tab="login">Masuk</span> &nbsp;&nbsp;|&nbsp;&nbsp; <span id="register-tab" class="tab-btn" tab="register">Daftar</span> -->
+            <?php
+                function repol($key){
+                    if(isset($_SESSION['data'][$key])){
+                        return $_SESSION['data'][$key];
+                    }
+                }
+                function grepol($key){
+                    if(isset($_SESSION['data'][$key])){
+                        if($_SESSION['data']['google'] == 1){
+                            return $_SESSION['data'][$key];
+                        }
+                    }
+                }
+            ?>
             <div id="login-container">
                 <span>Masuk dengan:</span><br><br>
                 <div class="g-signin2" data-onsuccess="onSignIn"></div><br>
@@ -35,50 +49,53 @@
                         <input class="fancy-input" type="password" name="pass" id="pass" placeholder=" ">
                         <span class="floating-label">Password</span>
                     </div>
+                    <div id="register-status">
+                        <div><?=(isset($_SESSION['regist']))?$_SESSION['regist']:'';?></div>
+                    </div>
                     <div>
-                        <button class="styled-btn" id="login-btn" data-icon='&#xf2f6'>Masuk</button>
+                        <button class="styled-btn" id="login-btn" data-icon='&#xf2f6'>Masuk</button> <a href="#" id="regist-trigger">Daftar</a>
                     </div>
                     <br><br><br>
-                    <div>
-                        <?=$this->session->regist?>
-                    </div>
                 </form>
             </div>
-            <!-- <div id="front-mask">
-                <div>
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque rerum magni corrupti odio, voluptatem maiores porro aspernatur eaque eum possimus doloremque vel!</p>
-                    <button id="mask-btn">Daftar</button>
-                </div>
-            </div> -->
             <!-- Modal HTML embedded directly into document -->
             <div id="register-modal" class="modal">
                 <div id="register-container">
+                    <ul id="validation-error">
+                        <?php if(isset($_SESSION['data'])): 
+                                foreach($_SESSION['data']['validation_error'] as $error): ?>
+                            <li><?=$error?></li>
+                        <?php endforeach; 
+                            endif; ?>
+                    </ul>
                     <br><br>
                     <form id="regForm" action="<?=base_url('dataprocess/register')?>" method="post">
-                        <input type="text" name="google-acc" id="google-acc">
-                        <input type="text" name="photo" id="photo">
-                        <textarea name="idtoken" id="idtoken" cols="30" rows="10"></textarea>
+                        <input type="hidden" name="google-acc" id="google-acc" value="<?=grepol('google')?>">
+                        <input type="hidden" name="photo" id="photo" value="<?=grepol('photo')?>">
+                        <textarea style="display:none;" name="idtoken" id="idtoken" cols="30" rows="10"><?=grepol('token')?></textarea>
+                        <input type="hidden" name="id" id="id">
                         <div>
                             <label for="">Daftar sebagai :</label><br><br>
-                            <input type="radio" name="type" value="d" required> Dosen
-                            <input type="radio" name="type" value="m" required> Mahasiswa
+                            <input type="radio" name="type" value="d"> Dosen
+                            <input type="radio" name="type" value="m"> Mahasiswa
                         </div>
                         <div class="input-group email-reg">
-                            <input class="fancy-input" type="text" name="reg-email" id="reg-email" placeholder=" " onChange="userCheck()" required>
-                            <span class="floating-label">Email</span>
+                            <input class="fancy-input check" type="text" name="reg-email" id="reg-email" value="<?=repol('email')?>" placeholder=" " data-col="email" >
+                            <div class="floating-label">Email</div>
+                            <div class="avail-stats email-stats"></div>
                         </div>
                         <div class="input-group name-reg">
-                            <input class="fancy-input" type="text" name="reg-name" id="reg-name" placeholder=" " onChange="userCheck()" required>
-                            <span class="floating-label">Nama</span>
-                        </div>
-                        <div><span id="user-availability-status"></span> </div>
-                        <div class="input-group pass-reg">
-                            <input class="fancy-input" type="password" name="pass" id="passRegist" placeholder=" ">
-                            <span class="floating-label">Password</span>
+                            <input class="fancy-input check" type="text" name="reg-name" id="reg-name" value="<?=repol('name')?>" placeholder=" " data-col="name" >
+                            <div class="floating-label">Nama</div>
+                            <div class="avail-stats name-stats"></div>
                         </div>
                         <div class="input-group pass-reg">
                             <input class="fancy-input" type="password" name="pass" id="passRegist" placeholder=" ">
-                            <span class="floating-label">Password</span>
+                            <div class="floating-label">Password</div>
+                        </div>
+                        <div class="input-group pass-reg">
+                            <input class="fancy-input" type="password" name="passconf" id="passConfRegist" placeholder=" ">
+                            <div class="floating-label">Konfirmasi password</div>
                         </div>
                         <div>
                             <button class="modal-btn" data-icon='&#xf46d' id="reg-btn">Daftar</button>
@@ -97,49 +114,87 @@
         <div id="vector-img">
             <img src="<?=base_url()?>assets/img/front-vector.svg" alt="">
         </div>
+        <div id="sm-scr-div">
+            <p>Selamat datang di <span>Kalpro</span></p>
+            <button class="modal-btn" id="form-login-btn" data-icon='&#xf2f6'>Masuk</button>
+        </div>
+        <div id="loading">
+            <svg height="500" width="500">
+                <circle class="c1" cx="250" cy="250" r="40" stroke="#a463d8" stroke-width="5" fill="transparent" />
+                <circle class="c2" cx="250" cy="250" r="47" stroke="#3fa4d8" stroke-width="5" fill="transparent" />
+                <circle class="c3" cx="250" cy="250" r="54" stroke="#b2c224" stroke-width="5" fill="transparent" />
+                <circle class="c4" cx="250" cy="250" r="61" stroke="#fecc30" stroke-width="5" fill="transparent" />
+                <circle class="c5" cx="250" cy="250" r="68" stroke="#f7631e" stroke-width="5" fill="transparent" />
+                <circle class="c6" cx="250" cy="250" r="75" stroke="#dc3838" stroke-width="5" fill="transparent" />
+            </svg><br>
+            <span>Mohon tunggu..</span>
+            <i class="fas fa-times-circle"></i>
+            <!--
+            merah #dc3838
+            jingga #f7631e
+            kuning #fecc30
+            hijau #b2c224
+            biru #3fa4d8
+            ungu #a463d8
+            -->
+        </div>
     </div>
     <script src="<?=base_url('assets/js/TweenMax.js')?>"></script>
     <script src="<?=base_url('assets/js/TimelineMax.js')?>"></script>
     <script>
-        /* particlesJS.load(@dom-id, @path-json, @callback (optional)); */
-        // particlesJS.load('particles-js', 'assets/js/particlesjs-config-black.json', function() {
-        // console.log('callback - particles.js config loaded');
-        // });
-        
-        function signOut() {
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-            console.log('User signed out.');
+        $('#form-login-btn').click(function(){
+            $('#form-container').css('left', '0');
+        });
+        $('#hide-form').click(function(){
+            $('#form-container').css('left', '-730px');
+        });
+        $(window).resize(function() {
+            if($(window).width() > 1023){
+                $('#form-container').css('left', '0');
+            }else{
+                $('#form-container').css('left', '-730px');
+            }
+        });
+        let userStat = <?=json_encode($this->session->data)?>;
+        if(userStat){
+            console.log(userStat);
+            $("#id").val(userStat.id);
+            $("#register-modal").modal({
+                escapeClose: false,
+                clickClose: false,
+                showClose: false,
+                fadeDuration: 100
             });
+            if(userStat.google == 1){
+                // Google account
+                $('.pass-reg').hide();
+                $('#reg-email').prop('readonly', true);
+                console.log(userStat.id);
+            }else{
+                // Local account
+            }
         }
-        function onSignIn(googleUser) {
-            let profile = googleUser.getBasicProfile();
-            // console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-            // console.log('Name: ' + profile.getName());
-            // console.log('Image URL: ' + profile.getImageUrl());
-            // console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-            let name =  profile.getName();
-            let photo = profile.getImageUrl();
-            let email = profile.getEmail(); // This is null if the 'email' scope is not present.
-            let id_token = googleUser.getAuthResponse().id_token;
-
+        function getGoogle(data){
             // AJAX
-            $.ajax({
+            let userCheck = $.ajax({
                 type  : 'POST',
                 url   : '<?=base_url()?>dataprocess/googlelogin',
                 // dataType: 'json',
-                data : {
-                    name: name,
-                    photo: photo,
-                    email:email, 
-                    token:id_token
+                data : data,
+                beforeSend: function () {
+                    // ... your initialization code here (so show loader) ...
+                    $('#loading').show();
+                },
+                complete: function () {
+                    // ... your finalization code here (hide loader) ...
+                    $('#loading').hide();
                 },
                 error: function (jqXHR, textStatus, errorThrown){
                     alert(errorThrown.status);
                 },
-                success : function(data){
-                    // console.log(data);
-                    if(data.status == 1){
+                success : function(res){
+                    console.log('get google');
+                    if(res.status == 1){
                         window.location = "<?=base_url()?>";
                     }else{
                         $("#modal").modal({
@@ -149,16 +204,37 @@
                             fadeDuration: 100
                         });
                         $('.pass-reg').hide();
-                        $('.pass-reg').children('input').prop('required', false);
-                        $('#reg-email').val(email).prop('readonly', true);
-                        $('#reg-name').val(name).css('color', 'black');
+                        $('#reg-email').val(data.email).prop('readonly', true);
+                        $('#reg-name').val(data.name);
                         $('#google-acc').val('1');
-                        $('#idtoken').val(id_token);
-                        $('#photo').val(photo);
+                        $('#idtoken').val(data.token);
+                        $('#photo').val(data.photo);
                     }
                 }
             });
-
+        }
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+            console.log('User signed out.');
+            });
+            $('#regForm').find('input, textarea').val('');
+            $('#validation-error').html('');
+        }
+        function onSignIn(googleUser) {
+            let profile = googleUser.getBasicProfile();
+            let name =  profile.getName();
+            let photo = profile.getImageUrl();
+            let email = profile.getEmail(); // This is null if the 'email' scope is not present.
+            let id_token = googleUser.getAuthResponse().id_token;
+            let data = {
+                    name: name,
+                    photo: photo,
+                    email:email, 
+                    token:id_token
+                };
+            getGoogle(data);
+            console.log('sign in');
             // XHR
             // let xhr = new XMLHttpRequest();
             // xhr.open('POST', '<?=base_url('dataprocess/googlelogin')?>');
@@ -169,7 +245,7 @@
             // xhr.send('idtoken=' + id_token);
         }
 
-        $('#reg-modal-btn').click(function(){
+        $('#reg-modal-btn, #regist-trigger').click(function(){
             $("#register-modal").modal({
                 escapeClose: false,
                 clickClose: false,
@@ -243,20 +319,26 @@
             });
         });
 
-        function userCheck() {
+        $('.check').change(function(){
+            let col = $(this).attr('data-col');
+            let val = $(this).val();
             $.ajax({
                 url: "<?=base_url()?>dataprocess/userCheck",
-                data:'username='+$("#userRegist").val(),
+                data: {val:val, col:col},
                 type: "POST",
                 beforeSend: function () {
-                    $("#user-availability-status").html("<span style='color:yellow;font-size: 16px;'> Memeriksa Ketersediaan Username.</span>");
+                    $('.'+col+'-stats').html("Memeriksa Ketersediaan Username");
                 },
                 success:function(data){
-                    $("#user-availability-status").html(data);
+                    $('.'+col+'-stats').html(data.msg);
+                    $('.'+col+'-stats').css('background', data.color);
+                    if(val==''){
+                        $('.'+col+'-stats').html('');
+                    }
                 },
                 error:function (){}
             });
-        }
+        });
     </script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 </body>
