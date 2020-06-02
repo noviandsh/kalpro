@@ -142,6 +142,10 @@
     <script src="<?=base_url('assets/js/TweenMax.js')?>"></script>
     <script src="<?=base_url('assets/js/TimelineMax.js')?>"></script>
     <script>
+        // var auth2 = gapi.auth2.getAuthInstance();
+        // auth2.signOut().then(function () {
+        //     console.log('User signed out.');
+        // });
         $('#form-login-btn').click(function(){
             $('#form-container').css('left', '0');
         });
@@ -190,7 +194,11 @@
                     $('#loading').hide();
                 },
                 error: function (jqXHR, textStatus, errorThrown){
-                    alert(errorThrown.status);
+                    alert('Gagal mencoba masuk, silahkan coba lagi');
+                    var auth2 = gapi.auth2.getAuthInstance();
+                    auth2.signOut().then(function () {
+                        console.log('User signed out.');
+                    });
                 },
                 success : function(res){
                     console.log('get google');
