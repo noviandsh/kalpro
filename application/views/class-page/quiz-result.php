@@ -6,7 +6,6 @@
                 <th>Nama</th>
                 <th>Jawaban Benar</th>
                 <th>Nilai</th>
-                <th>Menu</th>
             </tr>
         </thead>
         <tbody>
@@ -18,7 +17,6 @@
                             <td>".$res['username']."</td>
                             <td>".$res['correctAnswer']."</td>
                             <td>".$res['score']."</td>
-                            <td>daosdksa</td>
                         </tr>";
                     $n++;
                 }
