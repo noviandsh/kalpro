@@ -8,7 +8,7 @@
                     <div class="quiz-option-btn">
                         <div></div>
                     </div>
-                    <span class="quiz-total">1 Pertanyaan</span> - <span class="quiz-duration"><?=$val['duration']?> Menit</span><br>
+                    <span class="quiz-duration"><?=$val['duration']?> Menit</span><br>
                 </div>
                 <?php
                     if($val['teacher'] == $this->session->name){
