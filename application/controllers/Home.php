@@ -135,6 +135,7 @@ class Home extends CI_Controller {
 		if($classCheck==0){
 			show_404();
 		}
+		$subData['quizRes'] = $this->crud->GetWhere('quiz_result', array('username'=>$this->session->name));
 		$subData['quiz'] = $this->crud->GetWhere('quiz', array('classID'=>$classID));
 		$subData['class'] = $where;
 		$subData['link'] = $link;
