@@ -1,3 +1,14 @@
+<?php
+    function takenQuiz($id, $res){
+        foreach($res as $val){
+            if(in_array($id, $val)){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+?>
 <div id="container">
     <div id="side-menu">
         <ul>
@@ -14,19 +25,21 @@
     </div>
     <div>
         <?php
-            foreach($quiz as $val): ?>
-                <div class="quiz-list-box">
-                    <div class="quiz-info">
-                        <span class="quiz-title"><?=$val['title']?></span><br>
-                        <span class="quiz-date"><?=tgl_indo($val['date'])?></span> | <span class="quiz-due-date"><?=tgl_indo($val['dueDate'])?></span><br>
-                        <div class="quiz-option-btn">
-                            <div></div>
+            foreach($quiz as $val): 
+                if(takenQuiz($val['id'], $quizRes)):?>
+                    <div class="quiz-list-box">
+                        <div class="quiz-info">
+                            <span class="quiz-title"><?=$val['title']?></span><br>
+                            <span class="quiz-date"><?=tgl_indo($val['date'])?></span> | <span class="quiz-due-date"><?=tgl_indo($val['dueDate'])?></span><br>
+                            <div class="quiz-option-btn">
+                                <div></div>
+                            </div>
+                            <span class="quiz-total">1 Pertanyaan</span> - <span class="quiz-duration"><?=$val['duration']?> Menit</span><br/>
                         </div>
-                        <span class="quiz-total">1 Pertanyaan</span> - <span class="quiz-duration"><?=$val['duration']?> Menit</span><br/>
+                        <a href="<?=base_url('start-quiz/').$val['id']?>" class="styled-btn" data-icon="&#xf0ae">Ambil</a>
                     </div>
-                    <a href="<?=base_url('start-quiz/').$val['id']?>" class="styled-btn" data-icon="&#xf0ae">Ambil</a>
-                </div>
-    <?php   endforeach;
+        <?php   endif;
+            endforeach;
         ?>
     </div>
 </div>
