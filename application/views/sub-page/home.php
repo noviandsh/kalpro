@@ -1,10 +1,14 @@
 <?php
     function takenQuiz($id, $res){
-        foreach($res as $val){
-            if(in_array($id, $val)){
-                return true;
-            }else{
-                return false;
+        if(empty($res)){
+            return true;
+        }else{
+            foreach($res as $val){
+                if(in_array($id, $val)){
+                    return false;
+                }else{
+                    return true;
+                }
             }
         }
     }
@@ -122,7 +126,7 @@
                                 <div class="quiz-option-btn">
                                     <div></div>
                                 </div>
-                                <span class="quiz-total">1 Pertanyaan</span> - <span class="quiz-duration"><?=$val['duration']?> Menit</span><br/>
+                                <span class="quiz-duration"><?=$val['duration']?> Menit</span><br/>
                             </div>
                             <a href="<?=base_url('start-quiz/').$val['id']?>" class="styled-btn" data-icon="&#xf0ae">Ambil</a>
                         </div>
