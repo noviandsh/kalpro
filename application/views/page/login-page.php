@@ -152,11 +152,16 @@
         $('#hide-form').click(function(){
             $('#form-container').css('left', '-730px');
         });
+
+        let width = $(window).width();
         $(window).resize(function() {
-            if($(window).width() > 1023){
-                $('#form-container').css('left', '0');
-            }else{
-                $('#form-container').css('left', '-730px');
+            if ($(this).width() !== width) {
+                if($(window).width() > 1023){
+                    $('#form-container').css('left', '0');
+                }else{
+                    $('#form-container').css('left', '-730px');
+                }
+                width = $(this).width();
             }
         });
         let userStat = <?=json_encode($this->session->data)?>;
