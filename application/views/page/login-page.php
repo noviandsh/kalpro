@@ -109,7 +109,9 @@
                 <button id="reg-modal-btn" class="modal-btn" data-icon='&#xf46d'>Daftar</button>
                 <a style="color: #6b6a6a;" href="#" rel="modal:close" onclick="signOut();">Batal</a>
             </div>
-
+            <div id="login-stat" class="modal">
+                <span></span>
+            </div>
         </div>
         <div id="vector-img">
             <img src="<?=base_url()?>assets/img/front-vector.svg" alt="">
@@ -326,7 +328,10 @@
                     if(data.status == 1){
                         window.location = "<?=base_url()?>";
                     }else{
-                        console.log(data.msg);
+                        $("#login-stat>span").html(data.msg);
+                        $("#login-stat").modal({
+                            fadeDuration: 100
+                        });
                     }
                 }
             });

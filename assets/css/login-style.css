@@ -72,10 +72,11 @@ html, body, #container{
     padding: 10px;
     width: 20px;
     height: 20px;
-    border-radius: 20px;
+    border-radius: 30px;
     text-align: center;
     line-height: 20px;
     display: none;
+    border: 5px solid #0a3a40;
 }
 #form-container{
     padding: 80px 110px 0 30px;
@@ -126,6 +127,19 @@ html, body, #container{
 #register-container .fancy-input{
     border-bottom-color: #08808e;
     color: #005059;
+}
+.blocker{
+    z-index: 3 !important;
+}
+#login-stat{
+    text-align: center;
+    padding: 50px 0;
+}
+#login-stat>span{
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size: 21px;
+    color: #e12727;
 }
 #desc{
     font-size: 16px;
