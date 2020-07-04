@@ -317,9 +317,11 @@
                 data : {email:email, password:pass},
                 beforeSend: function () {
                     // ... your initialization code here (so show loader) ...
+                    $('#loading').show();
                 },
                 complete: function () {
                     // ... your finalization code here (hide loader) ...
+                    $('#loading').hide();
                 },
                 error: function (jqXHR, textStatus, errorThrown){
                     alert(errorThrown.status);
