@@ -382,107 +382,217 @@ class Dataprocess extends CI_Controller {
     // PROSES MEMBUAT KUIS BARU
     public function newquestion()
     {
-        foreach($_POST['answer'] as $key => $val){
-            
-            if(strpos($key, 'target') !== false){
-                $_POST['answer'][$key]['answer'] = nl2br($_POST['answer'][$key]['answer']);
-            }
-        }
-        $question = json_encode($_POST['answer']);
-        $this->crud->Insert('question_flow', array('quizID'=>$_POST['quizDetail']['id'],'question'=>$_POST['question'],'answer'=>$question));
+        $data = array(
+            'quizID' => $_POST['quizDetail']['id'],
+            'question' => $_POST['question'],
+            'answer' => $_POST['answer'],
+            'svg' => $_POST['svg']
+        );
+        $this->crud->Insert('question_flow', $data);
         $this->crud->Insert('quiz', $_POST['quizDetail']);
+		
+		$this->session->set_flashdata('alert', 'Berhasil menambahkan kuis');
+    }
+    public function editquiz()
+    {
+        $id = $_POST['id'];
+        $data = array(
+            'question' => $_POST['question'],
+            'answer' => $_POST['answer'],
+            'svg' => $_POST['svg']
+        );
+        $detail = $_POST['quizDetail'];
+        $this->crud->Update('question_flow', $data, array('quizID'=>$_POST['id']));
+        $this->crud->Update('quiz', $detail, array('id'=>$_POST['id']));
+
+		$this->session->set_flashdata('alert', 'Berhasil menyimpan kuis');
+    }
+    // Lihat kuis
+    public function viewquiz($id)
+    {
+        $quiz = $this->crud->GetWhere('question_flow', array('quizID'=>$id));
+        echo json_encode($quiz[0]);
     }
 
     public function submitanswer($quizID)
     {
         $this->session->unset_userdata('timer');
-        $matchAnswer = 0;
-        $matchShape = 0;
-        $matchArrow = 0;
-        $n = 0;
-        $wrongPlace = 0;
-        //Mengambil kunci jawaban dan menkonversi menjadi array
-        $answer['flowchart'] = $this->crud->GetWhere('question_flow', array('quizID'=>$quizID));
-        $rawAnswer = get_object_vars(json_decode($answer['flowchart'][0]['answer']));
 
-        // Menghitung jumlah bagian soal
-        foreach($rawAnswer as $key => $val){
-            // cek key target
-            if(strpos($key, 'target') === 0){
-                $n += count($val->shape);
-                $n += count($val->answer);
-            }else{
-                // cek turn-arrow
-                if(strpos($val->arrow, '-') === 4){
-                    $n += 0.5;
-                }else{
-                    $n += count($val);
-                }
-            }
+        // KOREKSI JAWABAN
+        // Inisiasi variabel
+        // ambil data dari database
+        $keys = $this->crud->GetWhere('question_flow', array('quizID'=>$quizID))[0];
+        // konversi json dari diagram gojs ke php array
+        $userAnswerRaw = json_decode(json_encode(json_decode($_POST['answer'])),true);
+        $keysAnswerRaw = json_decode(json_encode(json_decode($keys['answer'])),true);
+        // variable delete key dari array jawaban
+        $delKey = array('from', 'to', 'fromPort', 'toPort', 'points', 'visible');
+        // variabel key array user answer dan key answer
+        $u=0;
+        $k=0;
+        $total=0;
+        $countKey=0;
+        $corr=0;
+        $corrAns=0;
+        $keysAnswer_perc=0;
+        // unset key dari userAnswer dan keyAnswer
+        unset(
+            $userAnswerRaw['class'],
+            $userAnswerRaw['linkFromPortIdProperty'],
+            $userAnswerRaw['linkToPortIdProperty'],
+            $keysAnswerRaw['class'],
+            $keysAnswerRaw['linkFromPortIdProperty'],
+            $keysAnswerRaw['linkToPortIdProperty']
+        );
+        // mengisi array nodekey
+        foreach($userAnswerRaw['nodeDataArray'] as $key => $val){
+            $nodeUser[$val['key']]['category'] = $val['category'];
+            $nodeUser[$val['key']]['text'] = $val['text'];
         }
-
-        // Mencocokkan jawaban dengan kunci jawaban
-        foreach($_POST as $key => $val){
-            // cek isi answer 
-            if(isset($val['answer'])){
-                if(!empty($rawAnswer[$key]->answer)){
-                    if($val['answer'] == $rawAnswer[$key]->answer){
-                        $matchAnswer++;
-                    }
-                }else{
-                    $wrongPlace++;
-                }
-            }
-            // cek isi shape
-            if(isset($val['shape'])){
-                if(!empty($rawAnswer[$key]->shape)){
-                    if($val['shape'] == $rawAnswer[$key]->shape){
-                        $matchShape++;
-                    }
-                }else{
-                    $wrongPlace++;
-                }
-            }
-            // cek isi arrow
-            if(isset($val['arrow'])){
-                if(!empty($rawAnswer[$key]->arrow)){
-                    if($val['arrow'] == $rawAnswer[$key]->arrow){
-                        if(strpos($val['arrow'], '-') === 4){
-                            $matchArrow+=0.5;
-                        }else{
-                            $matchArrow++;
-                        }
-                    }
-                }else{
-                    if(strpos($val['arrow'], '-') === 4){
-                        $wrongPlace+=0.5;
-                    }else{
-                        $wrongPlace++;
-                    }
-                }
-            }
+        foreach($keysAnswerRaw['nodeDataArray'] as $key => $val){
+            $nodeKey[$val['key']]['category'] = $val['category'];
+            $nodeKey[$val['key']]['text'] = $val['text'];
         }
+        // mengisi array userAnswer
+        foreach($userAnswerRaw['linkDataArray'] as $uar){
+            foreach($uar as $key => $val){
+                if(!in_array($key, $delKey)){
+                    $userAnswer[$u][$key] = $val;
+                }
+            }
+            $userAnswer[$u]['fromNode'] = $nodeUser[$uar['from']]['category'];
+            $userAnswer[$u]['toNode'] = $nodeUser[$uar['to']]['category'];
+            if($nodeUser[$uar['from']]['category'] != "Start"){
+                $userAnswer[$u]['nodeText'] = $nodeUser[$uar['from']]['text'];
+            }
+            $u++;
+        }
+        // mengisi array keysAnswer
+        foreach($keysAnswerRaw['linkDataArray'] as $kar){
+            foreach($kar as $key => $val){
+                if(!in_array($key, $delKey)){
+                    $keysAnswer[$k][$key] = $val;
+                }
+            }
+            $keysAnswer[$k]['fromNode'] = $nodeKey[$kar['from']]['category'];
+            $keysAnswer[$k]['toNode'] = $nodeKey[$kar['to']]['category'];
         
-        // print_r($_POST);
-        // print_r($matchArrow);
-
-        // Menghitung nilai total dan jumlah bagian yang benar
-        // echo round((100/$n)*($matchAnswer+$matchShape+$matchArrow)-($wrongPlace*2)).'|';
-        // echo ($matchAnswer+$matchShape+$matchArrow).'/'.$n;
+            if($nodeKey[$kar['from']]['category'] != "Start"){
+                $keysAnswer[$k]['nodeText'] = $nodeKey[$kar['from']]['text'];
+            }
+            $k++;
+        }
+        // total kunci jawaban
+        foreach($keysAnswer as $val){
+            $total += count($val);
+        }
+        // koreksi jawaban
+        foreach($keysAnswer as $val){
+            $similar = array_intersect($keysAnswer[$corr], $userAnswer[$corr]);
+            $keysAnswer_perc += count($similar) / count($keysAnswer[$corr]); // 0.5
+            $corrAns += count($similar);
+            $corr++;
+        }
+        $score = round((100 / count($keysAnswer)) * $keysAnswer_perc); // 0.5714..
         
         $result = array(
             'username'=> $this->session->name,
             'quizID'=> $quizID,
-            'correctAnswer'=> ($matchAnswer+$matchShape+$matchArrow).'/'.$n,
-            'score'=> round((100/$n)*($matchAnswer+$matchShape+$matchArrow)-($wrongPlace*2))
+            'correctAnswer'=> $corrAns.'/'.$total,
+            'score'=> $score
+        );
+        $userAnswer = array(
+            'answer'=> $_POST['answer'],
+            'svg'=> $_POST['svg']
         );
         $where =  array(
             'username'=>$this->session->name,
             'quizID'=>$quizID
         );
-        $answerData = $this->crud->Update('user_answer', array('answer'=>json_encode($_POST)), $where);
+        $answerData = $this->crud->Update('user_answer', $userAnswer, $where);
         $quizResult = $this->crud->Insert('quiz_result', $result);
     }
+    public function checkAnswer($id)
+    {
+        // Inisiasi variabel
+        // ambil data dari database
+        $user = $this->crud->GetWhere('user_answer', array('quizID'=>$id))[0];
+        $keys = $this->crud->GetWhere('question_flow', array('quizID'=>$id))[0];
+        // konversi json dari diagram gojs ke php array
+        $userAnswerRaw = json_decode(json_encode(json_decode($user['answer'])),true);
+        $keysAnswerRaw = json_decode(json_encode(json_decode($keys['answer'])),true);
+        // variable delete key dari array jawaban
+        $delKey = array('from', 'to', 'fromPort', 'toPort', 'points', 'visible');
+        // variabel key array user answer dan key answer
+        $u=0;
+        $k=0;
+        $total=0;
+        $countKey=0;
+        $corr=0;
+        $corrAns=0;
+        $keysAnswer_perc=0;
+        // unset key dari userAnswer dan keyAnswer
+        unset(
+            $userAnswerRaw['class'],
+            $userAnswerRaw['linkFromPortIdProperty'],
+            $userAnswerRaw['linkToPortIdProperty'],
+            $keysAnswerRaw['class'],
+            $keysAnswerRaw['linkFromPortIdProperty'],
+            $keysAnswerRaw['linkToPortIdProperty']
+        );
+        // mengisi array nodekey
+        foreach($userAnswerRaw['nodeDataArray'] as $key => $val){
+            $nodeUser[$val['key']]['category'] = $val['category'];
+            $nodeUser[$val['key']]['text'] = $val['text'];
+        }
+        foreach($keysAnswerRaw['nodeDataArray'] as $key => $val){
+            $nodeKey[$val['key']]['category'] = $val['category'];
+            $nodeKey[$val['key']]['text'] = $val['text'];
+        }
+        // mengisi array userAnswer
+        foreach($userAnswerRaw['linkDataArray'] as $uar){
+            foreach($uar as $key => $val){
+                if(!in_array($key, $delKey)){
+                    $userAnswer[$u][$key] = $val;
+                }
+            }
+            $userAnswer[$u]['fromNode'] = $nodeUser[$uar['from']]['category'];
+            $userAnswer[$u]['toNode'] = $nodeUser[$uar['to']]['category'];
+            if($nodeUser[$uar['from']]['category'] != "Start"){
+                $userAnswer[$u]['nodeText'] = $nodeUser[$uar['from']]['text'];
+            }
+            $u++;
+        }
+        // mengisi array keysAnswer
+        foreach($keysAnswerRaw['linkDataArray'] as $kar){
+            foreach($kar as $key => $val){
+                if(!in_array($key, $delKey)){
+                    $keysAnswer[$k][$key] = $val;
+                }
+            }
+            $keysAnswer[$k]['fromNode'] = $nodeKey[$kar['from']]['category'];
+            $keysAnswer[$k]['toNode'] = $nodeKey[$kar['to']]['category'];
+        
+            if($nodeKey[$kar['from']]['category'] != "Start"){
+                $keysAnswer[$k]['nodeText'] = $nodeKey[$kar['from']]['text'];
+            }
+            $k++;
+        }
+        foreach($keysAnswer as $val){
+            $total += count($val);
+        }
+        foreach($keysAnswer as $val){
+            $similar = array_intersect($keysAnswer[$corr], $userAnswer[$corr]);
+            $keysAnswer_perc += count($similar) / count($keysAnswer[$corr]); // 0.5
+            $corrAns += count($similar);
+            echo $corrAns.' | ';
+            $corr++;
+        }
+        echo $score = round((100 / count($keysAnswer)) * $keysAnswer_perc); // 0.5714..
+        print_r($userAnswer);
+        print_r($keysAnswer);
+    }
+
     public function deleteclass()
     {
         $class = $_POST['id'];
@@ -503,6 +613,7 @@ class Dataprocess extends CI_Controller {
         $teacher = $this->session->name;
         $del = $this->crud->Delete('quiz', array('id'=>$id, 'teacher'=>$teacher));
         if($del){
+            $this->crud->Delete('question_flow', array('quizID'=>$id));
             $res = 1;
         }else{
             $res = 0;
