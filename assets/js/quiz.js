@@ -1,506 +1,511 @@
-let droppedShape = 1,
-    droppedArrow = 1,
-    arrowContainer,
-    drop = 7,
-    arrow = 8,
-    targetRow = 1,
-    diagramContainer = true,
-    answerContainer = true,
-    questionDataVariable;
+// JQUERY NO CONFLICT
+const $j = jQuery.noConflict();
 
-window.onbeforeunload = function() {
-    // return 'You have unsaved changes!';
-    // $('.answer-container').show
-}
+// DATE PICKER FUNCTION
+let tgl = new Date();
+tgl.setHours(tgl.getHours()+1);
+$j("#startDate").datetimepicker({ 
+    minDate: tgl,
+    changeMonth: true,
+    dateFormat: "yy-mm-dd",
+    onSelect: function(date){
+        let selectedDate = new Date(date);
+        let msecsInADay = 86400000;
+        let endDate = new Date(selectedDate.getTime() + msecsInADay);
 
-// fungsi submit kuis
-function submitQuiz() {
-    let quizDetail = {
-      'id' : $('#quiz-id').val(),
-      'teacher' : $('#quiz-teacher').val(),
-      'classID' : $('#quiz-classID').val(),
-      'title' : $('#quiz-title').val(),
-      'date' : $('#startDate').val(),
-      'dueDate' : $('#dueDate').val(),
-      'duration' : $('#quiz-duration').val(),
+        //Set Minimum Date of EndDatePicker After Selected Date of StartDatePicker
+        $j("#dueDate").datepicker( "option", "minDate", endDate );
+    }
+});
+
+$j("#dueDate").datetimepicker({ 
+    dateFormat: 'yy-mm-dd',
+    changeMonth: true
+});
+
+// GOJS FLOWCHART
+
+// function init() {
+    const draft = { 
+        "class": "GraphLinksModel",
+        "linkFromPortIdProperty": "fromPort",
+        "linkToPortIdProperty": "toPort"
     };
-    let scheme = [];
-    let a = {};
-    let drop = $('.target>.drop').length;
-    let arrow = $('.target>.arrow').length;
-    for(i=0;i<drop;i++){
-        a['target-' + (i+1)] = ({
-            'shape' : $('#drop-'+(i+1)+'>div>img').attr('diagram'),
-            'answer' : $('#answer-'+$('#drop-'+(i+1)+'>div').attr('id')).val()
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+        $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
+        {
+            "LinkDrawn": showLinkLabel,  // this DiagramEvent listener is defined below
+            "LinkRelinked": showLinkLabel,
+            "undoManager.isEnabled": true  // enable undo & redo
+        });
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener("Modified", function(e) {
+        var button = document.getElementById("SaveButton");
+        if (button) button.disabled = !myDiagram.isModified;
+        var idx = document.title.indexOf("*");
+        if (myDiagram.isModified) {
+            if (idx < 0) document.title += "*";
+        } else {
+            if (idx >= 0) document.title = document.title.substr(0, idx);
+        }
+    });
+
+    // helper definitions for node templates
+
+    function nodeStyle() {
+        return [
+        // The Node.location comes from the "loc" property of the node data,
+        // converted by the Point.parse static method.
+        // If the Node.location is changed, it updates the "loc" property of the node data,
+        // converting back using the Point.stringify static method.
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+        {
+            // the Node.location is at the center of each node
+            locationSpot: go.Spot.Center
+        }
+        ];
+    }
+
+    // Define a function for creating a "port" that is normally transparent.
+    // The "name" is used as the GraphObject.portId,
+    // the "align" is used to determine where to position the port relative to the body of the node,
+    // the "spot" is used to control how links connect with the port and whether the port
+    // stretches along the side of the node,
+    // and the boolean "output" and "input" arguments control whether the user can draw links from or to the port.
+    function makePort(name, align, spot, output, input) {
+        var horizontal = align.equals(go.Spot.Top) || align.equals(go.Spot.Bottom);
+        // the port is basically just a transparent rectangle that stretches along the side of the node,
+        // and becomes colored when the mouse passes over it
+        return $(go.Shape,
+        {
+            fill: "transparent",  // changed to a color in the mouseEnter event handler
+            strokeWidth: 0,  // no stroke
+            width: horizontal ? NaN : 8,  // if not stretching horizontally, just 8 wide
+            height: !horizontal ? NaN : 8,  // if not stretching vertically, just 8 tall
+            alignment: align,  // align the port on the main Shape
+            stretch: (horizontal ? go.GraphObject.Horizontal : go.GraphObject.Vertical),
+            portId: name,  // declare this object to be a "port"
+            fromSpot: spot,  // declare where links may connect at this port
+            fromLinkable: output,  // declare whether the user may draw links from here
+            toSpot: spot,  // declare where links may connect at this port
+            toLinkable: input,  // declare whether the user may draw links to here
+            cursor: "pointer",  // show a different cursor to indicate potential link point
+            mouseEnter: function(e, port) {  // the PORT argument will be this Shape
+            if (!e.diagram.isReadOnly) port.fill = "rgba(255,0,255,0.5)";
+            },
+            mouseLeave: function(e, port) {
+            port.fill = "transparent";
+            }
         });
     }
-    for(i=0;i<arrow;i++){
-        a['arrow-'+ (i+1)] = ({'arrow' : $('#arrow-'+(i+1)+'>div>img').attr('arrow-id')});
+
+    function textStyle() {
+        return {
+        font: "bold 11pt Lato, Helvetica, Arial, sans-serif",
+        stroke: "#F8F8F8"
+        }
     }
-    scheme.push(a);
-    // console.log(scheme);
-    $.ajax({
+
+    // define the Node templates for regular nodes
+
+    myDiagram.nodeTemplateMap.add("Process",  // the default category
+        $(go.Node, "Table", nodeStyle(),
+        // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
+        $(go.Panel, "Auto",
+            $(go.Shape, "Rectangle",
+            { fill: "#282c34", stroke: "#00A9C9", strokeWidth: 3.5 },
+            new go.Binding("figure", "figure")),
+            $(go.TextBlock, textStyle(),
+            {
+                margin: 8,
+                maxSize: new go.Size(160, NaN),
+                wrap: go.TextBlock.WrapFit,
+                editable: true
+            },
+            new go.Binding("text").makeTwoWay())
+        ),
+        // four named ports, one on each side:
+        makePort("T", go.Spot.Top, go.Spot.TopSide, false, true),
+        makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+        makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
+        makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, false)
+        ));
+
+    myDiagram.nodeTemplateMap.add("Conditional",
+        $(go.Node, "Table", nodeStyle(),
+        // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
+        $(go.Panel, "Auto",
+            $(go.Shape, "Diamond",
+            { fill: "#282c34", stroke: "#00A9C9", strokeWidth: 3.5 },
+            new go.Binding("figure", "figure")),
+            $(go.TextBlock, textStyle(),
+            {
+                margin: 8,
+                maxSize: new go.Size(160, NaN),
+                wrap: go.TextBlock.WrapFit,
+                editable: true
+            },
+            new go.Binding("text").makeTwoWay())
+        ),
+        // four named ports, one on each side:
+        makePort("T", go.Spot.Top, go.Spot.Top, false, true),
+        makePort("L", go.Spot.Left, go.Spot.Left, true, true),
+        makePort("R", go.Spot.Right, go.Spot.Right, true, true),
+        makePort("B", go.Spot.Bottom, go.Spot.Bottom, true, false)
+        ));
+
+    myDiagram.nodeTemplateMap.add("Start",
+        $(go.Node, "Table", nodeStyle(),
+        $(go.Panel, "Spot",
+            $(go.Shape, "Circle",
+            { desiredSize: new go.Size(70, 70), fill: "#282c34", stroke: "#09d3ac", strokeWidth: 3.5 }),
+            $(go.TextBlock, "Start", textStyle(),
+            new go.Binding("text"))
+        ),
+        // three named ports, one on each side except the top, all output only:
+        makePort("L", go.Spot.Left, go.Spot.Left, true, false),
+        makePort("R", go.Spot.Right, go.Spot.Right, true, false),
+        makePort("B", go.Spot.Bottom, go.Spot.Bottom, true, false)
+        ));
+
+    myDiagram.nodeTemplateMap.add("End",
+        $(go.Node, "Table", nodeStyle(),
+        $(go.Panel, "Spot",
+            $(go.Shape, "Circle",
+            { desiredSize: new go.Size(60, 60), fill: "#282c34", stroke: "#DC3C00", strokeWidth: 3.5 }),
+            $(go.TextBlock, "End", textStyle(),
+            new go.Binding("text"))
+        ),
+        // three named ports, one on each side except the bottom, all input only:
+        makePort("T", go.Spot.Top, go.Spot.Top, false, true),
+        makePort("L", go.Spot.Left, go.Spot.Left, false, true),
+        makePort("R", go.Spot.Right, go.Spot.Right, false, true)
+        ));
+
+    // taken from ../extensions/Figures.js:
+    go.Shape.defineFigureGenerator("File", function(shape, w, h) {
+        var geo = new go.Geometry();
+        var fig = new go.PathFigure(0, 0, true); // starting point
+        geo.add(fig);
+        fig.add(new go.PathSegment(go.PathSegment.Line, .75 * w, 0));
+        fig.add(new go.PathSegment(go.PathSegment.Line, w, .25 * h));
+        fig.add(new go.PathSegment(go.PathSegment.Line, w, h));
+        fig.add(new go.PathSegment(go.PathSegment.Line, 0, h).close());
+        var fig2 = new go.PathFigure(.75 * w, 0, false);
+        geo.add(fig2);
+        // The Fold
+        fig2.add(new go.PathSegment(go.PathSegment.Line, .75 * w, .25 * h));
+        fig2.add(new go.PathSegment(go.PathSegment.Line, w, .25 * h));
+        geo.spot1 = new go.Spot(0, .25);
+        geo.spot2 = go.Spot.BottomRight;
+        return geo;
+    });
+
+    myDiagram.nodeTemplateMap.add("Document",  // the default category
+        $(go.Node, "Table", nodeStyle(),
+        // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
+        $(go.Panel, "Auto",
+            $(go.Shape, "Document",
+            { fill: "#282c34", stroke: "#00A9C9", strokeWidth: 3.5 },
+            new go.Binding("figure", "figure")),
+            $(go.TextBlock, textStyle(),
+            {
+                margin: 8,
+                maxSize: new go.Size(160, NaN),
+                wrap: go.TextBlock.WrapFit,
+                editable: true
+            },
+            new go.Binding("text").makeTwoWay())
+        ),
+        // four named ports, one on each side:
+        makePort("T", go.Spot.Top, go.Spot.TopSide, false, true),
+        makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+        makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
+        makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, false)
+        ));
+
+    myDiagram.nodeTemplateMap.add("Input",  // the default category
+        $(go.Node, "Table", nodeStyle(),
+        // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
+        $(go.Panel, "Auto",
+            $(go.Shape, "Input",
+            { fill: "#282c34", stroke: "#00A9C9", strokeWidth: 3.5 },
+            new go.Binding("figure", "figure")),
+            $(go.TextBlock, textStyle(),
+            {
+                margin: 8,
+                maxSize: new go.Size(160, NaN),
+                wrap: go.TextBlock.WrapFit,
+                editable: true
+            },
+            new go.Binding("text").makeTwoWay())
+        ),
+        // four named ports, one on each side:
+        makePort("T", go.Spot.Top, go.Spot.TopSide, false, true),
+        makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+        makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
+        makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, false)
+        ));
+
+    // replace the default Link template in the linkTemplateMap
+    myDiagram.linkTemplate =
+        $(go.Link,  // the whole link panel
+        {
+            routing: go.Link.AvoidsNodes,
+            curve: go.Link.JumpOver,
+            corner: 5, toShortLength: 4,
+            relinkableFrom: true,
+            relinkableTo: true,
+            reshapable: true,
+            resegmentable: true,
+            // mouse-overs subtly highlight links:
+            mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
+            mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
+            selectionAdorned: false
+        },
+        new go.Binding("points").makeTwoWay(),
+        $(go.Shape,  // the highlight shape, normally transparent
+            { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
+        $(go.Shape,  // the link path shape
+            { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
+            new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
+        $(go.Shape,  // the arrowhead
+            { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
+        $(go.Panel, "Auto",  // the link label, normally not visible
+            { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
+            new go.Binding("visible", "visible").makeTwoWay(),
+            $(go.Shape, "RoundedRectangle",  // the label shape
+            { fill: "#F8F8F8", strokeWidth: 0 }),
+            $(go.TextBlock, "Yes",  // the label
+            {
+                textAlign: "center",
+                font: "10pt helvetica, arial, sans-serif",
+                stroke: "#333333",
+                editable: true
+            },
+            new go.Binding("text").makeTwoWay())
+        )
+        );
+
+        // Make link labels visible if coming out of a "conditional" node.
+        // This listener is called by the "LinkDrawn" and "LinkRelinked" DiagramEvents.
+        function showLinkLabel(e) {
+            var label = e.subject.findObject("LABEL");
+            if (label !== null) label.visible = (e.subject.fromNode.data.category === "Conditional");
+        }
+
+        // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
+        myDiagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
+        myDiagram.toolManager.relinkingTool.temporaryLink.routing = go.Link.Orthogonal;
+
+        // load();  // load an initial diagram from some JSON text
+
+        // initialize the Palette that is on the left side of the page
+        myPalette =
+            $(go.Palette, "myPaletteDiv",  // must name or refer to the DIV HTML element
+            {
+                // Instead of the default animation, use a custom fade-down
+                "animationManager.initialAnimationStyle": go.AnimationManager.None,
+                "InitialAnimationStarting": animateFadeDown, // Instead, animate with this function
+
+                nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
+                model: new go.GraphLinksModel([  // specify the contents of the Palette
+                { category: "Start", text: "Start" },
+                { category: "Process", text: "Step" },
+                { category: "Conditional", text: "???" },
+                { category: "Document", text: "Document" },
+                { category: "Input", text: "Input" },
+                { category: "End", text: "End" }
+                ])
+            });
+
+        // This is a re-implementation of the default animation, except it fades in from downwards, instead of upwards.
+        function animateFadeDown(e) {
+            var diagram = e.diagram;
+            var animation = new go.Animation();
+            animation.isViewportUnconstrained = true; // So Diagram positioning rules let the animation start off-screen
+            animation.easing = go.Animation.EaseOutExpo;
+            animation.duration = 900;
+            // Fade "down", in other words, fade in from above
+            animation.add(diagram, 'position', diagram.position.copy().offset(0, 200), diagram.position);
+            animation.add(diagram, 'opacity', 0, 1);
+            animation.start();
+        }
+
+    // } // end init
+
+
+    // Show the diagram's model in JSON format that the user may edit
+    function save() {
+        document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+        myDiagram.isModified = false;
+    }
+    function load() {
+        myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    }
+
+// print the diagram by opening a new window holding SVG images of the diagram contents for each page
+function printDiagram() {
+    // var svgWindow = window.open();
+    // if (!svgWindow) return;  // failure to open a new Window
+    var printSize = new go.Size(700, 960);
+    var bnds = myDiagram.documentBounds;
+    var x = bnds.x;
+    var y = bnds.y;
+    var s = new XMLSerializer();
+    while (y < bnds.bottom) {
+        while (x < bnds.right) {
+        var svg = myDiagram.makeSVG({ scale: 1.0, position: new go.Point(x, y), size: printSize });
+        x += printSize.width;
+        }
+        x = bnds.x;
+        y += printSize.height;
+    }
+    var str = s.serializeToString(svg);
+    var encod = encodeURIComponent(str)
+    return encod;
+}
+
+if(window.location.pathname.includes("edit-quiz")){
+    myDiagram.model = go.Model.fromJson(savedDiagram);
+}else{
+    myDiagram.model = go.Model.fromJson(draft);
+}
+// fungsi submit kuis
+function editQuiz() {
+    let id = $j('#quiz-id').val();
+    let quizDetail = {
+      'title' : $j('#quiz-title').val(),
+      'date' : $j('#startDate').val(),
+      'dueDate' : $j('#dueDate').val(),
+      'duration' : $j('#quiz-duration').val(),
+    };
+    let answer = myDiagram.model.toJson();
+    $j.ajax({
         type  : 'POST',
-        url   : baseUrl+'dataprocess/newQuestion',
+        url   : baseUrl+'dataprocess/editquiz',
         // dataType: 'json',
-        data : {'quizDetail': quizDetail, 'question': $('#question-form').val(), 'answer': scheme[0]},
+        data : {'quizDetail': quizDetail, 'question': $j('#question-form').val(), 'answer': answer, svg: printDiagram(), 'id': id},
         beforeSend: function () {
             // ... your initialization code here (so show loader) ...
+            $j('#loading').show();
         },
         complete: function () {
             // ... your finalization code here (hide loader) ...
+            $j('#loading').hide();
         },
         error: function (jqXHR, textStatus, errorThrown){
-            alert(errorThrown.status);
+            alert("Gagal menyimpan kuis, coba lagi!");
         },
         success : function(data){
-            // console.log(data);
+            history.go(-1);
+        }
+    });
+}
+// fungsi submit kuis
+function submitQuiz() {
+    let quizDetail = {
+      'id' : $j('#quiz-id').val(),
+      'teacher' : $j('#quiz-teacher').val(),
+      'classID' : $j('#quiz-classID').val(),
+      'title' : $j('#quiz-title').val(),
+      'date' : $j('#startDate').val(),
+      'dueDate' : $j('#dueDate').val(),
+      'duration' : $j('#quiz-duration').val()
+    };
+    let answer = myDiagram.model.toJson();
+    $j.ajax({
+        type  : 'POST',
+        url   : baseUrl+'dataprocess/newQuestion',
+        // dataType: 'json',
+        data : {'quizDetail': quizDetail, 'question': $j('#question-form').val(), 'answer': answer, svg: printDiagram()},
+        beforeSend: function () {
+            // ... your initialization code here (so show loader) ...
+            $j('#loading').show();
+        },
+        complete: function () {
+            // ... your finalization code here (hide loader) ...
+            $j('#loading').hide();
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+            alert("Gagal menyimpan kuis, coba lagi!");
+        },
+        success : function(data){
             history.go(-1);
         }
     });
 }
 
-// fungsi menambahkan target
-function makeTarget(){
-    let n = 0;
-    let change = true;
-    targetRow++;
-    for ( let i=0; i<=9; i++ ) {
-        n++;
-        if(!change){
-            if(n%2 === 0){
-                $('.target').append($('<div class="drop" id="drop-'+drop+'"></div>').droppable({
-                    accept: '.diagram-wrap',
-                    hoverClass: 'hovered',
-                    drop: diagramDrop
-                }));
-                drop++;
-            }else{
-                $('.target').append($('<div class="arrow" id="arrow-'+arrow+'"></div>').click(function(){
-                    viewArrow($(this));
-                }));
-                arrow++;
-            }
-        }else{
-            if(n%2 === 1){
-                $('.target').append($('<div class="arrow" id="arrow-'+arrow+'"></div>').click(function(){
-                    viewArrow($(this));
-                }));
-                arrow++;
-            }else{
-                $('.target').append('<div class="empty"></div>');
-            }
-        }
-        if(n%5 === 0){
-            change = !change;
-        }
+// FUNGSI START QUIZ
+function countDown() {
+    let date = Math.round((timeLimit-new Date())/1000);
+    let hours = Math.floor(date/3600);
+    date = date - (hours*3600);
+    let mins = Math.floor(date/60);
+    date = date - (mins*60);
+    let secs = date;
+    if (hours<10) hours = '0'+hours;
+    if (mins<10) mins = '0'+mins;
+    if (secs<10) secs = '0'+secs;
+    $j('#timer').html(hours+':'+mins+':'+secs);
+    let coba = setTimeout("countDown()",1000);
+    if(hours == 0 && mins == 0 && secs == 0){
+        clearTimeout(coba);
+        submitAnswer();
     }
 }
 
-// fungsi membuat target awal
-function firstTarget(){
-    let n = 0;
-    let drop = 1;
-    let arrow = 1;
-    let change = true;
-    for ( let i=0; i<=14; i++ ) {
-        n++;
-        if(change){
-            if(n%2 === 1){
-                $('.target').append($('<div class="drop" id="drop-'+drop+'"></div>').droppable({
-                    accept: '.diagram-wrap',
-                    hoverClass: 'hovered',
-                    drop: diagramDrop
-                }));
-                drop++;
-            }else{
-                $('.target').append('<div class="arrow" id="arrow-'+arrow+'"></div>');
-                arrow++;
-            }
-        }else{
-            if(n%2 === 0){
-                $('.target').append('<div class="arrow" id="arrow-'+arrow+'"></div>');
-                arrow++;
-            }else{
-                $('.target').append('<div class="empty"></div>');
-            }
+function submitAnswer() {
+    let answer = myDiagram.model.toJson();
+    $j.ajax({
+        type  : 'POST',
+        url   : baseUrl+'dataprocess/submitAnswer/'+quizID,
+        // dataType: 'json',
+        data : {'answer': answer, 'svg': printDiagram()},
+        beforeSend: function () {
+            // ... your initialization code here (so show loader) ...
+            $j('#loading').show();
+        },
+        complete: function () {
+            // ... your finalization code here (hide loader) ...
+            $j('#loading').hide();
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+            alert(errorThrown.status);
+        },
+        success : function(data){
+            console.log(data);
+            window.location.replace(baseUrl+'start-quiz/'+quizID+'/result');
         }
-        if(n%5 === 0){
-            change = !change;
-        }
-    }
-}
-
-// fungsi mencari element terdekat
-function getSibling(obstacle, colls, direction){
-    let collision = colls.collision(obstacle, {
-        relative: 'obstacle',
-        as: '<div/>',
-        colliderData: 'cdata',
-        obstacleData: 'odata',
-        directionData: 'ddata'
-    });
-    for(let i=0; i<collision.length; i++){
-        let o = $(collision[i]).data("odata");
-        let c = $(collision[i]).data("cdata");
-        let d = $(collision[i]).data("ddata");
-        let coba = $(o).get(0).id;
-        if(d === direction){
-            return coba;
-        }else if(direction === null){
-            return d;
-        }
-    }
-}
-
-function coba() {
-    console.log(droppedShape);
-    console.log(droppedArrow);
-    console.log(drop);
-    console.log(arrow);
-    console.log(arrowContainer);
-}
-
-// fungsi drop diagram
-function diagramDrop(event, ui) {
-    let count = $(this)[0].children.length;
-    if($(this).children().hasClass('turn-arrow')){
-        
-        let arrowGroup = $(this).children().attr('class').split(' ')[1];
-        $('.'+arrowGroup).remove();
-    }
-    if(ui.draggable.hasClass('dropped')){
-        if(!$(this).children().attr('id') || $(this).children().attr('id') !== $(ui.draggable).attr('id')){
-            console.log('ada');
-            $(this).html($(ui.draggable).draggable({
-                // stack: '.diagram-wrap',
-                zIndex: 2,
-                revert: 'invalid'
-            }));
-        }
-        $(ui.draggable).position({
-            of: $(this), my: 'center center', at: 'center center'
-        });
-    }else{
-        if(ui.draggable.children().attr('diagram') == 'start-end'){
-            $(this).html($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
-                    // stack: '.diagram-wrap',
-                    zIndex: 2,
-                    revert: 'invalid'
-                })
-            );
-            $(this).children().append('<span>Selesai</span>')
-        }else{
-            $(this).html($(ui.draggable).clone().addClass('dropped').attr('id', 'shape-'+droppedShape).draggable({
-                    // stack: '.diagram-wrap',
-                    zIndex: 2,
-                    revert: 'invalid'
-                })
-                .append($('<textarea class="answer-text" name="" id="answer-shape-'+droppedShape+'" cols="30" rows="1"></textarea>')
-                .focus(function(){
-                    $(this).css({
-                        'width' : '300px',
-                        'height' : '100px',
-                        'box-shadow' : '6px 6px 9px -5px rgba(0,0,0,0.75)'
-                    });
-                    $(this).parent().css('z-index', '99');
-                })
-                .focusout(function(){
-                    $(this).css({
-                        'width' : '70%',
-                        'height' : '21px',
-                        'box-shadow' : 'none'
-                    });
-                    $(this).parent().css('z-index', 'auto');
-            })));
-        }
-        $(ui.draggable[1]).position({
-            of: $(this), my: 'center center', at: 'center center'
-        });
-        droppedShape++;
-    }
-}
-
-// fungsi drop arrow
-function arrowDrop(val){
-    let arrowList = {
-        'arrow1' : {
-            'id' : 'arrow1',
-            'file' : 'arrow1',
-            'rotate' : 0,
-            'direction' : ['S','E'],
-            'turn' : 'right'
-        },
-        'arrow2' : {
-            'id' : 'arrow2',
-            'file' : 'arrow1',
-            'rotate' : 90,
-            'direction' : ['W','S'],
-            'turn' : 'right'
-        },
-        'arrow3' : {
-            'id' : 'arrow3',
-            'file' : 'arrow1',
-            'rotate' : 180,
-            'direction' : ['N','W'],
-            'turn' : 'right'
-        },
-        'arrow4' : {
-            'id' : 'arrow4',
-            'file' : 'arrow1',
-            'rotate' : 270,
-            'direction' : ['E','N'],
-            'turn' : 'right'
-        },
-        'arrow5' : {
-            'id' : 'arrow5',
-            'file' : 'arrow2',
-            'rotate' : 0,
-            'direction' : ['S','W'],
-            'turn' : 'left'
-        },
-        'arrow6' : {
-            'id' : 'arrow6',
-            'file' : 'arrow2',
-            'rotate' : 90,
-            'direction' : ['W','N'],
-            'turn' : 'left'
-        },
-        'arrow7' : {
-            'id' : 'arrow7',
-            'file' : 'arrow2',
-            'rotate' : 180,
-            'direction' : ['N','E'],
-            'turn' : 'left'
-        },
-        'arrow8' : {
-            'id' : 'arrow8',
-            'file' : 'arrow2',
-            'rotate' : 270,
-            'direction' : ['E','S'],
-            'turn' : 'left'
-        },
-        'arrow9' : {
-            'id' : 'arrow9',
-            'file' : 'arrow3',
-            'rotate' : 0,
-            'direction' : null,
-            'turn' : null
-        },
-        'arrow10' : {
-            'id' : 'arrow10',
-            'file' : 'arrow3',
-            'rotate' : 90,
-            'direction' : null,
-            'turn' : null
-        },
-        'arrow11' : {
-            'id' : 'arrow11',
-            'file' : 'arrow3',
-            'rotate' : 180,
-            'direction' : null,
-            'turn' : null
-        },
-        'arrow12' : {
-            'id' : 'arrow12',
-            'file' : 'arrow3',
-            'rotate' : 270,
-            'direction' : null,
-            'turn' : null
-        }
-    }
-    console.log(val);
-    return arrowList[val];
-}
-
-// fungsi menampilkan pilihan arrow
-function viewArrow(container) {
-    let arrowList = {
-        '-2' : [
-            '2', '9', '11'
-        ],
-        '-1' : [
-            '8','9','11'
-        ],
-        '0' : [
-            '1','7','10','12'
-        ],
-        '1' : [
-            '1','5','10','12'
-        ],
-        '2' : [
-            '3','5','10','12'
-        ],
-        '3' : [
-            '2','4','6','8','9','11'
-        ],
-        '4' : [
-            '2','4','6','8','9','11'
-        ]
-    }
-    for(i=0;i<12;i++){
-        $('#arrow'+(i+1)).parent().hide();
-    }
-    $('#arrow-container').show();
-    arrowContainer = container;
-    containerID = $(container).attr('id').substring(6);
-    $.each((arrowList[(containerID-3)%5]), function(i, val){
-        $('#arrow'+val).parent().show();
     });
 }
-
-$(document).ready(function(){
-    firstTarget();
-
-    // button menampilkan diagram container
-    $('.diagram-btn').click(function(){
-        $('.answer-container').hide();
-        $('#diagram-container').toggle();
+function loadVideo(file){
+    $j('#modal-tutorial>video>source').attr('src', baseUrl+'assets/video/'+file+'.mp4');
+    $j('#modal-tutorial>video').get(0).load();
+    $j('#modal-tutorial>video').get(0).play();
+}
+$j('#tutorial-button').click(function(){
+    $j("#modal-tutorial").modal({
+        fadeDuration: 100
     });
-    
-    // button menampilkan anwer container
-    $('.answer-btn').click(function(){
-        $('#diagram-container').hide();
-        $('.answer-container').toggle();
-        $('.answer-container').css('display', 'grid');
-    });
-
-    // button menampilkan arrow container
-    $('.arrow').click(function(){
-        viewArrow($(this));
-    });
-
-    // menyembunyikan arrow container
-    $('#arrow-container').click(function(){
-        $(this).hide();
-    });
-
-    // inisiasi answer number sebagai draggable
-    $('.answer-number').draggable({
-        zIndex : 999,
-        revert : 'invalid',
-        start : function(){
-            console.log('object');
-            // $('.answer-container').css('overflow-y', 'hidden');
-        },
-        stop : function(){
-            // $('.answer-container').css('overflow-y', 'scroll');
-        }
-    });
-
-    // menampilkan keterangan jawaban
-    $(".answer-number").hover(
-        function() {
-            $(this).find('p').show();
-        }, function() {
-            $(this).find('p').hide();
-        }
-    );
-
-    // fungsi arrow drop
-    $('.arrow-img').click(function(){
-        // replace turned arrow
-        let arrowImage = $(arrowContainer).children('img');
-        if(arrowImage.hasClass('empty-arrow')){
-            console.log('wkwk');
-            let arrowGroup = arrowImage.attr('class').split(' ')[2];
-            console.log(arrowGroup);
-            $('.'+arrowGroup).remove();
-        }
-
-        let arrowData = arrowDrop($(this).children().attr('id'));
-        let arrowType = arrowData['file'].substring(5);
-        if(arrowType < 3){
-            let firstSibling = getSibling('.drop', arrowContainer, arrowData.direction[0]);
-            let secondSibling = getSibling('.arrow', $('#'+firstSibling), arrowData.direction[1]);
-            if(!secondSibling){
-                makeTarget();
-                secondSibling = getSibling('.arrow', $('#'+firstSibling), arrowData.direction[1]);
-            }
-
-            $(arrowContainer).html(
-                $(`<div><img arrow-id="tail-${arrowData['id']}" class='empty-arrow arrow-tail arrow-group-${droppedArrow}" src="${baseUrl}assets/img/empty-arrow.svg" alt=""></div>`
-            ));
-
-            $('#'+firstSibling).html(
-                $(`<img arrow-id="${arrowData['id']}" id="dropped-arrow-${droppedArrow}" class="turn-arrow arrow-group-${droppedArrow}" src="${baseUrl}assets/img/turn-${arrowData['turn']}-arrow.svg">`
-            ).css('transform', `translate(-50%, -50%) rotate(${arrowData['rotate']}deg)`));
-
-            $('#'+secondSibling).html(
-                $(`<div><img arrow-id="head-${arrowData['id']}" class="empty-arrow arrow-head arrow-group-${droppedArrow}" src="${baseUrl}assets/img/empty-arrow.svg"></div>`
-            ));
-
-            console.log(firstSibling+'-'+secondSibling);
-        }else{
-            $(arrowContainer).html($(`
-                <div>
-                    <img arrow-id="${arrowData['id']}" id="dropped-arrow-${droppedArrow}" src="${baseUrl}assets/img/${arrowData['file']}.svg" alt="">
-                </div>
-            `).css({
-                'transform': `rotate(${arrowData['rotate']}deg)`,
-                'position': 'relative',
-                'line-height': '53px',
-                'width': '100%',
-                'height': '100%',
-            }));
-        }
-        droppedArrow++;
-    });
-
-    // inisiasi diagram trash sebagai droppable
-    $('#diagram-trash').droppable({
-        accept: '.dropped',
-        hoverClass: 'hovered',
-        drop: function(event, ui){
-            $('#diagram-trash>#trash-top').css('transform', 'rotate(0deg)');
-            $(ui.draggable).remove();
-        },
-        over: function(event, ui){
-            $(ui.draggable).css('opacity', '.5');
-            $('#diagram-trash>#trash-top').css('transform', 'rotate(-19deg)');
-        },
-        out: function(event, ui){
-            $(ui.draggable).css('opacity', '1');
-            $('#diagram-trash>#trash-top').css('transform', 'rotate(0deg)');
-        }
-    })
-
-    // inisiasi diagram sebagai draggable
-    $('.diagram-wrap').draggable({
-        zIndex: 2,
-        containtment: '#flowchart-container',
-        helper: 'clone',
-        revert: 'invalid',
-        cursorAt: { left: 45 }
-    });
-
-    // ADD QUIZ NUMBER FUNCTION
-    let n = 1;
-    $("#add-quiz").click(function(e){
-        e.preventDefault();
-        n++;
-        $("#add-quiz-id").before('<li><a href="#">'+n+'</a></li>');
-    })
-
-    // DATE PICKER FUNCTION
-    
-    let tgl = new Date();
-    tgl.setHours(tgl.getHours()+1);
-    $("#startDate").datetimepicker({ 
-        minDate: tgl,
-        changeMonth: true,
-        dateFormat: "yy-mm-dd",
-        onSelect: function(date){
-            let selectedDate = new Date(date);
-            let msecsInADay = 86400000;
-            let endDate = new Date(selectedDate.getTime() + msecsInADay);
-
-            //Set Minimum Date of EndDatePicker After Selected Date of StartDatePicker
-            $("#dueDate").datepicker( "option", "minDate", endDate );
-        }
-    });
-    $("#dueDate").datetimepicker({ 
-        dateFormat: 'yy-mm-dd',
-        changeMonth: true
-    });
+    file = $j("#modal-tutorial li.active").attr('title');
+    loadVideo(file);
+});
+let nav = 1;
+$j('.nav-btn').click(function(){
+    console.log(nav);
+    $j("#modal-tutorial li#nav-"+nav).removeClass('active');
+    nav == 6 ? nav = 1 : nav++;
+    console.log(nav);
+    $j("#modal-tutorial li#nav-"+nav).addClass('active');
+    file = $j("#modal-tutorial li.active").attr('title');
+    loadVideo(file);
 })
+
+if(window.location.pathname.includes("start-quiz")){
+    countDown();
+}
