@@ -54,6 +54,7 @@ $route['login-page'] = 'home/login';
 $route['class'] = 'home/manageClass';
 $route['class/(:any)/(:any)'] = 'home/classPage';
 $route['class/(:any)/(:any)/new-quiz'] = 'home/createQuiz';
+$route['class/edit-quiz'] = 'home/editQuiz';
 $route['start-quiz/(:any)'] = 'home/startQuiz/$1';
 $route['start-quiz/(:any)/result'] = 'home/quizResult/$1';
 $route['message'] = 'home/messagePage';
