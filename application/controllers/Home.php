@@ -34,6 +34,10 @@ class Home extends CI_Controller {
 			redirect(base_url('login-page'));
 		}
    	}
+	public function coba()
+	{
+		$this->load->view('coba');
+	}
 	
 	public function akun()
 	{
@@ -153,11 +157,22 @@ class Home extends CI_Controller {
 		);
 		// $draftQuiz = $this->crud->Insert('quiz', $subData['draft']);
 		$data['page'] = $this->load->view('sub-page/new-quiz', $subData, TRUE);
+		$data['script'] = array('go-debug.js', 'Figures.js', 'quiz.js');
+		$this->load->view('page/home', $data);
+	}
+
+	public function editQuiz(){
+		$id = $_GET['id'];
+		$subData['quiz'] = $this->crud->GetWhere('question_flow', array('quizID'=>$id))[0];
+		$subData['detail'] = $this->crud->GetWhere('quiz', array('id'=>$id))[0];
+		$data['page'] = $this->load->view('sub-page/edit-quiz', $subData, TRUE);
+		$data['script'] = array('go-debug.js', 'Figures.js', 'quiz.js');
 		$this->load->view('page/home', $data);
 	}
 
 	public function startQuiz($quizID)
 	{
+		// temp data for user answer
 		$subData['startTime'] = date("Y-m-d H:i:s");
 		$this->crud->Insert('user_answer', array(
 			'username'=> $this->session->name,
@@ -170,14 +185,6 @@ class Home extends CI_Controller {
 		$subData['question']['flowchart'] = $this->crud->GetWhere('question_flow', array('quizID'=>$quizID));
 		
 		$jawaban = get_object_vars(json_decode($subData['question']['flowchart'][0]['answer']));
-		$subData['answer'] = array();
-		foreach ($jawaban as $key => $value) {
-			if(!empty($value->answer)){
-				array_push($subData['answer'], $value->answer);
-			}
-		}
-		// array_push($subData['answer'], 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, nostrum! Aut repellat beatae, numquam dolorum fuga sequi quo cupiditate eligendi ab, ea accusamus aliquam sunt saepe hic, commodi ex nobis.');
-		shuffle($subData['answer']);
 		$subData['soal'] = $this->crud->GetWhere('question_flow', array('quizID'=>$quizID));
 
 		if(!isset($_SESSION['timer'])){
@@ -186,6 +193,7 @@ class Home extends CI_Controller {
 		}
         // $this->session->unset_userdata('timer');
 
+		$data['script'] = array('go-debug.js', 'Figures.js', 'quiz.js');
 		$data['page'] = $this->load->view('sub-page/start-quiz', $subData, TRUE);
 		$this->load->view('page/home', $data);
 	}
