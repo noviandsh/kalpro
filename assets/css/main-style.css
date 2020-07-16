@@ -463,6 +463,42 @@ body {
     -o-transform: scale(1.2);
     -webkit-transform: scale(1.2); }
 
+.corner-menu {
+  transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  position: absolute;
+  right: -9px;
+  background: white;
+  color: #08808E;
+  height: 25px;
+  width: 25px;
+  border: 2px solid #08808E;
+  border-radius: 20px;
+  text-align: center;
+  line-height: 25px;
+  cursor: pointer;
+  overflow: hidden;
+  margin-top: 10px; }
+  .corner-menu:hover, .corner-menu span {
+    width: 75px; }
+  .corner-menu span {
+    white-space: nowrap;
+    margin-left: 4px; }
+  .corner-menu.view {
+    top: 5px; }
+    .corner-menu.view span {
+      margin-left: 4px; }
+  .corner-menu.edit {
+    top: 45px; }
+    .corner-menu.edit span {
+      margin-left: 5px; }
+  .corner-menu.delete {
+    top: 85px; }
+    .corner-menu.delete span {
+      margin-left: 6px; }
+
 #quiz-result-container table {
   margin: 1em 0;
   width: 100%;
@@ -562,6 +598,20 @@ body {
 .quiz-total, .quiz-duration {
   font-size: 14px; }
 
+#modal-view {
+  max-width: 60% !important; }
+  #modal-view svg {
+    background-color: #282c34;
+    width: 100% !important;
+    height: 90vh !important;
+    box-sizing: border-box;
+    padding: 20px; }
+  #modal-view #view-question {
+    background-color: #282c34;
+    padding: 20px;
+    padding-bottom: 0;
+    color: white; }
+
 #new-quiz {
   /* cursor: pointer; */ }
   #new-quiz > div {
@@ -608,8 +658,7 @@ body {
 
 .new-quiz-form {
   border: 2px solid #005059;
-  padding: 20px;
-  padding-left: 0;
+  padding: 20px 10px;
   margin-top: 2px; }
 
 /* FLOWCHART STYLE */
@@ -632,7 +681,8 @@ body {
 
 #question-form {
   resize: none;
-  width: 70%; }
+  width: 70%;
+  padding: 10px; }
 
 .menu-btn {
   position: fixed;
@@ -942,7 +992,7 @@ body {
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: 20% 75% 5%; }
+  grid-template-columns: 95% 5%; }
 
 #start-quiz-content {
   background: white;
@@ -1048,6 +1098,157 @@ body {
     transform: skewX(-50deg);
     box-shadow: -1px 0px 5px 1px black; }
 
+.blocker {
+  z-index: 9999 !important; }
+
+.ui-datepicker {
+  z-index: 2 !important; }
+
+#tutorial-button {
+  position: fixed;
+  top: 100px;
+  right: 20px; }
+  #tutorial-button i {
+    color: #08808E;
+    font-size: 60px;
+    cursor: pointer; }
+
+#modal-tutorial {
+  max-width: 50% !important;
+  height: 650px; }
+  #modal-tutorial video {
+    width: 100%; }
+  #modal-tutorial ul {
+    text-align: center;
+    margin-top: 20px; }
+    #modal-tutorial ul li {
+      display: inline-block;
+      border: 5px solid #7AC9D0;
+      border-radius: 53px;
+      width: 10px;
+      height: 10px;
+      cursor: pointer; }
+      #modal-tutorial ul li.nav-btn {
+        background-color: white;
+        border: 0;
+        width: 50px;
+        height: 40px;
+        border-radius: 0;
+        font-size: 30px;
+        color: #08808E;
+        text-align: center; }
+      #modal-tutorial ul li.active {
+        background-color: #7AC9D0; }
+
+/* Loading style */
+#loading {
+  position: fixed;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.54);
+  text-align: center;
+  display: none; }
+  #loading div {
+    background-color: white;
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+    border-radius: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%); }
+    #loading div svg {
+      transform-origin: center center;
+      animation: svg 5s ease-in-out forwards infinite alternate;
+      margin-top: -100px; }
+    #loading div span {
+      color: #005059;
+      font-family: sans-serif;
+      font-size: 32px;
+      font-weight: 600; }
+  #loading i {
+    position: absolute;
+    left: 50px;
+    top: 40px;
+    color: #f13838;
+    font-size: 35px;
+    cursor: pointer; }
+
+.c1 {
+  stroke-dasharray: 250;
+  /*   stroke-dashoffset: 125; */
+  transform-origin: center center;
+  stroke-dashoffset: 250;
+  animation: dash 2s ease-in-out forwards infinite alternate, c1 2s ease-in-out forwards infinite alternate; }
+
+.c2 {
+  stroke-dasharray: 294;
+  /*   stroke-dashoffset: 147; */
+  stroke-dashoffset: 294;
+  transform-origin: center center;
+  transform: rotate(20deg);
+  animation: dash 2s ease-in-out forwards infinite alternate, c2 2s ease-in-out forwards infinite alternate; }
+
+.c3 {
+  stroke-dasharray: 338;
+  /*   stroke-dashoffset: 169; */
+  stroke-dashoffset: 338;
+  transform-origin: center center;
+  transform: rotate(40deg);
+  animation: dash 2s ease-in-out forwards infinite alternate, c3 2s ease-in-out forwards infinite alternate; }
+
+.c4 {
+  stroke-dasharray: 382;
+  /*   stroke-dashoffset: 191; */
+  stroke-dashoffset: 382;
+  transform-origin: center center;
+  transform: rotate(60deg);
+  animation: dash 2s ease-in-out forwards infinite alternate, c4 2s ease-in-out forwards infinite alternate; }
+
+.c5 {
+  stroke-dasharray: 426;
+  /*   stroke-dashoffset: 213; */
+  stroke-dashoffset: 426;
+  transform-origin: center center;
+  transform: rotate(80deg);
+  animation: dash 2s ease-in-out forwards infinite alternate, c5 2s ease-in-out forwards infinite alternate; }
+
+.c6 {
+  stroke-dasharray: 470;
+  /*   stroke-dashoffset: 235; */
+  stroke-dashoffset: 470;
+  transform-origin: center center;
+  transform: rotate(100deg);
+  animation: dash 2s ease-in-out forwards infinite alternate, c6 2s ease-in-out forwards infinite alternate; }
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0; } }
+@keyframes svg {
+  to {
+    transform: rotate(720deg); } }
+@keyframes c1 {
+  to {
+    transform: rotate(-90deg); } }
+@keyframes c2 {
+  to {
+    transform: rotate(-110deg); } }
+@keyframes c3 {
+  to {
+    transform: rotate(-130deg); } }
+@keyframes c4 {
+  to {
+    transform: rotate(-150deg); } }
+@keyframes c5 {
+  to {
+    transform: rotate(-170deg); } }
+@keyframes c6 {
+  to {
+    transform: rotate(-190deg); } }
 /*
 | -------------------------------------------------------------------------
 | MEDIA QUERIES
