@@ -249,15 +249,6 @@
                     token:id_token
                 };
             getGoogle(data);
-            console.log('sign in');
-            // XHR
-            // let xhr = new XMLHttpRequest();
-            // xhr.open('POST', '<?=base_url('dataprocess/googlelogin')?>');
-            // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            // xhr.onload = function() {
-            // console.log('Signed in as: ' + xhr.responseText);
-            // };
-            // xhr.send('idtoken=' + id_token);
         }
 
         $('#reg-modal-btn, #regist-trigger').click(function(){
@@ -271,9 +262,7 @@
 
         let mask = true;
         $('#mask-btn').click(function(){
-            console.log(mask);  
             if(mask){
-                console.log('wkwk');
                 $('#front-mask').css('transform', 'translateX(-520px)');
                 $('#register-container').css('width', '520px');
                 $('#login-container').css('width', '280px');
@@ -281,7 +270,6 @@
                 $('#regForm').css('transform', 'translateX(0px)');
                 $(this).html('Masuk');
             }else{
-                console.log('haha');
                 $('#front-mask').css('transform', 'translateX(0px)');
                 $('#register-container').css('width', '280px');
                 $('#login-container').css('width', '520px');

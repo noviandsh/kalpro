@@ -1,5 +1,8 @@
 .DS_Store
 
+node_modules/*
+package-lock.json
+
 application/cache/*
 application/vendor/*
 !application/cache/index.html

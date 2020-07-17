@@ -34,10 +34,6 @@ class Home extends CI_Controller {
 			redirect(base_url('login-page'));
 		}
    	}
-	public function coba()
-	{
-		$this->load->view('coba');
-	}
 	
 	public function akun()
 	{

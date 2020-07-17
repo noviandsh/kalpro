@@ -10,11 +10,15 @@
                     </div>
                     <span class="quiz-duration"><?=$val['duration']?> Menit</span><br>
                 </div>
-                <?php
-                    if($val['teacher'] == $this->session->name){
-                        echo "<div class='trash' data-id='".$val['id']."' data-title='".$val['title']."'><i class='fas fa-trash-alt fa-s'></i></div>";
-                    } 
-                    ?>
+                <div class="corner-menu view" data-id="<?=$val["id"]?>" data-title="<?=$val["title"]?>">
+                    <span><i class="fas fa-eye fa-s"></i> Lihat</span>
+                </div>
+                <div class="corner-menu edit" data-id="<?=$val["id"]?>" data-title="<?=$val["title"]?>">
+                    <span><i class="fas fa-pen fa-s"></i> Ubah</span>
+                </div>
+                <div class="corner-menu delete" data-id="<?=$val["id"]?>" data-title="<?=$val["title"]?>">
+                    <span><i class="fas fa-trash-alt fa-s"></i> Hapus</span>
+                </div>
                 <a href="#" data-title="<?=$val['title']?>" data-id="<?=$val['id']?>" class="styled-btn show-result" data-icon="&#xf0ae">Lihat Hasil</a>
             </div>
     <?php endforeach;
@@ -24,6 +28,9 @@
         <div><i class="fas fa-plus-circle"></i></div>
     </div>
     </a>
+</div>
+<div id="modal-view" class="modal">
+
 </div>
 <div id="modal" class="modal">
     <p>Apakah anda ingin menghapus kuis <b></b>?</p><br><br>
@@ -55,12 +62,34 @@
             }
         });
     });
-    $('.trash').click(function() {
+    $('.corner-menu.delete').click(function() {
         $("#modal").modal({
             fadeDuration: 100
         });
         $("#modal b").html($(this).attr('data-title'));
         $('#delete-btn').attr('delete-id', $(this).attr('data-id'));
+    });
+    $('.corner-menu.view').click(function() {
+        $("#modal-view").modal({
+            fadeDuration: 100
+        });
+        let id = $(this).attr('data-id');
+        $.ajax({
+            type  : 'POST',
+            url   : '<?php echo base_url()?>dataprocess/viewquiz/'+id,
+            error: function (jqXHR, textStatus, errorThrown){
+                alert(jqXHR.status);
+            },
+            success : function(data){
+                quiz = JSON.parse(data);
+                $('#modal-view').html(
+                    `<div id="view-question">${quiz.question}</div>
+                    ${decodeURIComponent(quiz.svg)}`);
+            }
+        });
+    });
+    $('.corner-menu.edit').click(function() {
+        window.location = "<?=base_url('class/edit-quiz?id=')?>" + $(this).attr('data-id');
     });
     $('#delete-btn').click(function(){
         let id = $(this).attr('delete-id');

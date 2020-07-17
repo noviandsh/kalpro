@@ -16,19 +16,41 @@
     <script src="<?=base_url('assets/js/jquery.min.js')?>"></script>
     <script src="<?=base_url('assets/js/jquery-ui.js')?>"></script>
     <script src="<?=base_url('assets/js/jquery-ui-timepicker-addon.js')?>"></script>
-    <script src="<?=base_url('assets/js/jquery-collision.js')?>"></script>
-    <script src="<?=base_url('assets/js/jquery.connections.js')?>"></script>
+    <!-- <script src="<?=base_url('assets/js/jquery-collision.js')?>"></script>
+    <script src="<?=base_url('assets/js/jquery.connections.js')?>"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
 
 </head>
 <body>
+    <div id="loading">
+        <div>
+            <svg height="500" width="500">
+                <circle class="c1" cx="250" cy="250" r="40" stroke="#a463d8" stroke-width="5" fill="transparent" />
+                <circle class="c2" cx="250" cy="250" r="47" stroke="#3fa4d8" stroke-width="5" fill="transparent" />
+                <circle class="c3" cx="250" cy="250" r="54" stroke="#b2c224" stroke-width="5" fill="transparent" />
+                <circle class="c4" cx="250" cy="250" r="61" stroke="#fecc30" stroke-width="5" fill="transparent" />
+                <circle class="c5" cx="250" cy="250" r="68" stroke="#f7631e" stroke-width="5" fill="transparent" />
+                <circle class="c6" cx="250" cy="250" r="75" stroke="#dc3838" stroke-width="5" fill="transparent" />
+            </svg><br>
+            <span>Mohon tunggu..</span>
+        </div>
+        <!-- <i class="fas fa-times-circle"></i> -->
+        <!--
+        merah #dc3838
+        jingga #f7631e
+        kuning #fecc30
+        hijau #b2c224
+        biru #3fa4d8
+        ungu #a463d8
+        -->
+    </div>
     <div id="navbar">
         <div id="logo"></div>
             <div id="menubar-atas">
-                <div id="search-box">
+                <!-- <div id="search-box">
                     <input type="" id="search" name="search" placeholder="Search">
                     <i id="search-btn" class="fa fa-search" aria-hidden="true"></i>
-                </div>
+                </div> -->
             </div>
             <div id="menubar-bawah">
                 <div id="menu-div">
@@ -51,6 +73,9 @@
             </div>
         </div>
     </div>
+    <div id="alert-modal" class="modal">
+        <span></span>
+    </div>
     <?=$page?>
     <script>
         let menu = '<?=$this->uri->segment(1)?>';
@@ -58,6 +83,21 @@
             menu = 'home';
         }
         $('.'+menu+'-menu').addClass('active');
+        let alrt = '<?=$this->session->alert?>';
+        if(alrt != ''){
+            // alert(alrt);
+            $("#alert-modal>span").html(alrt);
+            $("#alert-modal").modal({
+                fadeDuration: 100
+            });
+        }
     </script>
+    <?php
+        if(isset($script)){
+            foreach($script as $s){
+                echo "<script src='".base_url('assets/js/').$s."'></script>";
+            }
+        }
+    ?>
 </body>
 </html>
