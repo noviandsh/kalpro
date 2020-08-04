@@ -19,8 +19,8 @@
                 <div id="flowchart-container">
                     <textarea id="question-form" placeholder="Pertanyaan" cols="100" rows="10"><?=$quiz['question']?></textarea>
                     <div id="flowchart-edit" style="width: 100%; display: flex; justify-content: space-between">
-                        <div id="myPaletteDiv" style="width: 100px; margin-right: 2px; background-color: #282c34;"></div>
-                        <div id="myDiagramDiv" style="flex-grow: 1; height: 750px; background-color: #282c34;"></div>
+                        <div id="myPaletteDiv"></div>
+                        <div id="myDiagramDiv"></div>
                     </div>
                 </div>
             </div>

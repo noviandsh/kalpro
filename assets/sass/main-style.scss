@@ -803,6 +803,16 @@ body{
     /* display: grid;
     grid-template-columns: 19% 81%; */
 }
+#myPaletteDiv{
+    width: 140px; 
+    margin-right: 2px; 
+    background-color: #282c34;
+}
+#myDiagramDiv{
+    flex-grow: 1; 
+    height: 750px; 
+    background-color: #282c34;
+}
 #question-form{
     resize: none;
     width: 70%;
