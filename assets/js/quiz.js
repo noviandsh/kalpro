@@ -134,6 +134,30 @@ $j("#dueDate").datetimepicker({
         makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
         makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, false)
         ));
+    
+        myDiagram.nodeTemplateMap.add("Preparation",  // the default category
+        $(go.Node, "Table", nodeStyle(),
+        // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
+        $(go.Panel, "Auto",
+            $(go.Shape,
+            { fill: "#282c34", stroke: "#00A9C9", strokeWidth: 3.5,
+            geometryString: "M 150 200 L 250 100 L 400 100 L 500 200 L 400 300 L 250 300 L 150 200 " },
+            new go.Binding("figure", "figure")),
+            $(go.TextBlock, textStyle(),
+            {
+                margin: new go.Margin(15, 35, 15, 35),
+                maxSize: new go.Size(160, NaN),
+                wrap: go.TextBlock.WrapFit,
+                editable: true
+            },
+            new go.Binding("text").makeTwoWay())
+        ),
+        // four named ports, one on each side:
+        makePort("T", go.Spot.Top, go.Spot.TopSide, false, true),
+        makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+        makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
+        makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, false)
+        ));
 
     myDiagram.nodeTemplateMap.add("Conditional",
         $(go.Node, "Table", nodeStyle(),
@@ -315,6 +339,7 @@ $j("#dueDate").datetimepicker({
                 nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
                 model: new go.GraphLinksModel([  // specify the contents of the Palette
                 { category: "Start", text: "Start" },
+                { category: "Preparation", text: "Prep" },
                 { category: "Process", text: "Step" },
                 { category: "Conditional", text: "???" },
                 { category: "Document", text: "Document" },
