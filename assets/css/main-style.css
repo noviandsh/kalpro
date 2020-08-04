@@ -572,7 +572,8 @@ body {
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   position: relative;
-  padding-bottom: 50px; }
+  padding-bottom: 50px;
+  max-width: 280px; }
   .quiz-list-box a {
     position: absolute;
     bottom: 10px;

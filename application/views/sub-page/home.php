@@ -128,7 +128,9 @@
                                 </div>
                                 <span class="quiz-duration"><?=$val['duration']?> Menit</span><br/>
                             </div>
-                            <a href="<?=base_url('start-quiz/').$val['id']?>" class="styled-btn" data-icon="&#xf0ae">Ambil</a>
+                            <?php if($this->session->type == 'm'): ?>
+                                <a href="<?=base_url('start-quiz/').$val['id']?>" class="styled-btn" data-icon="&#xf0ae">Ambil</a>
+                            <?php endif; ?>
                         </div>
         <?php       endif;
                 endforeach;

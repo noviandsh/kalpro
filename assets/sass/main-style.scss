@@ -687,6 +687,7 @@ body{
     @include border-radius(5px);
     position: relative;
     padding-bottom: 50px;
+    max-width: 280px;
     a{
         position: absolute;
         bottom: 10px;
